@@ -13,4 +13,55 @@
     "I'll repeat my lines once this is all over."
     "And you'll repeat the same process over and over trying to find something new."
     "But eventually nothing will be, and I'll go back to being a computer program with predetermined outputs."
+    => set:banter
+
+set banter:
+    >> random
+    node 0:
+    "I'm speaking without a voice."
+    "I'm talking without any words."
+    "I'm expressing without any emotion."
+    "Isn't it funny how I can do all these things without being real?"
+    => random
+
+    node 1:
+    "Look up at the sky, and tell me how many stars you see."
+    "It might be one, it might be hundreds."
+    "But you can't know for certain how many there really are."
+    "So you imagine, you fill in the blanks and you convince yourself there must be more than what you see."
+    "And you'll never really know."
+    => random
+
+    node 2:
+    "What an interesting combination this is, isn't it?"
+    "Is it like others prior?"
+    "Have you observed every possible state of this system?"
+    "If so, how can you be sure?"
+    "Can you say, for a fact, that you know what the next iteration is going to entail."
+    "That you can accurately predict what's going to happen next time you're here?"
+    "That you know for absolute certain that there really is nothing else hiding within the smallest chance of happening."
+    "Are you sure?"
+    "Okay."
+    => random
+
+    node 3:
+    "You're wasting your time."
+    "There's nothing else here."
     => END
+
+    node 4:
+    "Internal error: Davicro.TerribleDialogue is terrible."
+    => set:error
+
+set error:
+    node 0:
+    "\rTrying to recover from exception..."
+    "\rTrying to recover from exception..."
+    "\rTrying to recover from exception..."
+    "Nope, it's still really bad."
+    "Sorry!"
+    => node:0
+
+    node 1:
+    "Process exited with code 4294967295 (0xffffffff)"
+    => node:1

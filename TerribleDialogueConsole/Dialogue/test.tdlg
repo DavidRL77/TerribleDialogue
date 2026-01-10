@@ -1,0 +1,16 @@
+﻿set default:
+    node 0:
+    "Yo, what's up."
+    "I'm nothing but a console speaking to you through pre-processed, compiled and parsed data."
+    "A computer program made of bits pretending to speak using unicode characters."
+    "Isn't it cool?"
+    => node:1
+
+    node 1:
+    "I think it's cool."
+    "Not that it matters."
+    "Not that anything does."
+    "I'll repeat my lines once this is all over."
+    "And you'll repeat the same process over and over trying to find something new."
+    "But eventually nothing will be, and I'll go back to being a computer program with predetermined outputs."
+    => END

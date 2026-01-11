@@ -73,7 +73,7 @@ namespace Davicro.TerribleDialogue
             select new Dictionary<string, string>(kvp);
 
         /// <summary>
-        /// Quoted text and a dictionary of tags (wip)
+        /// Quoted text and a dictionary of tags
         /// </summary>
         private static readonly Parser<DialogueLine> Line =
             from text in QuotedText

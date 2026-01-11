@@ -1,9 +1,12 @@
 using Sprache;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 
 namespace Davicro.TerribleDialogue
 {
+    // For future reference: ORDER MATTERS! Parsers need to be defined before they're used or they'll be null.
+
     public static class DialogueGrammar
     {
         // Every set starts at node 0 by default
@@ -43,11 +46,40 @@ namespace Davicro.TerribleDialogue
             select content;
 
         /// <summary>
+        /// An id that is composed of only letter, digits or underscores.
+        /// Stops at any other character
+        /// </summary>
+        private static readonly Parser<string> Id =
+            from id in Parse.LetterOrDigit.Or(Parse.Char('_')).Many().Text()
+            select id;
+
+
+        /// <summary>
+        /// Key=Value
+        /// </summary>
+        private static readonly Parser<KeyValuePair<string, string>> KeyValue =
+            from key in Id
+            from sign in Parse.Char('=')
+            from value in QuotedText.Or(Id)
+            select new KeyValuePair<string, string>(key, value);
+
+        /// <summary>
+        /// [Attribute=Value,Attribute=Value]
+        /// </summary>
+        private static readonly Parser<Dictionary<string, string>> Attributes =
+            from open in Parse.Char('[')
+            from kvp in KeyValue.DelimitedBy(Parse.Char(','))
+            from close in Parse.Char(']')
+            select new Dictionary<string, string>(kvp);
+
+        /// <summary>
         /// Quoted text and a dictionary of tags (wip)
         /// </summary>
         private static readonly Parser<DialogueLine> Line =
             from text in QuotedText
-            select new DialogueLine(text, new());
+            from space in OptionalWhitespace
+            from tags in Attributes.Optional()
+            select new DialogueLine(text, tags.GetOrElse(new Dictionary<string, string>()));
 
         /// <summary>
         /// A bunch of quoted text, in array form
@@ -55,14 +87,6 @@ namespace Davicro.TerribleDialogue
         private static readonly Parser<DialogueLine[]> Lines =
             from lines in Line.AtLeastOnce()
             select lines.ToArray();
-
-        /// <summary>
-        /// An id that is composed of only letter, digits or underscores.
-        /// Stops at any other character
-        /// </summary>
-        private static readonly Parser<string> Id =
-            from id in Parse.LetterOrDigit.Or(Parse.Char('_')).Many().Text()
-            select id;
 
         private static readonly Parser<int> Integer =
            Parse.Number.Token().Select(int.Parse);

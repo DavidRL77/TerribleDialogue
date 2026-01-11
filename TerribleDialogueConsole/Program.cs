@@ -17,7 +17,6 @@ namespace TerribleDialogueConsole
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-
             while(true)
             {
                 Console.WriteLine("Who do you want to talk to?");
@@ -53,7 +52,8 @@ namespace TerribleDialogueConsole
 
             while(c.Processor.HasNextLine()) 
             {
-                Console.Write(c.Processor.GetNextLine().Text);
+                DialogueLine line = c.Processor.GetNextLine();
+                Console.Write(line.Text);
                 Console.ReadLine();
             }
 

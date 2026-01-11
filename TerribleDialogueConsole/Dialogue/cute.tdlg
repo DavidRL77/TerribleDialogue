@@ -1,0 +1,27 @@
+set default:
+    node 0:
+    "O-Oh... Hi!"
+    "Y-Y-You wanted t-t-to talk to me?! (∩˃o˂∩)♡"
+    "I-I hope I'm not bothering you! I-I'm a little bit shy... (⌯˃̶᷄ ﹏ ˂̶᷄⌯)"
+    => node:1
+
+    node 1:
+    "W-Wow, y-you're really muscular and r-really toned..."
+    "I-I can tell you take care of yourself... (*´∀`*)"
+    ""
+    "S-SORRY, I DIDN'T MEAN TO STARE! (*´艸`)"
+    => node:2
+
+    node 2:
+    "S-Senpai..."
+    "Y-You really like talking to me, don't you? (◍＞◡＜◍)⋈。✧♡"
+    "I-I also like t-talking to you..."
+    "It's really easy to talk to you, senpai~"
+    => node:3
+
+    node 3:
+    "✧♡(◕‿◕✿)"
+    "(◍＞◡＜◍)⋈。✧♡"
+    "( ๑ ❛ ڡ ❛ ๑ )❤"
+    "【≽ܫ≼】"
+    => END

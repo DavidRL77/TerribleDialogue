@@ -1,12 +1,16 @@
 ﻿using Davicro.TerribleDialogue;
 using Sprache;
+using System.Media;
 using System.Text;
+using TerribleDialogue;
 
 namespace TerribleDialogueConsole
 {
     internal class Program
     {
         private static readonly Random random = new Random();
+        private static readonly DialogueManager dialogueManager = new DialogueManager();
+        private static readonly SoundPlayer soundPlayer = new SoundPlayer();
 
         private static readonly Character[] characters = { 
             CreateCharacter("John", "Dialogue/john.tdlg"),
@@ -17,6 +21,13 @@ namespace TerribleDialogueConsole
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
+
+            dialogueManager.OnStart += OnDialogueStart;
+            dialogueManager.OnLine += DisplayLine;
+            dialogueManager.OnEnd += OnDialogueEnd;
+            dialogueManager.AddTagProcessor("music", ProcessMusicTag);
+            dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
+
             while(true)
             {
                 Console.WriteLine("Who do you want to talk to?");
@@ -35,29 +46,64 @@ namespace TerribleDialogueConsole
                     continue;
                 }
 
-                Console.Clear();
                 TalkToCharacter(character);
-                Console.Clear();
             }
+        }
+
+        private static void OnDialogueStart()
+        {
+            Console.Clear();
+        }
+
+        private static void OnDialogueEnd()
+        {
+            Console.Clear();
+            soundPlayer.Stop();
+        }
+
+        private static void DisplayLine(string line)
+        {
+            Console.Write(line);
         }
 
         private static void TalkToCharacter(Character c)
         {
             if(c.Processor.HasEndedDialogue)
             {
-                Console.Write($"{c.Name} has nothing to say.");
+                Console.Clear();
+                Console.Write($"{c.Name} has nothing else to say.");
                 Console.ReadLine();
+                Console.Clear();
                 return;
             }
 
-            while(c.Processor.HasNextLine()) 
-            {
-                DialogueLine line = c.Processor.GetNextLine();
-                Console.Write(line.Text);
-                Console.ReadLine();
-            }
+            dialogueManager.BeginDialogue(c.Processor);
 
-            c.Processor.EndNode();
+            while(dialogueManager.InDialogue)
+            {
+                Console.ReadLine();
+                dialogueManager.Next();
+            }
+        }
+
+        private static void ProcessMusicTag(string key, string value)
+        {
+            switch(value)
+            {
+                case "stop":
+                    soundPlayer.Stop();
+                    break;
+                default:
+                    soundPlayer.SoundLocation = Path.Join("Music", value+".wav");
+                    soundPlayer.PlayLooping();
+                    break;
+            }
+        }
+
+        private static void ProcessSfxTag(string key, string value)
+        {
+            soundPlayer.SoundLocation = Path.Join("Sfx", value + ".wav");
+            soundPlayer.Play();
         }
 
         private static Character CreateCharacter(string name, string dialogueFile)

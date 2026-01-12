@@ -13,8 +13,28 @@
 	  </Content>
   </ItemGroup>
 
+	<ItemGroup>
+		<Content Include="Music\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Sfx\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Windows.Extensions" Version="10.0.1" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\TerribleDialogue\TerribleDialogue.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Music\" />
   </ItemGroup>
 
 </Project>

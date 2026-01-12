@@ -8,10 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TerribleDialogue\TerribleDialogue.csproj" />
 	  <Content Include="Dialogue\**">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TerribleDialogue\TerribleDialogue.csproj" />
   </ItemGroup>
 
 </Project>

@@ -50,18 +50,18 @@ set banter:
     => END
 
     node 4:
-    "Internal error: Davicro.TerribleDialogue is terrible."
+    "Internal error: Davicro.TerribleDialogue is terrible." [color=red]
     => set:error
 
 set error:
     node 0:
-    "\rTrying to recover from exception..."
-    "\rTrying to recover from exception..."
-    "\rTrying to recover from exception..."
+    "\rTrying to recover from exception..." [color=blue]
+    "\rTrying to recover from exception..." [color=blue]
+    "\rTrying to recover from exception..." [color=blue]
     "Nope, it's still really bad."
     "Sorry!"
     => node:0
 
     node 1:
     "Process exited with code 4294967295 (0xffffffff)"
-    => node:1
+    => node:0

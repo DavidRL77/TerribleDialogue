@@ -10,9 +10,8 @@ namespace TerribleDialogueConsole
     {
         private static readonly Random random = new Random();
         private static readonly DialogueManager dialogueManager = new DialogueManager();
-        private static readonly SoundPlayer soundPlayer = new SoundPlayer();
 
-        private static readonly Character[] characters = { 
+        private static readonly Character[] characters = {
             CreateCharacter("John", "Dialogue/john.tdlg"),
             CreateCharacter("Byte", "Dialogue/byte.tdlg"),
             CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg")
@@ -28,10 +27,10 @@ namespace TerribleDialogueConsole
             dialogueManager.AddTagProcessor("music", ProcessMusicTag);
             dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
 
-            while(true)
+            while (true)
             {
                 Console.WriteLine("Who do you want to talk to?");
-                for(int i = 0; i < characters.Length; i++)
+                for (int i = 0; i < characters.Length; i++)
                 {
                     Console.WriteLine(characters[i].Name);
                 }
@@ -39,7 +38,7 @@ namespace TerribleDialogueConsole
 
                 string answer = Console.ReadLine();
                 Character character = characters.FirstOrDefault(c => c.Name.ToLower() == answer.ToLower().Trim());
-                if(character == null)
+                if (character == null)
                 {
                     Console.WriteLine("No character by that name");
                     Console.WriteLine();
@@ -58,7 +57,7 @@ namespace TerribleDialogueConsole
         private static void OnDialogueEnd()
         {
             Console.Clear();
-            soundPlayer.Stop();
+            SoundPlayer.Stop();
         }
 
         private static void DisplayLine(string line)
@@ -68,7 +67,7 @@ namespace TerribleDialogueConsole
 
         private static void TalkToCharacter(Character c)
         {
-            if(c.Processor.HasEndedDialogue)
+            if (c.Processor.HasEndedDialogue)
             {
                 Console.Clear();
                 Console.Write($"{c.Name} has nothing else to say.");
@@ -79,7 +78,7 @@ namespace TerribleDialogueConsole
 
             dialogueManager.BeginDialogue(c.Processor);
 
-            while(dialogueManager.InDialogue)
+            while (dialogueManager.InDialogue)
             {
                 Console.ReadLine();
                 dialogueManager.Next();
@@ -91,19 +90,17 @@ namespace TerribleDialogueConsole
             switch(value)
             {
                 case "stop":
-                    soundPlayer.Stop();
+                    SoundPlayer.Stop();
                     break;
                 default:
-                    soundPlayer.SoundLocation = Path.Join("Music", value+".wav");
-                    soundPlayer.PlayLooping();
+                    SoundPlayer.PlayLooping(Path.Join("Music", value+".wav"));
                     break;
             }
         }
 
         private static void ProcessSfxTag(string key, string value)
         {
-            soundPlayer.SoundLocation = Path.Join("Sfx", value + ".wav");
-            soundPlayer.Play();
+            SoundPlayer.Play(Path.Join("Sfx", value + ".wav"));
         }
 
         private static Character CreateCharacter(string name, string dialogueFile)

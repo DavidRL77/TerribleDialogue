@@ -10,11 +10,13 @@ namespace TerribleDialogue
         public delegate void TagProcessor(string key, string value);
 
         public bool InDialogue { get => currentProcessor != null; }
+        public DialogueLine CurrentLine { get => currentLine; set => currentLine = value; }
 
         private DialogueProcessor currentProcessor;
+        public DialogueLine currentLine;
 
         public event Action OnStart;
-        public event Action<string> OnLine;
+        public event Action<DialogueLine> OnLine;
         public event Action OnEnd;
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
@@ -32,14 +34,14 @@ namespace TerribleDialogue
         {
             if(currentProcessor.HasNextLine())
             {
-                DialogueLine line = currentProcessor.GetNextLine();
+                currentLine = currentProcessor.GetNextLine();
 
-                foreach(KeyValuePair<string,string> kvp in line.Tags)
+                foreach(KeyValuePair<string,string> kvp in currentLine.Tags)
                 {
                     CallTagProcessors(kvp.Key, kvp.Value);
                 }
 
-                OnLine?.Invoke(line.Text);
+                OnLine?.Invoke(currentLine);
             } 
             else
             {
@@ -51,6 +53,7 @@ namespace TerribleDialogue
         public void EndDialogue()
         {
             currentProcessor = null;
+            currentLine = null;
 
             OnEnd?.Invoke();
         }

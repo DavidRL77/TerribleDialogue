@@ -14,7 +14,8 @@ namespace TerribleDialogueConsole
         private static readonly Character[] characters = {
             CreateCharacter("John", "Dialogue/john.tdlg"),
             CreateCharacter("Byte", "Dialogue/byte.tdlg"),
-            CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg")
+            CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
+            CreateCharacter("Color guy", "Dialogue/test.tdlg")
         };
 
         static void Main(string[] args)
@@ -60,9 +61,12 @@ namespace TerribleDialogueConsole
             SoundPlayer.Stop();
         }
 
-        private static void DisplayLine(string line)
+        private static void DisplayLine(DialogueLine line)
         {
-            Console.Write(line);
+            Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "gray"));
+            Console.Write(line.Text);
+
+            Console.ResetColor();
         }
 
         private static void TalkToCharacter(Character c)
@@ -106,6 +110,18 @@ namespace TerribleDialogueConsole
         private static Character CreateCharacter(string name, string dialogueFile)
         {
             return new Character(name, new DialogueProcessor(DialogueGrammar.Dialogue.Parse(File.ReadAllText(dialogueFile)), random.Next));
+        }
+
+        private static ConsoleColor ColorByName(string name)
+        {
+            if(Enum.TryParse(name, true, out ConsoleColor color))
+            {
+                return color;
+            }
+            else
+            {
+                return ConsoleColor.White;
+            }
         }
 
     }

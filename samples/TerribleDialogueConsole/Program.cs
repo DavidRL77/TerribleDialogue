@@ -63,7 +63,7 @@ namespace TerribleDialogueConsole
 
         private static void DisplayLine(DialogueLine line)
         {
-            Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "gray"));
+            Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "white"));
             Console.Write(line.Text);
 
             Console.ResetColor();

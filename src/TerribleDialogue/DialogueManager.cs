@@ -1,22 +1,22 @@
-﻿using Davicro.TerribleDialogue;
+﻿using Davicro.TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace TerribleDialogue
+namespace Davicro.TerribleDialogue
 {
     public class DialogueManager
     {
         public delegate void TagProcessor(string key, string value);
 
         public bool InDialogue { get => currentProcessor != null; }
-        public DialogueLine CurrentLine { get => currentLine; set => currentLine = value; }
+        public DialogueStatement.Line CurrentLine { get => currentLine; set => currentLine = value; }
 
         private DialogueProcessor currentProcessor;
-        public DialogueLine currentLine;
+        public DialogueStatement.Line currentLine;
 
         public event Action OnStart;
-        public event Action<DialogueLine> OnLine;
+        public event Action<DialogueStatement.Line> OnLine;
         public event Action OnEnd;
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
@@ -32,7 +32,7 @@ namespace TerribleDialogue
 
         public void Next()
         {
-            if(currentProcessor.HasNextLine())
+            if(currentProcessor.HasNextStatement())
             {
                 currentLine = currentProcessor.GetNextLine();
 
@@ -45,7 +45,6 @@ namespace TerribleDialogue
             } 
             else
             {
-                currentProcessor.EndNode();
                 EndDialogue();
             }
         }

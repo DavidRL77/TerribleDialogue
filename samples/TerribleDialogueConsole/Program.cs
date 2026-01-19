@@ -1,8 +1,8 @@
 ﻿using Davicro.TerribleDialogue;
+using Davicro.TerribleDialogue.Model;
 using Sprache;
 using System.Media;
 using System.Text;
-using TerribleDialogue;
 
 namespace TerribleDialogueConsole
 {
@@ -61,7 +61,7 @@ namespace TerribleDialogueConsole
             SoundPlayer.Stop();
         }
 
-        private static void DisplayLine(DialogueLine line)
+        private static void DisplayLine(DialogueStatement.Line line)
         {
             Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "white"));
             Console.Write(line.Text);

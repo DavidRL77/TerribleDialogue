@@ -1,4 +1,4 @@
-namespace Davicro.TerribleDialogue
+namespace Davicro.TerribleDialogue.Model
 {
     public abstract record FlowAction
     {
@@ -34,16 +34,12 @@ namespace Davicro.TerribleDialogue
             }
         }
 
-        public sealed record NothingAction : FlowAction
-        {
+        public sealed record PreviousAction : FlowAction 
+        { 
         }
 
         public sealed record EndAction : FlowAction
         {
-        }
-
-        public sealed record PreviousAction : FlowAction 
-        { 
         }
     }
 }

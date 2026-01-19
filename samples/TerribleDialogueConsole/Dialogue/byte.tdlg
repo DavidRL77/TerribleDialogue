@@ -4,7 +4,7 @@
     "I'm nothing but a console speaking to you through pre-processed, compiled and parsed data."
     "A computer program made of bits pretending to speak using unicode characters."
     "Isn't it cool?"
-    => node:1
+    goto node:1
 
     node 1:
     "I think it's cool."
@@ -13,7 +13,7 @@
     "I'll repeat my lines once this is all over."
     "And you'll repeat the same process over and over trying to find something new."
     "But eventually nothing will be, and I'll go back to being a computer program with predetermined outputs."
-    => set:banter
+    goto set:banter
 
 set banter:
     >> random
@@ -22,7 +22,7 @@ set banter:
     "I'm talking without any words."
     "I'm expressing without any emotion."
     "Isn't it funny how I can do all these things without being real?"
-    => random
+    goto random
 
     node 1:
     "Look up at the sky, and tell me how many stars you see."
@@ -30,7 +30,7 @@ set banter:
     "But you can't know for certain how many there really are."
     "So you imagine, you fill in the blanks and you convince yourself there must be more than what you see."
     "And you'll never really know."
-    => random
+    goto random
 
     node 2:
     "What an interesting combination this is, isn't it?"
@@ -42,16 +42,16 @@ set banter:
     "That you know for absolute certain that there really is nothing else hiding within the smallest chance of happening."
     "Are you sure?"
     "Okay."
-    => random
+    goto random
 
     node 3:
     "You're wasting your time."
     "There's nothing else here."
-    => END
+    goto END
 
     node 4:
     "Internal error: Davicro.TerribleDialogue is terrible." [color=red]
-    => set:error
+    goto set:error
 
 set error:
     node 0:
@@ -60,8 +60,8 @@ set error:
     "\rTrying to recover from exception..." [color=blue]
     "Nope, it's still really bad."
     "Sorry!"
-    => node:0
+    goto node:0
 
     node 1:
     "Process exited with code 4294967295 (0xffffffff)"
-    => node:0
+    goto node:0

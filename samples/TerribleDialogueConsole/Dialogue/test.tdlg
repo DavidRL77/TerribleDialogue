@@ -6,13 +6,13 @@ set default:
     "Black" [color=black]
     "White" [color=white]
     "Cool, that's all the colors I wanted to test."
-    => node:1
+    goto node:1
 
     node 1:
     "Wait I forgot one thing."
     "Cyan" [color=cyan]
-    => node:2
+    goto node:2
 
     node 2:
     "I just wanted to test if the colors reset properly after the dialogue ends."
-    => END
+    goto END

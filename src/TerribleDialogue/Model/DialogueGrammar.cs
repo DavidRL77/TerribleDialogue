@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 
-namespace Davicro.TerribleDialogue
+namespace Davicro.TerribleDialogue.Model
 {
     // For future reference: ORDER MATTERS! Parsers need to be defined before they're used or they'll be null.
 
@@ -75,69 +75,65 @@ namespace Davicro.TerribleDialogue
         /// <summary>
         /// Quoted text and a dictionary of tags
         /// </summary>
-        private static readonly Parser<DialogueLine> Line =
+        private static readonly Parser<DialogueStatement.Line> LineStatement =
             from text in QuotedText
             from space in OptionalWhitespace
             from tags in Attributes.Optional()
-            select new DialogueLine(text, tags.GetOrElse(new Dictionary<string, string>()));
+            select new DialogueStatement.Line(text, tags.GetOrElse(new Dictionary<string, string>()));
 
         /// <summary>
-        /// A bunch of quoted text, in array form
+        /// An arrow and then an identifier for what comes next after a node
         /// </summary>
-        private static readonly Parser<DialogueLine[]> Lines =
-            from lines in Line.AtLeastOnce()
-            select lines.ToArray();
+        private static readonly Parser<DialogueStatement.Goto> GotoStatement =
+            from leading in OptionalWhitespace
+            from keyword in Parse.String("goto")
+            from whiteSpace in Parse.WhiteSpace
+            from action in FlowAction
+            select new DialogueStatement.Goto(action);
+
+        /// <summary>
+        /// General statement (line, goto, if...)
+        /// </summary>
+        private static readonly Parser<DialogueStatement> Statement =
+            LineStatement.Or<DialogueStatement>(GotoStatement);
 
         private static readonly Parser<int> Integer =
            Parse.Number.Token().Select(int.Parse);
 
-        private static readonly Parser<FlowAction> NodeAction =
+        private static readonly Parser<FlowAction.NodeAction> NodeAction =
             from header in Parse.String("node")
             from id in FlowActionId
             select new FlowAction.NodeAction(id);
 
-        private static readonly Parser<FlowAction> SetAction =
+        private static readonly Parser<FlowAction.SetAction> SetAction =
             from header in Parse.String("set")
             from id in FlowActionId
             select new FlowAction.SetAction(id, false);
 
-        private static readonly Parser<FlowAction> NothingAction =
-            Parse.String("nothing").Return(new FlowAction.NothingAction());
-
-        private static readonly Parser<FlowAction> EndAction =
-            Parse.String("END").Return(new FlowAction.EndAction());
-
-        private static readonly Parser<FlowAction> RandomActionDiscard =
+        private static readonly Parser<FlowAction.RandomAction> RandomActionDiscard =
             from header in Parse.String("random")
             select new FlowAction.RandomAction(true);
 
-        private static readonly Parser<FlowAction> RandomAction =
+        private static readonly Parser<FlowAction.RandomAction> RandomAction =
             from header in Parse.String("random")
             select new FlowAction.RandomAction(false);
 
-        private static readonly Parser<FlowAction> PreviousAction =
+        private static readonly Parser<FlowAction.PreviousAction> PreviousAction =
             from header in Parse.String("previous")
             select new FlowAction.PreviousAction();
 
+        private static readonly Parser<FlowAction.EndAction> EndAction = 
+            from header in Parse.String("END")
+            select new FlowAction.EndAction();
+
         private static readonly Parser<FlowAction> FlowAction =
-            NodeAction.Or(SetAction).Or(NothingAction).Or(EndAction).Or(RandomActionDiscard).Or(PreviousAction);
+            NodeAction.Or<FlowAction>(SetAction).Or(RandomActionDiscard).Or(PreviousAction).Or(EndAction);
+
 
         private static readonly Parser<string> FlowActionId =
             from colon in Parse.Char(':')
             from id in Id
             select id;
-
-
-        /// <summary>
-        /// An arrow and then an identifier for what comes next after a node
-        /// </summary>
-        private static readonly Parser<FlowAction> NodeFlowAction =
-            from leading in OptionalWhitespace
-            from arrow in Parse.String("=>")
-            from whiteSpace in OptionalWhitespace
-            from action in FlowAction
-            from end in Parse.AnyChar.Except(Parse.LineEnd).Many().Text()
-            select action;
 
         /// <summary>
         /// A way to specify where a set starts (only set and random action is allowed)
@@ -146,7 +142,7 @@ namespace Davicro.TerribleDialogue
             from leading in OptionalWhitespace
             from start in Parse.String(">>")
             from whiteSpace in OptionalWhitespace
-            from action in NodeAction.Or(RandomAction)
+            from action in NodeAction.Or<FlowAction>(RandomAction)
             select action;
 
         /// <summary>
@@ -160,10 +156,9 @@ namespace Davicro.TerribleDialogue
             from id in Id
             from colon in Parse.Char(':')
             from lineEnd in Parse.LineEnd
-            from lines in Lines
-            from flowAction in NodeFlowAction
+            from statements in Statement.AtLeastOnce()
             from nodeEnd in Parse.LineEnd.Many()
-            select new DialogueNode(id, lines, flowAction);
+            select new DialogueNode(id, statements.ToArray());
 
         /// <summary>
         /// A dictionary of nodes mapped by its id

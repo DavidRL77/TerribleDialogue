@@ -1,16 +1,14 @@
-namespace Davicro.TerribleDialogue
+namespace Davicro.TerribleDialogue.Model
 {
     public record DialogueNode
     {
         public string Id { get; }
-        public DialogueLine[] Lines { get; }
-        public FlowAction FlowActionOnEnd { get; }
+        public DialogueStatement[] Statements { get; }
 
-        public DialogueNode(string id, DialogueLine[] lines, FlowAction flowAction)
+        public DialogueNode(string id, DialogueStatement[] statements)
         {
             Id = id;
-            Lines = lines;
-            FlowActionOnEnd = flowAction;
+            Statements = statements;
         }
     }
 }

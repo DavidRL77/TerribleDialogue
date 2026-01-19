@@ -1,7 +1,7 @@
+using Davicro.TerribleDialogue.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-
 namespace Davicro.TerribleDialogue
 {
     public class DialogueProcessor
@@ -17,7 +17,7 @@ namespace Davicro.TerribleDialogue
         private readonly DialogueObject dialogueObject;
         private DialogueSet currentSet;
         private DialogueNode currentNode;
-        private int lineIndex = 0;
+        private int statementIndex = 0;
         private HashSet<string> discardedNodes = new HashSet<string>();
 
         private string previousNode;
@@ -36,28 +36,40 @@ namespace Davicro.TerribleDialogue
 
         }
 
-        public bool HasNextLine()
+        public bool HasNextStatement()
         {
-            return lineIndex < currentNode.Lines.Length;
+            return statementIndex < currentNode.Statements.Length;
         }
 
-        public DialogueLine GetNextLine()
+        public DialogueStatement.Line GetNextLine()
         {
-            if(!HasNextLine())
-                return null;
+            do
+            {
+                DialogueStatement statement = GetNextStatement();
 
-            // Return the current line and increment
-            return currentNode.Lines[lineIndex++];
+                if(statement is DialogueStatement.Line line)
+                    return line;
+
+                ProcessStatement(statement);
+            }
+            while(HasNextStatement());
+            
+
+            return null;
+
         }
 
-        /// <summary>
-        /// Processes the dialogue finished action
-        /// </summary>
-        public void EndNode()
+        private void ProcessStatement(DialogueStatement statement)
         {
-            ProcessFlowAction(currentNode.FlowActionOnEnd);
+            switch(statement)
+            {
+                case DialogueStatement.Goto g:
+                    ProcessFlowAction(g.Action);
+                    break;
+                case DialogueStatement.Line l:
+                    break;
+            }
         }
-
         private void ProcessFlowAction(FlowAction action)
         {
             switch(action)
@@ -71,17 +83,23 @@ namespace Davicro.TerribleDialogue
                 case FlowAction.RandomAction r:
                     SetRandomNode(r.Discard);
                     break;
-                case FlowAction.EndAction:
-                    EndDialogue();
-                    break;
                 case FlowAction.PreviousAction:
                     string node = previousNode;
-
                     SetSet(previousSet);
                     SetNode(node);
                     break;
+                case FlowAction.EndAction e:
+                    EndDialogue();
+                    break;
             }
+        }
 
+        private DialogueStatement GetNextStatement()
+        {
+            if(!HasNextStatement())
+                return null;
+
+            return currentNode.Statements[statementIndex++];
         }
 
         public void SetNode(string id)
@@ -89,7 +107,7 @@ namespace Davicro.TerribleDialogue
             if(currentSet.Nodes.TryGetValue(id, out DialogueNode node))
             {
                 currentNode = node;
-                this.lineIndex = 0;
+                this.statementIndex = 0;
             }
             else
             {
@@ -106,12 +124,12 @@ namespace Davicro.TerribleDialogue
                     previousSet = currentSet.Id;
                     previousNode = currentNode.Id;
                 }
-                
+
                 currentSet = set;
                 HasEndedDialogue = false; // Re-enables dialogue if explicitely setting a new set
                 discardedNodes.Clear(); // Doesn't make sense to keep nodes discarded when changing sets, even if back to the same one
-                ProcessFlowAction(currentSet.StartFlowAction);
-            } 
+                ProcessFlowAction(set.StartFlowAction);
+            }
             else
             {
                 throw new Exception($"No set with id '{id}'");

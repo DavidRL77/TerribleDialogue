@@ -4,7 +4,7 @@ namespace TerribleDialogueConsole
     public static class SoundPlayer
     {
 #if WINDOWS
-        private static SoundPlayer soundPlayer = new SoundPlayer();
+        private static System.Media.SoundPlayer soundPlayer = new System.Media.SoundPlayer();
         public static void Play(string path) {
             soundPlayer.SoundLocation = path;
             soundPlayer.Play();

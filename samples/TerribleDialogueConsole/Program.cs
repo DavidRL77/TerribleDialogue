@@ -1,7 +1,6 @@
 ﻿using Davicro.TerribleDialogue;
 using Davicro.TerribleDialogue.Model;
 using Sprache;
-using System.Media;
 using System.Text;
 
 namespace TerribleDialogueConsole

@@ -108,7 +108,9 @@ namespace TerribleDialogueConsole
 
         private static Character CreateCharacter(string name, string dialogueFile)
         {
-            return new Character(name, new DialogueProcessor(DialogueGrammar.Dialogue.Parse(File.ReadAllText(dialogueFile)), random.Next));
+            return new Character(name, new DialogueProcessor(DialogueGrammar.Dialogue.Parse(
+                File.ReadAllText(Path.Combine(AppContext.BaseDirectory,dialogueFile))), 
+                random.Next));
         }
 
         private static ConsoleColor ColorByName(string name)

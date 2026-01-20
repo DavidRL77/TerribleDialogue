@@ -32,21 +32,20 @@ namespace Davicro.TerribleDialogue
 
         public void Next()
         {
-            if(currentProcessor.HasNextStatement())
-            {
-                currentLine = currentProcessor.GetNextLine();
-
-                foreach(KeyValuePair<string,string> kvp in currentLine.Tags)
-                {
-                    CallTagProcessors(kvp.Key, kvp.Value);
-                }
-
-                OnLine?.Invoke(currentLine);
-            } 
-            else
+            currentLine = currentProcessor.GetNextLine();
+            if (currentLine == null)
             {
                 EndDialogue();
+                return;
             }
+
+
+            foreach (KeyValuePair<string, string> kvp in currentLine.Tags)
+            {
+                CallTagProcessors(kvp.Key, kvp.Value);
+            }
+
+            OnLine?.Invoke(currentLine);
         }
 
         public void EndDialogue()
@@ -59,7 +58,7 @@ namespace Davicro.TerribleDialogue
 
         public void AddTagProcessor(string tagType, TagProcessor tagProcessor)
         {
-            if(!tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            if (!tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
             {
                 processors = new List<TagProcessor>();
                 tagProcessors[tagType] = processors;
@@ -70,9 +69,9 @@ namespace Davicro.TerribleDialogue
 
         public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor)
         {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            if (tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
             {
-                if(processors.Remove(tagProcessor) && processors.Count == 0)
+                if (processors.Remove(tagProcessor) && processors.Count == 0)
                 {
                     tagProcessors.Remove(tagType);
                 }
@@ -81,9 +80,9 @@ namespace Davicro.TerribleDialogue
 
         private void CallTagProcessors(string tagType, string value)
         {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            if (tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
             {
-                foreach(TagProcessor tagProcessor in processors)
+                foreach (TagProcessor tagProcessor in processors)
                 {
                     tagProcessor.Invoke(tagType, value);
                 }

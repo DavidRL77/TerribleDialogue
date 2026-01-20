@@ -33,10 +33,9 @@ namespace Davicro.TerribleDialogue
             this.dialogueObject = obj;
             this.randProvider = randProvider;
             SetSet(START_SET);
-
         }
 
-        public bool HasNextStatement()
+        private bool HasNextStatement()
         {
             return statementIndex < currentNode.Statements.Length;
         }
@@ -70,6 +69,7 @@ namespace Davicro.TerribleDialogue
                     break;
             }
         }
+        
         private void ProcessFlowAction(FlowAction action)
         {
             switch(action)

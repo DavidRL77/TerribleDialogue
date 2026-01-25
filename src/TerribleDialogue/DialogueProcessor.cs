@@ -35,15 +35,13 @@ namespace Davicro.TerribleDialogue
             SetSet(START_SET);
         }
 
-        private bool HasNextStatement()
+        public bool HasNextStatement()
         {
             return statementIndex < currentNode.Statements.Length;
         }
 
-        public bool GetNextLine(out DialogueStatement.Line line)
+        public DialogueStatement.Line GetNextLine()
         {
-            line = null;
-
             do
             {
                 DialogueStatement statement = GetNextStatement();
@@ -51,17 +49,17 @@ namespace Davicro.TerribleDialogue
                 switch(statement)
                 {
                     case DialogueStatement.Goto g:
+                        // Early return so the manager can decide if to continue after a goto or not
                         ProcessFlowAction(g.Action);
-                        return false;
+                        return null;
                     case DialogueStatement.Line l:
-                        line = l;
-                        return true;
+                        return l;
                 }
             }
             while(HasNextStatement());
             
 
-            return false;
+            return null;
 
         }
         

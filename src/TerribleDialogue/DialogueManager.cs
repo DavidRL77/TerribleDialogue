@@ -32,8 +32,8 @@ namespace Davicro.TerribleDialogue
 
         public void Next()
         {
-            bool result = currentProcessor.GetNextLine(out currentLine);
-            if (!result)
+            currentLine = currentProcessor.GetNextLine();
+            if (currentLine == null)
             {
                 EndDialogue();
                 return;

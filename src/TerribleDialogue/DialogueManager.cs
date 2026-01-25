@@ -9,11 +9,11 @@ namespace Davicro.TerribleDialogue
     {
         public delegate void TagProcessor(string key, string value);
 
-        public bool InDialogue { get => currentProcessor != null; }
-        public DialogueStatement.Line CurrentLine { get => currentLine; set => currentLine = value; }
+        public bool InDialogue => currentProcessor != null;
+        public DialogueStatement.Line CurrentLine => currentLine;
 
         private DialogueProcessor currentProcessor;
-        public DialogueStatement.Line currentLine;
+        private DialogueStatement.Line currentLine;
 
         public event Action OnStart;
         public event Action<DialogueStatement.Line> OnLine;

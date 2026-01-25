@@ -11,8 +11,6 @@ namespace Davicro.TerribleDialogue
         private const string START_SET = "default";
 
         public bool HasEndedDialogue { get; private set; }
-        public DialogueSet CurrentSet => currentSet;
-        public DialogueNode CurrentNode => currentNode;
 
         private readonly DialogueObject dialogueObject;
         private DialogueSet currentSet;

@@ -11,6 +11,8 @@ namespace Davicro.TerribleDialogue
         private const string START_SET = "default";
 
         public bool HasEndedDialogue { get; private set; }
+        public string CurrentSetId => currentSet.Id;
+        public string CurrentNodeId => currentNode.Id;
 
         private readonly DialogueObject dialogueObject;
         private DialogueSet currentSet;
@@ -38,34 +40,29 @@ namespace Davicro.TerribleDialogue
             return statementIndex < currentNode.Statements.Length;
         }
 
-        public DialogueStatement.Line GetNextLine()
+        public bool GetNextLine(out DialogueStatement.Line line)
         {
+            line = null;
+
             do
             {
                 DialogueStatement statement = GetNextStatement();
 
-                if(statement is DialogueStatement.Line line)
-                    return line;
-
-                ProcessStatement(statement);
+                switch(statement)
+                {
+                    case DialogueStatement.Goto g:
+                        ProcessFlowAction(g.Action);
+                        return false;
+                    case DialogueStatement.Line l:
+                        line = l;
+                        return true;
+                }
             }
             while(HasNextStatement());
             
 
-            return null;
+            return false;
 
-        }
-
-        private void ProcessStatement(DialogueStatement statement)
-        {
-            switch(statement)
-            {
-                case DialogueStatement.Goto g:
-                    ProcessFlowAction(g.Action);
-                    break;
-                case DialogueStatement.Line l:
-                    break;
-            }
         }
         
         private void ProcessFlowAction(FlowAction action)

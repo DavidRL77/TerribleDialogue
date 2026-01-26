@@ -9,6 +9,7 @@ namespace TerribleDialogueConsole
     {
         private static readonly Random random = new Random();
         private static readonly DialogueManager dialogueManager = new DialogueManager();
+        private static ISoundPlayer soundPlayer = new NetCoreAdioPlayer();
 
         private static readonly Character[] characters = {
             CreateCharacter("John", "Dialogue/john.tdlg"),
@@ -57,7 +58,7 @@ namespace TerribleDialogueConsole
         private static void OnDialogueEnd()
         {
             Console.Clear();
-            SoundPlayer.Stop();
+            soundPlayer.Stop();
         }
 
         private static void DisplayLine(DialogueStatement.Line line)
@@ -93,17 +94,17 @@ namespace TerribleDialogueConsole
             switch(value)
             {
                 case "stop":
-                    SoundPlayer.Stop();
+                    soundPlayer.Stop();
                     break;
                 default:
-                    SoundPlayer.PlayLooping(Path.Join("Music", value+".wav"));
+                    soundPlayer.Play(Path.Join("Music", value+".wav"));
                     break;
             }
         }
 
         private static void ProcessSfxTag(string key, string value)
         {
-            SoundPlayer.Play(Path.Join("Sfx", value + ".wav"));
+            soundPlayer.Play(Path.Join("Sfx", value + ".wav"));
         }
 
         private static Character CreateCharacter(string name, string dialogueFile)

@@ -1,7 +1,6 @@
-﻿using Davicro.TerribleDialogue.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
 
 namespace Davicro.TerribleDialogue
 {
@@ -9,14 +8,12 @@ namespace Davicro.TerribleDialogue
     {
         public delegate void TagProcessor(string key, string value);
 
-        public bool InDialogue => currentProcessor != null;
-        public DialogueStatement.Line CurrentLine => currentLine;
+        public bool InDialogue => processor != null;
+        public IReadOnlyDictionary<string, string> CurrentTags => processor.CurrentTags;
 
-        private DialogueProcessor currentProcessor;
-        private DialogueStatement.Line currentLine;
-
+        private DialogueProcessor processor;
         public event Action OnStart;
-        public event Action<DialogueStatement.Line> OnLine;
+        public event Action<string> OnLine;
         public event Action OnEnd;
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
@@ -25,34 +22,35 @@ namespace Davicro.TerribleDialogue
         {
             OnStart.Invoke();
 
-            this.currentProcessor = processor;
+            this.processor = processor;
             Next();
 
         }
 
         public void Next()
         {
-            currentLine = currentProcessor.GetNextLine();
-            if (currentLine == null)
+            DialogueProcessor.ProcessResult result = processor.Next();
+            switch(result)
             {
-                EndDialogue();
-                return;
+                case DialogueProcessor.ProcessResult.ChangeSet:
+                case DialogueProcessor.ProcessResult.ChangeNode:
+                case DialogueProcessor.ProcessResult.End:
+                    EndDialogue();
+                    return;
             }
 
 
-            foreach (KeyValuePair<string, string> kvp in currentLine.Tags)
+            foreach (KeyValuePair<string, string> kvp in processor.CurrentTags)
             {
                 CallTagProcessors(kvp.Key, kvp.Value);
             }
 
-            OnLine?.Invoke(currentLine);
+            OnLine?.Invoke(processor.CurrentText);
         }
 
         public void EndDialogue()
         {
-            currentProcessor = null;
-            currentLine = null;
-
+            processor = null;
             OnEnd?.Invoke();
         }
 

@@ -61,10 +61,10 @@ namespace TerribleDialogueConsole
             soundPlayer.Stop();
         }
 
-        private static void DisplayLine(DialogueStatement.Line line)
+        private static void DisplayLine(string line)
         {
-            Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "white"));
-            Console.Write(line.Text);
+            Console.ForegroundColor = ColorByName(dialogueManager.CurrentTags.GetValueOrDefault("color", "white"));
+            Console.Write(line);
 
             Console.ResetColor();
         }

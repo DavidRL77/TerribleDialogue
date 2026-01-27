@@ -6,11 +6,21 @@ namespace Davicro.TerribleDialogue
 {
     public class DialogueProcessor
     {
+        public enum ProcessResult
+        {
+            Line,
+            ChangeSet,
+            ChangeNode,
+            End
+        }
+
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
 
         private const string START_SET = "default";
 
         public bool HasEndedDialogue { get; private set; }
+        public string CurrentText { get; private set; }
+        public IReadOnlyDictionary<string,string> CurrentTags { get; private set; }
         public string CurrentSetId => currentSet.Id;
         public string CurrentNodeId => currentNode.Id;
 
@@ -40,8 +50,18 @@ namespace Davicro.TerribleDialogue
             return statementIndex < currentNode.Statements.Length;
         }
 
-        public DialogueStatement.Line GetNextLine()
+        /// <summary>
+        /// Advances the dialogue to the next stopping point
+        /// </summary>
+        /// <returns>If the dialogue is in a valid state</returns>
+        public ProcessResult Next()
         {
+            if(!HasNextStatement())
+            {
+                EndDialogue();
+                return ProcessResult.End;
+            }
+
             do
             {
                 DialogueStatement statement = GetNextStatement();
@@ -49,41 +69,41 @@ namespace Davicro.TerribleDialogue
                 switch(statement)
                 {
                     case DialogueStatement.Goto g:
-                        // Early return so the manager can decide if to continue after a goto or not
-                        ProcessFlowAction(g.Action);
-                        return null;
+                        return ProcessFlowAction(g.Action);
                     case DialogueStatement.Line l:
-                        return l;
+                        CurrentText = l.Text;
+                        CurrentTags = l.Tags;
+                        return ProcessResult.Line;
                 }
             }
             while(HasNextStatement());
-            
 
-            return null;
-
+            return ProcessResult.End;
         }
         
-        private void ProcessFlowAction(FlowAction action)
+        private ProcessResult ProcessFlowAction(FlowAction action)
         {
             switch(action)
             {
                 case FlowAction.NodeAction n:
                     SetNode(n.Id);
-                    break;
+                    return ProcessResult.ChangeNode;
                 case FlowAction.SetAction s:
                     SetSet(s.Id);
-                    break;
+                    return ProcessResult.ChangeSet;
                 case FlowAction.RandomAction r:
                     SetRandomNode(r.Discard);
-                    break;
+                    return ProcessResult.ChangeNode;
                 case FlowAction.PreviousAction:
                     string node = previousNode;
                     SetSet(previousSet);
                     SetNode(node);
-                    break;
+                    return ProcessResult.ChangeSet;
                 case FlowAction.EndAction e:
                     EndDialogue();
-                    break;
+                    return ProcessResult.End;
+                default:
+                    throw new NotImplementedException($"No flow action for '{action.GetType()}'");
             }
         }
 
@@ -154,6 +174,8 @@ namespace Davicro.TerribleDialogue
         public void EndDialogue()
         {
             HasEndedDialogue = true;
+            CurrentText = null;
+            CurrentTags = null;
         }
     }
 }

@@ -15,4 +15,3 @@ set default:
 
     node 2:
     "I just wanted to test if the colors reset properly after the dialogue ends."
-    goto END

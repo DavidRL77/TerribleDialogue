@@ -18,7 +18,7 @@ namespace Davicro.TerribleDialogue
 
         private const string START_SET = "default";
 
-        public bool HasEndedDialogue { get; private set; }
+        public bool IsDialogueOver { get; private set; }
         public string CurrentText { get; private set; }
         public IReadOnlyDictionary<string,string> CurrentTags { get; private set; }
         public string CurrentSetId => currentSet.Id;
@@ -45,7 +45,7 @@ namespace Davicro.TerribleDialogue
             SetSet(START_SET);
         }
 
-        public bool HasNextStatement()
+        private bool HasNextStatement()
         {
             return statementIndex < currentNode.Statements.Length;
         }
@@ -146,7 +146,7 @@ namespace Davicro.TerribleDialogue
                 }
 
                 currentSet = set;
-                HasEndedDialogue = false; // Re-enables dialogue if explicitely setting a new set
+                IsDialogueOver = false; // Re-enables dialogue if explicitely setting a new set
                 discardedNodes.Clear(); // Doesn't make sense to keep nodes discarded when changing sets, even if back to the same one
                 ProcessFlowAction(set.StartFlowAction);
             }
@@ -180,7 +180,7 @@ namespace Davicro.TerribleDialogue
 
         public void EndDialogue()
         {
-            HasEndedDialogue = true;
+            IsDialogueOver = true;
             CurrentText = null;
             CurrentTags = null;
         }

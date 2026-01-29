@@ -71,7 +71,7 @@ namespace TerribleDialogueConsole
 
         private static void TalkToCharacter(Character c)
         {
-            if (c.Processor.HasEndedDialogue)
+            if (c.Processor.IsDialogueOver)
             {
                 Console.Clear();
                 Console.Write($"{c.Name} has nothing else to say.");

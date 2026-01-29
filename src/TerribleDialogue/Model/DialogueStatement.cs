@@ -32,10 +32,10 @@ namespace Davicro.TerribleDialogue.Model
             public FlowAction Action { get; }
             private readonly bool isBlocking;
 
-            public Goto(FlowAction action, bool isBlocking = false)
+            public Goto(FlowAction action, bool isBlocking = true)
             {
                 Action = action;
-                this.isBlocking = true;
+                this.isBlocking = isBlocking;
             }
         }
     }

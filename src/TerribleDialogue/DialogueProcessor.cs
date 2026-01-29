@@ -56,7 +56,7 @@ namespace Davicro.TerribleDialogue
         /// <returns>Where we stopped</returns>
         public StepResult Step()
         {
-            if(!HasNextStatement())
+            if (!HasNextStatement())
             {
                 EndDialogue();
                 return StepResult.End;
@@ -81,8 +81,8 @@ namespace Davicro.TerribleDialogue
 
                 if(statement.IsBlocking)
                     return result;
-            }
-            while(HasNextStatement());
+
+            } while(HasNextStatement());
 
             return StepResult.End;
         }
@@ -118,7 +118,8 @@ namespace Davicro.TerribleDialogue
             if(!HasNextStatement())
                 return null;
 
-            return currentNode.Statements[statementIndex++];
+            DialogueStatement statement = currentNode.Statements[statementIndex++];
+            return statement;
         }
 
         public void SetNode(string id)

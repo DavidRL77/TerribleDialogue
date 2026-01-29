@@ -29,12 +29,12 @@ namespace Davicro.TerribleDialogue
 
         public void Next()
         {
-            DialogueProcessor.ProcessResult result = processor.Next();
+            DialogueProcessor.StepResult result = processor.Step();
             switch(result)
             {
-                case DialogueProcessor.ProcessResult.ChangeSet:
-                case DialogueProcessor.ProcessResult.ChangeNode:
-                case DialogueProcessor.ProcessResult.End:
+                case DialogueProcessor.StepResult.ChangeSet:
+                case DialogueProcessor.StepResult.ChangeNode:
+                case DialogueProcessor.StepResult.End:
                     EndDialogue();
                     return;
             }

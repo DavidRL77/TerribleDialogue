@@ -6,7 +6,7 @@ namespace Davicro.TerribleDialogue
 {
     public class DialogueProcessor
     {
-        public enum ProcessResult
+        public enum StepResult
         {
             Line,
             ChangeSet,
@@ -53,55 +53,61 @@ namespace Davicro.TerribleDialogue
         /// <summary>
         /// Advances the dialogue to the next stopping point
         /// </summary>
-        /// <returns>If the dialogue is in a valid state</returns>
-        public ProcessResult Next()
+        /// <returns>Where we stopped</returns>
+        public StepResult Step()
         {
             if(!HasNextStatement())
             {
                 EndDialogue();
-                return ProcessResult.End;
+                return StepResult.End;
             }
 
             do
             {
                 DialogueStatement statement = GetNextStatement();
 
+                StepResult result = StepResult.End;
                 switch(statement)
                 {
                     case DialogueStatement.Goto g:
-                        return ProcessFlowAction(g.Action);
+                        result = ProcessFlowAction(g.Action);
+                        break;
                     case DialogueStatement.Line l:
                         CurrentText = l.Text;
                         CurrentTags = l.Tags;
-                        return ProcessResult.Line;
+                        result = StepResult.Line;
+                        break;
                 }
+
+                if(statement.IsBlocking)
+                    return result;
             }
             while(HasNextStatement());
 
-            return ProcessResult.End;
+            return StepResult.End;
         }
         
-        private ProcessResult ProcessFlowAction(FlowAction action)
+        private StepResult ProcessFlowAction(FlowAction action)
         {
             switch(action)
             {
                 case FlowAction.NodeAction n:
                     SetNode(n.Id);
-                    return ProcessResult.ChangeNode;
+                    return StepResult.ChangeNode;
                 case FlowAction.SetAction s:
                     SetSet(s.Id);
-                    return ProcessResult.ChangeSet;
+                    return StepResult.ChangeSet;
                 case FlowAction.RandomAction r:
                     SetRandomNode(r.Discard);
-                    return ProcessResult.ChangeNode;
+                    return StepResult.ChangeNode;
                 case FlowAction.PreviousAction:
                     string node = previousNode;
                     SetSet(previousSet);
                     SetNode(node);
-                    return ProcessResult.ChangeSet;
+                    return StepResult.ChangeSet;
                 case FlowAction.EndAction e:
                     EndDialogue();
-                    return ProcessResult.End;
+                    return StepResult.End;
                 default:
                     throw new NotImplementedException($"No flow action for '{action.GetType()}'");
             }

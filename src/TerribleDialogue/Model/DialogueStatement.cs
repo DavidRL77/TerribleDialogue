@@ -6,12 +6,19 @@ namespace Davicro.TerribleDialogue.Model
 {
     public abstract record DialogueStatement
     {
+        /// <summary>
+        /// Whether execution of statements should stop here until prompted to continue
+        /// </summary>
+        public abstract bool IsBlocking { get; }
+
         public sealed record Line : DialogueStatement
         {
+            public override bool IsBlocking => true;
+
             public string Text { get; }
             public Dictionary<string, string> Tags { get; }
 
-            public Line(string text, Dictionary<string, string> tags)
+            public Line(string text, Dictionary<string, string> tags, bool isBlocking = true)
             {
                 Text = text;
                 Tags = tags;
@@ -20,11 +27,15 @@ namespace Davicro.TerribleDialogue.Model
 
         public sealed record Goto : DialogueStatement
         {
-            public FlowAction Action { get; }
+            public override bool IsBlocking => isBlocking;
 
-            public Goto(FlowAction action)
+            public FlowAction Action { get; }
+            private readonly bool isBlocking;
+
+            public Goto(FlowAction action, bool isBlocking = false)
             {
                 Action = action;
+                this.isBlocking = true;
             }
         }
     }

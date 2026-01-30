@@ -1,0 +1,4 @@
+set default:
+    node 0:
+    "Hello, world!"
+    => END

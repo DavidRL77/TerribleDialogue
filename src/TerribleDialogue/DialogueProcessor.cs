@@ -52,7 +52,7 @@ namespace Davicro.TerribleDialogue
 
         /// <summary>
         /// Advances the dialogue to the next stopping point.
-        /// When stopping check <see cref="HasLine"/> to see if there's a line available to get.
+        /// When stopping check <see cref="HasLine"/> to see if there's a line available to read.
         /// </summary>
         public void Step()
         {

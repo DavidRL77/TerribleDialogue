@@ -82,14 +82,20 @@ namespace Davicro.TerribleDialogue.Model
             select new DialogueStatement.Line(text, tags.GetOrElse(new Dictionary<string, string>()));
 
         /// <summary>
-        /// An arrow and then an identifier for what comes next after a node
+        /// A redirect node that takes the dialogue to the specified action
         /// </summary>
         private static readonly Parser<DialogueStatement.Goto> GotoStatement =
             from leading in OptionalWhitespace
             from keyword in Parse.String("goto")
             from whiteSpace in Parse.WhiteSpace
             from action in FlowAction
-            select new DialogueStatement.Goto(action);
+            from now in ( // Grouped like this to account for the space
+                from w1 in Parse.WhiteSpace
+                from now in Parse.IgnoreCase("now")
+                select now
+
+            ).Optional()
+            select new DialogueStatement.Goto(action, !now.IsDefined);
 
         /// <summary>
         /// General statement (line, goto, if...)

@@ -1,4 +1,22 @@
 set default:
     node 0:
-    "Hello, world!"
-    => END
+    "Listen, I'm not here to dilly dally alright?"
+    "I'm gonna tell you straight, and I ain't tellin' you twice."
+    goto random now
+
+    node 1:
+    "I love you"
+    goto set:end now
+
+    node 2:
+    "I hate you"
+    goto set:end now
+
+    node 3:
+    "I kind of like you but not really that way, so I'd prefer if we'd stay friends"
+    goto set:end now
+
+set end:
+    node 0:
+    "..."
+    goto END

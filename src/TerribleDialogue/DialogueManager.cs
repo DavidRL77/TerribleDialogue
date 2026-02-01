@@ -29,16 +29,13 @@ namespace Davicro.TerribleDialogue
 
         public void Next()
         {
-            DialogueProcessor.StepResult result = processor.Step();
-            switch(result)
-            {
-                case DialogueProcessor.StepResult.ChangeSet:
-                case DialogueProcessor.StepResult.ChangeNode:
-                case DialogueProcessor.StepResult.End:
-                    EndDialogue();
-                    return;
-            }
+            processor.Step();
 
+            if(processor.IsDialogueOver || !processor.HasLine)
+            {
+                EndDialogue();
+                return;
+            }
 
             foreach (KeyValuePair<string, string> kvp in processor.CurrentTags)
             {

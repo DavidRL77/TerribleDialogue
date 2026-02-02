@@ -148,7 +148,7 @@ namespace Davicro.TerribleDialogue.Model
             from leading in OptionalWhitespace
             from start in Parse.String(">>")
             from whiteSpace in OptionalWhitespace
-            from action in NodeAction.Or<FlowAction>(RandomAction)
+            from action in NodeAction.Or<FlowAction>(RandomAction).Or(SetAction)
             select action;
 
         /// <summary>

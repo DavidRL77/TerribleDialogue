@@ -7,14 +7,6 @@ namespace Davicro.TerribleDialogue
 {
     public class DialogueProcessor
     {
-        public enum StepResult
-        {
-            Line,
-            ChangeSet,
-            ChangeNode,
-            End
-        }
-
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
         private const string START_SET = "default";
 

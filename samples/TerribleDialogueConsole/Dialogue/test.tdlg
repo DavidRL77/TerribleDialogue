@@ -15,3 +15,28 @@ set default:
 
     node 2:
     "I just wanted to test if the colors reset properly after the dialogue ends."
+    goto set:banter now
+
+set banter:
+    >> random
+    node 0:
+    "Unless I'm forgetting something?"
+    "Nah, it's probably fine"
+    goto END
+
+    node 1:
+    "Have a nice day!"
+    goto END
+
+    node 2:
+    "Have an average day!"
+    goto END
+
+    node 3:
+    "Have a terrible day!"
+    "I'm just kidding by the way, this was my real, final test."
+    goto random now
+
+    node 4:
+    "Bye bye!"
+    goto END

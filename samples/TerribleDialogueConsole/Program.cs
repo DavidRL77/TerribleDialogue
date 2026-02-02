@@ -15,7 +15,7 @@ namespace TerribleDialogueConsole
             CreateCharacter("John", "Dialogue/john.tdlg"),
             CreateCharacter("Byte", "Dialogue/byte.tdlg"),
             CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
-            CreateCharacter("Color guy", "Dialogue/test.tdlg"),
+            CreateCharacter("Test guy", "Dialogue/test.tdlg"),
             CreateCharacter("Someone", "Dialogue/someone.tdlg")
         };
 

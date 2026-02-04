@@ -4,6 +4,9 @@ using System.Diagnostics;
 
 namespace Davicro.TerribleDialogue
 {
+    /// <summary>
+    /// Provides an easy way to manage multiple dialogue engines, exposing several useful callbacks.
+    /// </summary>
     public class DialogueManager
     {
         public delegate void TagProcessor(string key, string value);
@@ -26,7 +29,9 @@ namespace Davicro.TerribleDialogue
             Next();
 
         }
-
+        /// <summary>
+        /// Process dialogue until the next stop
+        /// </summary>
         public void Next()
         {
             engine.Step();

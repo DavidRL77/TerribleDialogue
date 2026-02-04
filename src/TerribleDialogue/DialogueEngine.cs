@@ -5,11 +5,16 @@ using System.Linq;
 using TerribleDialogue;
 namespace Davicro.TerribleDialogue
 {
+
+    /// <summary>
+    /// Main engine for processing dialogue flow, keeping track of its state.
+    /// </summary>
     public class DialogueEngine
     {
+        // I'm using a delegate provider for random numbers since I don't want to couple it to C#'s System.Random,
+        // so that the project is better integrated into wherever it might be used.
+        // Unity for example has its own Random that uses its own seed.
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
-        private const string START_SET = "default";
-
 
         public bool IsDialogueOver => state.IsDialogueOver;
         public bool HasLine => state.HasLine;
@@ -22,19 +27,14 @@ namespace Davicro.TerribleDialogue
 
         private readonly DialogueObject dialogueObject;
         private readonly DialogueState state = new DialogueState();
-
-
-        // I'm using a delegate provider for random numbers since I don't want to couple it to C#'s System.Random,
-        // so that the project is better integrated into wherever it might be used.
-        // Unity for example has its own Random that uses its own seed.
         private readonly RandProvider randProvider;
 
 
-        public DialogueEngine(DialogueObject obj, RandProvider randProvider)
+        public DialogueEngine(DialogueObject obj, RandProvider randProvider, string startSet = "default")
         {
             this.dialogueObject = obj;
             this.randProvider = randProvider;
-            SetSet(START_SET);
+            SetSet(startSet);
         }
 
         private bool HasNextStatement()

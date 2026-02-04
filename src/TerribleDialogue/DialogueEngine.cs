@@ -5,7 +5,7 @@ using System.Linq;
 using TerribleDialogue;
 namespace Davicro.TerribleDialogue
 {
-    public class DialogueProcessor
+    public class DialogueEngine
     {
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
         private const string START_SET = "default";
@@ -30,7 +30,7 @@ namespace Davicro.TerribleDialogue
         private readonly RandProvider randProvider;
 
 
-        public DialogueProcessor(DialogueObject obj, RandProvider randProvider)
+        public DialogueEngine(DialogueObject obj, RandProvider randProvider)
         {
             this.dialogueObject = obj;
             this.randProvider = randProvider;

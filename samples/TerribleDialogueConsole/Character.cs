@@ -5,12 +5,12 @@ namespace TerribleDialogueConsole
     internal record Character
     {
         public string Name { get; }
-        public DialogueProcessor Processor { get; }
+        public DialogueEngine Engine { get; }
 
-        public Character(string name, DialogueProcessor processor)
+        public Character(string name, DialogueEngine engine)
         {
             Name = name;
-            Processor = processor;
+            Engine = engine;
         }
     }
 }

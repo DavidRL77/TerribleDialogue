@@ -4,50 +4,55 @@ using System.Diagnostics;
 
 namespace Davicro.TerribleDialogue
 {
+    /// <summary>
+    /// Provides an easy way to manage multiple dialogue engines, exposing several useful callbacks.
+    /// </summary>
     public class DialogueManager
     {
         public delegate void TagProcessor(string key, string value);
 
-        public bool InDialogue => processor != null;
-        public IReadOnlyDictionary<string, string> CurrentTags => processor.CurrentTags;
+        public bool InDialogue => engine != null;
+        public IReadOnlyDictionary<string, string> CurrentTags => engine.CurrentTags;
 
-        private DialogueProcessor processor;
+        private DialogueEngine engine;
         public event Action OnStart;
         public event Action<string> OnLine;
         public event Action OnEnd;
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
 
-        public void BeginDialogue(DialogueProcessor processor)
+        public void BeginDialogue(DialogueEngine engine)
         {
             OnStart.Invoke();
 
-            this.processor = processor;
+            this.engine = engine;
             Next();
 
         }
-
+        /// <summary>
+        /// Process dialogue until the next stop
+        /// </summary>
         public void Next()
         {
-            processor.Step();
+            engine.Step();
 
-            if(processor.IsDialogueOver || !processor.HasLine)
+            if(engine.IsDialogueOver || !engine.HasLine)
             {
                 EndDialogue();
                 return;
             }
 
-            foreach (KeyValuePair<string, string> kvp in processor.CurrentTags)
+            foreach (KeyValuePair<string, string> kvp in engine.CurrentTags)
             {
                 CallTagProcessors(kvp.Key, kvp.Value);
             }
 
-            OnLine?.Invoke(processor.CurrentText);
+            OnLine?.Invoke(engine.CurrentText);
         }
 
         public void EndDialogue()
         {
-            processor = null;
+            engine = null;
             OnEnd?.Invoke();
         }
 

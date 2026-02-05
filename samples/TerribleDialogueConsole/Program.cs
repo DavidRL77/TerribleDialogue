@@ -72,7 +72,7 @@ namespace TerribleDialogueConsole
 
         private static void TalkToCharacter(Character c)
         {
-            if (c.Processor.IsDialogueOver)
+            if (c.Engine.IsDialogueOver)
             {
                 Console.Clear();
                 Console.Write($"{c.Name} has nothing else to say.");
@@ -81,7 +81,7 @@ namespace TerribleDialogueConsole
                 return;
             }
 
-            dialogueManager.BeginDialogue(c.Processor);
+            dialogueManager.BeginDialogue(c.Engine);
 
             while (dialogueManager.InDialogue)
             {
@@ -110,7 +110,7 @@ namespace TerribleDialogueConsole
 
         private static Character CreateCharacter(string name, string dialogueFile)
         {
-            return new Character(name, new DialogueProcessor(DialogueGrammar.Dialogue.Parse(
+            return new Character(name, new DialogueEngine(DialogueGrammar.Dialogue.Parse(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory,dialogueFile))), 
                 random.Next));
         }

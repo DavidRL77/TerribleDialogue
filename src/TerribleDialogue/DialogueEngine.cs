@@ -16,6 +16,8 @@ namespace Davicro.TerribleDialogue
         // Unity for example has its own Random that uses its own seed.
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
 
+
+        public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
         public bool HasLine => state.HasLine;
         public string CurrentText => state.CurrentText;

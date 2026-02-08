@@ -103,8 +103,6 @@ namespace Davicro.TerribleDialogue.Model
         private static readonly Parser<DialogueStatement> Statement =
             LineStatement.Or<DialogueStatement>(GotoStatement);
 
-        private static readonly Parser<int> Integer =
-           Parse.Number.Token().Select(int.Parse);
 
         private static readonly Parser<FlowAction.NodeAction> NodeAction =
             from header in Parse.String("node")

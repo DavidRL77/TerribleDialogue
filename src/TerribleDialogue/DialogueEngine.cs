@@ -24,13 +24,11 @@ namespace Davicro.TerribleDialogue
         public IReadOnlyDictionary<string, string> CurrentTags => state.CurrentTags;
         public string CurrentSetId => state.CurrentSet?.Id;
         public string CurrentNodeId => state.CurrentNode?.Id;
-
-
+        
 
         private readonly DialogueObject dialogueObject;
         private readonly DialogueState state = new DialogueState();
         private readonly RandProvider randProvider;
-
 
         public DialogueEngine(DialogueObject obj, RandProvider randProvider, string startSet = "default")
         {

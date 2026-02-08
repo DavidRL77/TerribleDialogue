@@ -10,6 +10,7 @@ namespace Davicro.TerribleDialogue.Model
         /// Whether execution of statements should stop here until prompted to continue
         /// </summary>
         public abstract bool IsYielding { get; }
+        public virtual DialogueStatement[][] Branches => Array.Empty<DialogueStatement[]>();
 
         public sealed record Line : DialogueStatement
         {

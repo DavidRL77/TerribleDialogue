@@ -44,6 +44,11 @@ namespace Davicro.TerribleDialogue
             return state.CurrentStatement < state.CurrentNode.Statements.Length;
         }
 
+        private bool HasUnresolvedBranches()
+        {
+            return ResolveCurrentStatement().Branches.Length > 0;
+        }
+
         /// <summary>
         /// Advances the dialogue to the next stopping point.
         /// When stopping check <see cref="HasLine"/> to see if there's a line available to read.
@@ -53,6 +58,11 @@ namespace Davicro.TerribleDialogue
             if (!HasNextStatement())
             {
                 EndDialogue();
+                return;
+            }
+
+            if(HasUnresolvedBranches())
+            {
                 return;
             }
 
@@ -109,19 +119,32 @@ namespace Davicro.TerribleDialogue
             }
         }
 
+        private void Advance()
+        {
+            // The parent to the current statement
+            DialogueStatement parent = ResolveStatement(Math.Min(state.StatementPath.Count-2, 0));
+            
+        }
+
         private DialogueStatement ResolveCurrentStatement()
+        {
+            return ResolveStatement(state.StatementPath.Count-1);
+        }
+
+        private DialogueStatement ResolveStatement(int depth)
         {
             // Root Pointer is the top-level statement
             Pointer rootPointer = state.StatementPath[0];
             DialogueStatement current = state.CurrentNode.Statements[rootPointer.StatementIndex];
-            
+
             // Walk down the path of pointers until the end
             // We assume every pointer is valid
-            for(int i = 1; i < state.StatementPath.Count; i++)
+            for(int i = 1; i < depth; i++)
             {
                 Pointer pointer = state.StatementPath[i];
                 current = current.Branches[pointer.Branch][pointer.StatementIndex];
             }
+
 
             return current;
         }

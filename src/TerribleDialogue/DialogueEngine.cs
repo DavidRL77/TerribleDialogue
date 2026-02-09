@@ -15,7 +15,9 @@ namespace Davicro.TerribleDialogue
         // so that the project is better integrated into wherever it might be used.
         // Unity for example has its own Random that uses its own seed.
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
-
+        
+        // Pointer at the root of a dialogue tree, without a branch
+        private static Pointer RootPointer = new Pointer(0,-1);
 
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
@@ -107,13 +109,21 @@ namespace Davicro.TerribleDialogue
             }
         }
 
-        private DialogueStatement GetNextStatement()
+        private DialogueStatement ResolveCurrentStatement()
         {
-            if(!HasNextStatement())
-                return null;
+            // Root Pointer is the top-level statement
+            Pointer rootPointer = state.StatementPath[0];
+            DialogueStatement current = state.CurrentNode.Statements[rootPointer.StatementIndex];
+            
+            // Walk down the path of pointers until the end
+            // We assume every pointer is valid
+            for(int i = 1; i < state.StatementPath.Count; i++)
+            {
+                Pointer pointer = state.StatementPath[i];
+                current = current.Branches[pointer.Branch][pointer.StatementIndex];
+            }
 
-            DialogueStatement statement = state.CurrentNode.Statements[state.CurrentStatement++];
-            return statement;
+            return current;
         }
 
         public void SetNode(string id)
@@ -121,7 +131,8 @@ namespace Davicro.TerribleDialogue
             if(state.CurrentSet.Nodes.TryGetValue(id, out DialogueNode node))
             {
                 state.CurrentNode = node;
-                state.CurrentStatement = 0;
+                state.StatementPath.Clear();
+                state.StatementPath.Add(RootPointer);
             }
             else
             {

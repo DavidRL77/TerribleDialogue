@@ -121,9 +121,54 @@ namespace Davicro.TerribleDialogue
 
         private void Advance()
         {
-            // The parent to the current statement
-            DialogueStatement parent = ResolveStatement(Math.Min(state.StatementPath.Count-2, 0));
+            if(state.StatementPath.Count == 0)
+                throw new Exception("No pointer path");
+
+            // Where we keep the statements we've passed through
+            // TODO: Only store the size of each container, no need for the whole statement
+            // ALSO: This has the problem of the root node not actually having branches.
+            Stack<DialogueStatement> stack = new Stack<DialogueStatement>();
+
+            DialogueStatement current = null;
+            // Build our stack of nested statements until depth-1
+            // Since we don't really care about the leaf, we care about the branch
+            for(int i = 0; i < state.StatementPath.Count-1; i++)
+            {
+                Pointer pointer = state.StatementPath[i];
+                
+                if(current == null)
+                    current = state.CurrentNode.Statements[pointer.StatementIndex];
+                else
+                    current = current.Branches[pointer.Branch][pointer.StatementIndex];
+                
+                stack.Push(current);
+            }
             
+            // Undo our steps propagating any out of bounds pointers
+            int depth = state.StatementPath.Count-1;
+            while(stack.Count > 0)
+            {
+                Pointer pointer = state.StatementPath[depth];
+
+                // Try to advance the last pointer in the path, every time a pointer goes out of bounds,
+                // the next pointer will get advanced, and so forth
+                pointer.Next();
+
+                DialogueStatement parentStatement = stack.Pop();
+
+                if(pointer.StatementIndex >= parentStatement.Branches[pointer.Branch].Length)
+                {
+                    // If the pointer is out of bounds we remove it and advance the next one
+                    state.StatementPath.RemoveAt(depth);
+                }
+                else
+                {
+                    // If the pointer is still in bounds, we leave everything else as-is
+                    break;
+                }
+
+                depth--;
+            }
         }
 
         private DialogueStatement ResolveCurrentStatement()
@@ -139,7 +184,7 @@ namespace Davicro.TerribleDialogue
 
             // Walk down the path of pointers until the end
             // We assume every pointer is valid
-            for(int i = 1; i < depth; i++)
+            for(int i = 1; i <= depth; i++)
             {
                 Pointer pointer = state.StatementPath[i];
                 current = current.Branches[pointer.Branch][pointer.StatementIndex];

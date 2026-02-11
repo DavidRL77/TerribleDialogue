@@ -4,9 +4,9 @@ using System.Text;
 
 namespace TerribleDialogue
 {
-    internal class Pointer
+    internal readonly struct Pointer
     {
-        public int StatementIndex { get; private set;}
+        public int StatementIndex { get; }
         public int Branch { get; }
 
         public Pointer(int statementIndex, int branch)
@@ -15,14 +15,6 @@ namespace TerribleDialogue
             Branch = branch;
         }
 
-        public void Next()
-        {
-            StatementIndex++;
-        }
-
-        public void Previous()
-        {
-            StatementIndex--;
-        }
+        public Pointer Next() => new Pointer(StatementIndex+1, Branch);
     }
 }

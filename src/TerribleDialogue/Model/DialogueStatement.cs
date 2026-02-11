@@ -12,6 +12,19 @@ namespace Davicro.TerribleDialogue.Model
         public abstract bool IsYielding { get; }
         public virtual DialogueStatement[][] Branches => Array.Empty<DialogueStatement[]>();
 
+        public sealed record Root : DialogueStatement
+        {
+            public override bool IsYielding => false;
+            public override DialogueStatement[][] Branches => _branches;
+
+            private readonly DialogueStatement[][] _branches = new DialogueStatement[1][];
+
+            public Root(DialogueStatement[] statements)
+            {  
+                _branches[0] = statements;
+            }
+        }
+
         public sealed record Line : DialogueStatement
         {
             // Lines are always yielding since the data they provide needs to be processed

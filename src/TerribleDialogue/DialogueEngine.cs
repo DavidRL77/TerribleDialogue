@@ -2,6 +2,7 @@ using Davicro.TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using TerribleDialogue;
 namespace Davicro.TerribleDialogue
 {
@@ -16,8 +17,8 @@ namespace Davicro.TerribleDialogue
         // Unity for example has its own Random that uses its own seed.
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
         
-        // Pointer at the root of a dialogue tree, without a branch
-        private static Pointer RootPointer = new Pointer(0,-1);
+        // Pointer at the root of a dialogue tree, branch 0, statement 0
+        private static Pointer RootPointer = new Pointer(0,0);
 
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
@@ -41,7 +42,8 @@ namespace Davicro.TerribleDialogue
 
         private bool HasNextStatement()
         {
-            return state.CurrentStatement < state.CurrentNode.Statements.Length;
+            return true;
+            //return state.CurrentStatement < state.CurrentNode.Statements.Length;
         }
 
         private bool HasUnresolvedBranches()
@@ -73,7 +75,18 @@ namespace Davicro.TerribleDialogue
                 state.CurrentTags = null;
                 state.HasLine = false;
 
-                DialogueStatement statement = GetNextStatement();
+                //TODO: Too many resolves, one should be enough.
+                DialogueStatement statement = ResolveCurrentStatement();
+
+                if(statement.Branches.Length > 0)
+                {
+                    //TEMP
+                    state.StatementPath.Add(new Pointer(0, 0));
+                    continue;
+                }
+
+                Advance();
+
                 switch(statement)
                 {
                     case DialogueStatement.Goto g:
@@ -127,43 +140,37 @@ namespace Davicro.TerribleDialogue
             // Where we keep the statements we've passed through
             // TODO: Only store the size of each container, no need for the whole statement
             // ALSO: This has the problem of the root node not actually having branches.
-            Stack<DialogueStatement> stack = new Stack<DialogueStatement>();
+            Stack<int> branchSizes = new Stack<int>();
 
-            DialogueStatement current = null;
-            // Build our stack of nested statements until depth-1
-            // Since we don't really care about the leaf, we care about the branch
-            for(int i = 0; i < state.StatementPath.Count-1; i++)
+            int depth = state.StatementPath.Count-1;
+            DialogueStatement current = state.CurrentNode.Root;
+
+            // Build our stack of branch sizes up until our current depth
+            for(int i = 0; i <= depth; i++)
             {
                 Pointer pointer = state.StatementPath[i];
-                
-                if(current == null)
-                    current = state.CurrentNode.Statements[pointer.StatementIndex];
-                else
-                    current = current.Branches[pointer.Branch][pointer.StatementIndex];
-                
-                stack.Push(current);
-            }
-            
-            // Undo our steps propagating any out of bounds pointers
-            int depth = state.StatementPath.Count-1;
-            while(stack.Count > 0)
-            {
-                Pointer pointer = state.StatementPath[depth];
+                branchSizes.Push(current.Branches[pointer.Branch].Length);
 
+                current = current.Branches[pointer.Branch][pointer.StatementIndex];
+            }
+
+            // Undo our steps propagating any out of bounds pointers
+            while(branchSizes.Count > 0)
+            {
                 // Try to advance the last pointer in the path, every time a pointer goes out of bounds,
                 // the next pointer will get advanced, and so forth
-                pointer.Next();
+                Pointer pointer = state.StatementPath[depth].Next();
 
-                DialogueStatement parentStatement = stack.Pop();
-
-                if(pointer.StatementIndex >= parentStatement.Branches[pointer.Branch].Length)
+                int branchSize = branchSizes.Pop();
+                if(pointer.StatementIndex >= branchSize)
                 {
                     // If the pointer is out of bounds we remove it and advance the next one
                     state.StatementPath.RemoveAt(depth);
                 }
                 else
                 {
-                    // If the pointer is still in bounds, we leave everything else as-is
+                    // If the pointer is still in bounds, we leave the rest as-is
+                    state.StatementPath[depth] = pointer;
                     break;
                 }
 
@@ -178,13 +185,11 @@ namespace Davicro.TerribleDialogue
 
         private DialogueStatement ResolveStatement(int depth)
         {
-            // Root Pointer is the top-level statement
-            Pointer rootPointer = state.StatementPath[0];
-            DialogueStatement current = state.CurrentNode.Statements[rootPointer.StatementIndex];
+            DialogueStatement current = state.CurrentNode.Root;
 
             // Walk down the path of pointers until the end
             // We assume every pointer is valid
-            for(int i = 1; i <= depth; i++)
+            for(int i = 0; i <= depth; i++)
             {
                 Pointer pointer = state.StatementPath[i];
                 current = current.Branches[pointer.Branch][pointer.StatementIndex];

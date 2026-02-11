@@ -137,9 +137,6 @@ namespace Davicro.TerribleDialogue
             if(state.StatementPath.Count == 0)
                 throw new Exception("No pointer path");
 
-            // Where we keep the statements we've passed through
-            // TODO: Only store the size of each container, no need for the whole statement
-            // ALSO: This has the problem of the root node not actually having branches.
             Stack<int> branchSizes = new Stack<int>();
 
             int depth = state.StatementPath.Count-1;

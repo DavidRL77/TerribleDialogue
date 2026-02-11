@@ -46,11 +46,6 @@ namespace Davicro.TerribleDialogue
             //return state.CurrentStatement < state.CurrentNode.Statements.Length;
         }
 
-        private bool HasUnresolvedBranches()
-        {
-            return ResolveCurrentStatement().Branches.Length > 0;
-        }
-
         /// <summary>
         /// Advances the dialogue to the next stopping point.
         /// When stopping check <see cref="HasLine"/> to see if there's a line available to read.
@@ -60,11 +55,6 @@ namespace Davicro.TerribleDialogue
             if (!HasNextStatement())
             {
                 EndDialogue();
-                return;
-            }
-
-            if(HasUnresolvedBranches())
-            {
                 return;
             }
 

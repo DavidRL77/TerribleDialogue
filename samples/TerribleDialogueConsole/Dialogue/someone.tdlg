@@ -2,6 +2,13 @@ set default:
     node 0:
     "Listen, I'm not here to dilly dally alright?"
     "I'm gonna tell you straight, and I ain't tellin' you twice."
+    choice
+    * "Okay"
+    "Finally, someone with a brain"
+    "I can already feel the romance"
+    * "I do not"
+    "Well that's not up to you, buster"
+    endchoice
     goto random now
 
     node 1:

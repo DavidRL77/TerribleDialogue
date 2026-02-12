@@ -10,18 +10,19 @@ namespace Davicro.TerribleDialogue.Model
         /// Whether execution of statements should stop here until prompted to continue
         /// </summary>
         public abstract bool IsYielding { get; }
-        public virtual DialogueStatement[][] Branches => Array.Empty<DialogueStatement[]>();
+        public DialogueStatement[][] Branches { get; protected set; } = Array.Empty<DialogueStatement[]>();
 
+        /// <summary>
+        /// Default statement with exactly one branch and the rest of statements within it.
+        /// </summary>
         public sealed record Root : DialogueStatement
         {
             public override bool IsYielding => false;
-            public override DialogueStatement[][] Branches => _branches;
-
-            private readonly DialogueStatement[][] _branches = new DialogueStatement[1][];
 
             public Root(DialogueStatement[] statements)
-            {  
-                _branches[0] = statements;
+            {
+                this.Branches = new DialogueStatement[1][];
+                this.Branches[0] = statements;
             }
         }
 
@@ -52,6 +53,18 @@ namespace Davicro.TerribleDialogue.Model
             {
                 Action = action;
                 this.isYielding = isYielding;
+            }
+        }
+
+        public sealed record Choice : DialogueStatement
+        {
+            public override bool IsYielding => true;
+            public string[] Choices { get; }
+
+            public Choice(string[] choices, DialogueStatement[][] branches)
+            {
+                Choices = choices;
+                this.Branches = branches;
             }
         }
     }

@@ -38,7 +38,6 @@ namespace Davicro.TerribleDialogue.Model
         /// Text within "quotes"
         /// </summary>
         private static readonly Parser<string> QuotedText =
-            from leading in OptionalWhitespace
             from open in Parse.Char('"')
             from content in EscapedChar.Or(Parse.CharExcept('"')).Many().Text()
             from end in Parse.Char('"')
@@ -76,6 +75,7 @@ namespace Davicro.TerribleDialogue.Model
         /// Quoted text and a dictionary of tags
         /// </summary>
         private static readonly Parser<DialogueStatement.Line> LineStatement =
+            from leading in OptionalWhitespace
             from text in QuotedText
             from space in OptionalWhitespace
             from tags in Attributes.Optional()
@@ -97,11 +97,25 @@ namespace Davicro.TerribleDialogue.Model
             ).Optional()
             select new DialogueStatement.Goto(action, !now.IsDefined);
 
+        private static readonly Parser<KeyValuePair<string, DialogueStatement[]>> SingleChoice =
+            from leading in OptionalWhitespace
+            from open in Parse.Char('*')
+            from space in OptionalWhitespace
+            from text in QuotedText
+            from statements in Statement.AtLeastOnce()
+            select KeyValuePair.Create(text, statements.ToArray());
+
+        private static readonly Parser<DialogueStatement.Choice> ChoiceStatement =
+            from open in Parse.String("choice")
+            from choices in SingleChoice.AtLeastOnce()
+            from close in Parse.String("endchoice")
+            select new DialogueStatement.Choice(choices.Select(kvp => kvp.Key).ToArray(), choices.Select(kvp => kvp.Value).ToArray());
+            
         /// <summary>
         /// General statement (line, goto, if...)
         /// </summary>
         private static readonly Parser<DialogueStatement> Statement =
-            LineStatement.Or<DialogueStatement>(GotoStatement);
+            LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement);
 
 
         private static readonly Parser<FlowAction.NodeAction> NodeAction =

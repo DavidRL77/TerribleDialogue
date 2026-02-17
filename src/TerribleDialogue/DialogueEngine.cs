@@ -2,6 +2,7 @@ using Davicro.TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Security;
 using TerribleDialogue;
 namespace Davicro.TerribleDialogue
@@ -27,6 +28,7 @@ namespace Davicro.TerribleDialogue
         public IReadOnlyDictionary<string, string> CurrentTags => state.CurrentTags;
         public string CurrentSetId => state.CurrentSet?.Id;
         public string CurrentNodeId => state.CurrentNode?.Id;
+        public string[] PendingChoices => state.PendingChoices;
         
 
         private readonly DialogueObject dialogueObject;
@@ -42,8 +44,7 @@ namespace Davicro.TerribleDialogue
 
         private bool HasNextStatement()
         {
-            return true;
-            //return state.CurrentStatement < state.CurrentNode.Statements.Length;
+            return state.StatementPath.Count > 0;
         }
 
         /// <summary>
@@ -52,11 +53,15 @@ namespace Davicro.TerribleDialogue
         /// </summary>
         public void Step()
         {
-            if (!HasNextStatement())
+            if(!HasNextStatement())
             {
                 EndDialogue();
                 return;
             }
+
+
+            if(!TryResolveChoices())
+                return;
 
             do
             {
@@ -64,18 +69,9 @@ namespace Davicro.TerribleDialogue
                 state.CurrentText = null;
                 state.CurrentTags = null;
                 state.HasLine = false;
+                state.PendingChoices = new string[0];
 
-                //TODO: Too many resolves, one should be enough.
-                DialogueStatement statement = ResolveCurrentStatement();
-
-                if(statement.Branches.Length > 0)
-                {
-                    //TEMP
-                    state.StatementPath.Add(new Pointer(0, 0));
-                    continue;
-                }
-
-                Advance();
+                DialogueStatement statement = Advance();
 
                 switch(statement)
                 {
@@ -86,6 +82,9 @@ namespace Davicro.TerribleDialogue
                         state.CurrentText = l.Text;
                         state.CurrentTags = l.Tags;
                         state.HasLine = true;
+                        break;
+                    case DialogueStatement.Choice c:
+                        state.PendingChoices = c.Choices;
                         break;
                 }
 
@@ -122,7 +121,24 @@ namespace Davicro.TerribleDialogue
             }
         }
 
-        private void Advance()
+        private bool TryResolveChoices()
+        {
+            if(PendingChoices.Length == 0)
+                return true;
+
+            if(!state.ChoiceQueue.TryDequeue(out int choiceIndex))
+                return false;
+
+            state.StatementPath.Add(new Pointer(0, choiceIndex));
+            return true;
+        }
+
+        /// <summary>
+        /// Advances the path to the next statement and resolves any branch backtracking.
+        /// </summary>
+        /// <returns>The statement before advancing</returns>
+        /// <exception cref="Exception"></exception>
+        private DialogueStatement Advance()
         {
             if(state.StatementPath.Count == 0)
                 throw new Exception("No pointer path");
@@ -140,6 +156,10 @@ namespace Davicro.TerribleDialogue
 
                 current = current.Branches[pointer.Branch][pointer.StatementIndex];
             }
+
+            // Can't move past unresolved branches
+            if(current.Branches.Length > 0)
+                return current;
 
             // Undo our steps propagating any out of bounds pointers
             while(branchSizes.Count > 0)
@@ -163,27 +183,17 @@ namespace Davicro.TerribleDialogue
 
                 depth--;
             }
-        }
-
-        private DialogueStatement ResolveCurrentStatement()
-        {
-            return ResolveStatement(state.StatementPath.Count-1);
-        }
-
-        private DialogueStatement ResolveStatement(int depth)
-        {
-            DialogueStatement current = state.CurrentNode.Root;
-
-            // Walk down the path of pointers until the end
-            // We assume every pointer is valid
-            for(int i = 0; i <= depth; i++)
-            {
-                Pointer pointer = state.StatementPath[i];
-                current = current.Branches[pointer.Branch][pointer.StatementIndex];
-            }
-
 
             return current;
+        }
+
+        /// <summary>
+        /// Add a choice to the queue to be processed when a choice statement is reached
+        /// </summary>
+        /// <param name="choiceIndex"></param>
+        public void AddChoice(int choiceIndex)
+        {
+            state.ChoiceQueue.Enqueue(choiceIndex);
         }
 
         public void SetNode(string id)

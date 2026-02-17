@@ -41,7 +41,6 @@ namespace Davicro.TerribleDialogue.Model
             from open in Parse.Char('"')
             from content in EscapedChar.Or(Parse.CharExcept('"')).Many().Text()
             from end in Parse.Char('"')
-            from newLine in Parse.LineEnd.Optional()
             select content;
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace Davicro.TerribleDialogue.Model
         /// Stops at any other character
         /// </summary>
         private static readonly Parser<string> Id =
-            from id in Parse.LetterOrDigit.Or(Parse.Char('_')).Many().Text()
+            from id in Parse.LetterOrDigit.Or(Parse.Char('_')).AtLeastOnce().Text()
             select id;
 
 
@@ -75,7 +74,6 @@ namespace Davicro.TerribleDialogue.Model
         /// Quoted text and a dictionary of tags
         /// </summary>
         private static readonly Parser<DialogueStatement.Line> LineStatement =
-            from leading in OptionalWhitespace
             from text in QuotedText
             from space in OptionalWhitespace
             from tags in Attributes.Optional()
@@ -85,7 +83,6 @@ namespace Davicro.TerribleDialogue.Model
         /// A redirect node that takes the dialogue to the specified action
         /// </summary>
         private static readonly Parser<DialogueStatement.Goto> GotoStatement =
-            from leading in OptionalWhitespace
             from keyword in Parse.String("goto")
             from whiteSpace in Parse.WhiteSpace
             from action in FlowAction
@@ -97,6 +94,7 @@ namespace Davicro.TerribleDialogue.Model
             ).Optional()
             select new DialogueStatement.Goto(action, !now.IsDefined);
 
+        //TODO: Optimize this
         private static readonly Parser<KeyValuePair<string, DialogueStatement[]>> SingleChoice =
             from leading in OptionalWhitespace
             from open in Parse.Char('*')
@@ -107,15 +105,20 @@ namespace Davicro.TerribleDialogue.Model
 
         private static readonly Parser<DialogueStatement.Choice> ChoiceStatement =
             from open in Parse.String("choice")
+            from newline in Parse.LineEnd
             from choices in SingleChoice.AtLeastOnce()
+            from leading in OptionalWhitespace
             from close in Parse.String("endchoice")
             select new DialogueStatement.Choice(choices.Select(kvp => kvp.Key).ToArray(), choices.Select(kvp => kvp.Value).ToArray());
-            
+
         /// <summary>
         /// General statement (line, goto, if...)
         /// </summary>
         private static readonly Parser<DialogueStatement> Statement =
-            LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement);
+            from leading in OptionalWhitespace
+            from statement in LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement)
+            from newLine in Parse.LineEnd.Optional()
+            select statement;
 
 
         private static readonly Parser<FlowAction.NodeAction> NodeAction =
@@ -155,6 +158,7 @@ namespace Davicro.TerribleDialogue.Model
 
         /// <summary>
         /// A way to specify where a set starts (only set and random action is allowed)
+        /// >> action
         /// </summary>
         private static readonly Parser<FlowAction> SetFlowAction =
             from leading in OptionalWhitespace

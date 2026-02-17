@@ -17,6 +17,7 @@ namespace Davicro.TerribleDialogue
         private DialogueEngine engine;
         public event Action OnStart;
         public event Action<string> OnLine;
+        public event Action<string[]> OnChoices;
         public event Action OnEnd;
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
@@ -36,12 +37,18 @@ namespace Davicro.TerribleDialogue
         {
             engine.Step();
 
+            if(engine.PendingChoices.Length > 0)
+            {
+                OnChoices?.Invoke(engine.PendingChoices);
+                return;
+            }
+
+
             if(engine.IsDialogueOver || !engine.HasLine)
             {
                 EndDialogue();
                 return;
             }
-
             foreach (KeyValuePair<string, string> kvp in engine.CurrentTags)
             {
                 CallTagProcessors(kvp.Key, kvp.Value);
@@ -49,6 +56,8 @@ namespace Davicro.TerribleDialogue
 
             OnLine?.Invoke(engine.CurrentText);
         }
+
+        public void AddChoice(int choiceIndex) => engine.AddChoice(choiceIndex);
 
         public void EndDialogue()
         {

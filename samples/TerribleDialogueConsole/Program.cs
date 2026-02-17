@@ -7,6 +7,8 @@ namespace TerribleDialogueConsole
 {
     internal class Program
     {
+        private static readonly string choiceDisplayIndexes = "123456789abcdefghijklmnopqrstuvwxyz";
+
         private static readonly Random random = new Random();
         private static readonly DialogueManager dialogueManager = new DialogueManager();
         private static ISoundPlayer soundPlayer = new NetCoreAdioPlayer();
@@ -21,10 +23,13 @@ namespace TerribleDialogueConsole
 
         static void Main(string[] args)
         {
+            DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/someone.tdlg"));
+
             Console.OutputEncoding = Encoding.UTF8;
 
             dialogueManager.OnStart += OnDialogueStart;
             dialogueManager.OnLine += DisplayLine;
+            dialogueManager.OnChoices += OnChoices;
             dialogueManager.OnEnd += OnDialogueEnd;
             dialogueManager.AddTagProcessor("music", ProcessMusicTag);
             dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
@@ -68,6 +73,30 @@ namespace TerribleDialogueConsole
             Console.Write(line);
 
             Console.ResetColor();
+        }
+
+        private static void OnChoices(string[] choices)
+        {
+            for(int i = 0; i < choices.Length; i++)
+            {
+                // Can't support more than what we display
+                if(i >= choiceDisplayIndexes.Length)
+                    break;
+
+                char displayChar = choiceDisplayIndexes[i];
+                Console.WriteLine($"{displayChar}. {choices[i]}");
+            }
+
+            int choiceIndex = -1;
+            while(choiceIndex < 0)
+            {
+                char choice = Console.ReadKey(true).KeyChar;
+                choiceIndex = choiceDisplayIndexes.IndexOf(choice);
+            }
+
+            Console.WriteLine(choices[choiceIndex]);
+            dialogueManager.AddChoice(choiceIndex);
+            dialogueManager.Next();
         }
 
         private static void TalkToCharacter(Character c)

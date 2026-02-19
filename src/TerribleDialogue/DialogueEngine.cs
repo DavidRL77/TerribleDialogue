@@ -19,7 +19,7 @@ namespace Davicro.TerribleDialogue
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
         
         // Pointer at the root of a dialogue tree, branch 0, statement 0
-        private static Pointer RootPointer = new Pointer(0,0);
+        private static Pointer RootPointer = Pointer.BranchStart(0);
 
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
@@ -129,7 +129,7 @@ namespace Davicro.TerribleDialogue
             if(!state.ChoiceQueue.TryDequeue(out int choiceIndex))
                 return false;
 
-            state.StatementPath.Add(new Pointer(0, choiceIndex));
+            state.StatementPath.Add(Pointer.BranchStart(choiceIndex));
             return true;
         }
 
@@ -152,13 +152,15 @@ namespace Davicro.TerribleDialogue
             for(int i = 0; i <= depth; i++)
             {
                 Pointer pointer = state.StatementPath[i];
-                branchSizes.Push(current.Branches[pointer.Branch].Length);
-
-                current = current.Branches[pointer.Branch][pointer.StatementIndex];
+                DialogueStatement[] statements = current.Branches[pointer.Branch];
+                branchSizes.Push(statements.Length);
+                if(statements.Length == 0) // Nowhere else to go
+                    break;
+                current = statements[pointer.StatementIndex];
             }
 
-            // Can't move past unresolved branches
-            if(current.Branches.Length > 0)
+            // Can't move past unresolved (non-empty) branches
+            if(current.Branches.Length > 0 && branchSizes.Peek() > 0)
                 return current;
 
             // Undo our steps propagating any out of bounds pointers

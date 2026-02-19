@@ -29,7 +29,6 @@ namespace TerribleDialogueConsole
                     {"0", new DialogueNode("0", [
                         new DialogueStatement.Line("Test", new()),
                         new DialogueStatement.Choice(["Hello"], [[
-                            
                         ]])
                     ])}
                 }
@@ -46,8 +45,6 @@ namespace TerribleDialogueConsole
                     Console.WriteLine(engine.CurrentText);
                 if(engine.PendingChoices.Length > 0)
                     Console.WriteLine(String.Join(',',engine.PendingChoices));
-
-                Console.ReadLine();
             }
             return;
 

@@ -32,7 +32,7 @@ namespace Davicro.TerribleDialogue
         
 
         private readonly DialogueObject dialogueObject;
-        private readonly DialogueState state = new DialogueState();
+        private DialogueState state = new DialogueState();
         private readonly RandProvider randProvider;
 
         public DialogueEngine(DialogueObject obj, RandProvider randProvider, string startSet = "default")
@@ -255,7 +255,7 @@ namespace Davicro.TerribleDialogue
 
         public void EndDialogue()
         {
-            state.IsDialogueOver = true;
+            this.state = DialogueState.END_STATE;
         }
     }
 }

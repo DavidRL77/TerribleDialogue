@@ -1,67 +1,52 @@
 ﻿set default:
     node 0:
-    "Yo, what's up."
-    "I'm nothing but a console speaking to you through pre-processed, compiled and parsed data."
-    "A computer program made of bits pretending to speak using unicode characters."
-    "Isn't it cool?"
-    goto node:1
+    "Oye, no se si te lo he dicho, pero has escuchado del 42?"
+    choice
+    * "Ya me lo has dicho"
+        "Pues te lo digo otra vez"
+        goto node:explain now
+    * "No"
+        "Pues escucha..."
+        goto node:explain now
+    endchoice
 
-    node 1:
-    "I think it's cool."
-    "Not that it matters."
-    "Not that anything does."
-    "I'll repeat my lines once this is all over."
-    "And you'll repeat the same process over and over trying to find something new."
-    "But eventually nothing will be, and I'll go back to being a computer program with predetermined outputs."
-    goto set:banter
+    node explain:
+    "Lo primero que el 42 NO es un culto, vale?"
+    "No digas que es un culto porque no es un culto"
+    "No se por que pensarias que es un culto, pero no es un culto"
+    "Te ha quedado claro?"
+    choice
+    * "Si..."
+    * "No"
+        goto node:explain now
+    endchoice
 
-set banter:
-    >> random
-    node 0:
-    "I'm speaking without a voice."
-    "I'm talking without any words."
-    "I'm expressing without any emotion."
-    "Isn't it funny how I can do all these things without being real?"
-    goto random
+    "Es INCREIBLE BRO PERO ALUCINANTE"
+    "Tienes como un árbol de actividades que hacer y vas ganando experiencia y subiendo de nivel"
+    "Hay logros que te dan fortycoin™ que puedes usar para comprar varios productos de la fortyshop™"
+    "Oye estas escuchando?"
+    choice
+    * "Si..."
+        "Perfecto."
+    * "No"
+        "Joder, pues te lo explico otra vez"
+        goto node:explain now
+    endchoice
 
-    node 1:
-    "Look up at the sky, and tell me how many stars you see."
-    "It might be one, it might be hundreds."
-    "But you can't know for certain how many there really are."
-    "So you imagine, you fill in the blanks and you convince yourself there must be more than what you see."
-    "And you'll never really know."
-    goto random
+    "Bueno pues aparte de comprar cosas de la fortyshop™ puedes comprar fortyexplosivos™ que usas para bombardear los ordenadores de otras personas"
 
-    node 2:
-    "What an interesting combination this is, isn't it?"
-    "Is it like others prior?"
-    "Have you observed every possible state of this system?"
-    "If so, how can you be sure?"
-    "Can you say, for a fact, that you know what the next iteration is going to entail?"
-    "That you can accurately predict what's going to happen next time you're here?"
-    "That you know for absolute certain that there really is nothing else hiding within the smallest chance of happening."
-    "Are you sure?"
-    "Okay."
-    goto random
+    choice
+    * "Bro, que?"
+        "No te preocupes"
+    endchoice
 
-    node 3:
-    "You're wasting your time."
-    "There's nothing else here."
-    goto END
-
-    node 4:
-    "Internal error: Davicro.TerribleDialogue is terrible." [color=red]
-    goto set:error
-
-set error:
-    node 0:
-    "\rTrying to recover from exception..." [color=blue]
-    "\rTrying to recover from exception..." [color=blue]
-    "\rTrying to recover from exception..." [color=blue]
-    "Nope, it's still really bad."
-    "Sorry!"
-    goto node:0
-
-    node 1:
-    "Process exited with code 4294967295 (0xffffffff)"
-    goto node:0
+    "Es muy divertido porque si no temes por tu vida cada segundo que te pasas escribiendo codigo tienes la posibilidad de morir explotado"
+    "Y eso me motiva mazo para vivir cada dia como el ultimo y programar todo lo que pueda bro"
+    "Aparte que todo el mundo es super majo y te fortysonrien™ cada vez que pasan por tu ordenador y te ven trabajando duro"
+    "Un dia me pase las 24 horas en un ordenador y cuando ya casi no podia respirar y me dieron 20 FORTYCOIN™ y me compre un fortyexplosivo™ para cargarme a un tio que tenia al lado"
+    choice
+    * "Osea un culto"
+        "Bro bro bro bro bro"
+        "Bro bro bro"
+        goto node:explain now
+    endchoice

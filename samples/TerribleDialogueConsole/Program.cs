@@ -23,7 +23,30 @@ namespace TerribleDialogueConsole
 
         static void Main(string[] args)
         {
-            DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/someone.tdlg"));
+            DialogueObject obj = new DialogueObject(new(){
+                {"default", new DialogueSet("default", new()
+                {
+                    {"0", new DialogueNode("0", [
+                        new DialogueStatement.Line("Test", new()),
+                        new DialogueStatement.Choice(["Hello"], [[
+                        ]])
+                    ])}
+                }
+                
+                , new FlowAction.NodeAction("0"))}
+            });
+            DialogueEngine engine = new DialogueEngine(obj, random.Next);
+
+            engine.AddChoice(0);
+            while (!engine.IsDialogueOver)
+            {
+                engine.Step();
+                if(engine.HasLine)
+                    Console.WriteLine(engine.CurrentText);
+                if(engine.PendingChoices.Length > 0)
+                    Console.WriteLine(String.Join(',',engine.PendingChoices));
+            }
+            return;
 
             Console.OutputEncoding = Encoding.UTF8;
 

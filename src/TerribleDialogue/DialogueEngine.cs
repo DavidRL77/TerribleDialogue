@@ -60,7 +60,7 @@ namespace Davicro.TerribleDialogue
             }
 
 
-            if(!TryResolveChoices())
+            if(PendingChoices.Length > 0 && !TryResolveChoice())
                 return;
 
             do
@@ -72,6 +72,11 @@ namespace Davicro.TerribleDialogue
                 state.PendingChoices = new string[0];
 
                 DialogueStatement statement = Advance();
+                if(statement == null)
+                {
+                    EndDialogue();
+                    return;
+                }
 
                 switch(statement)
                 {
@@ -84,7 +89,8 @@ namespace Davicro.TerribleDialogue
                         state.HasLine = true;
                         break;
                     case DialogueStatement.Choice c:
-                        state.PendingChoices = c.Choices;
+                        if(!TryResolveChoice())
+                            state.PendingChoices = c.Choices;
                         break;
                 }
 
@@ -121,11 +127,8 @@ namespace Davicro.TerribleDialogue
             }
         }
 
-        private bool TryResolveChoices()
+        private bool TryResolveChoice()
         {
-            if(PendingChoices.Length == 0)
-                return true;
-
             if(!state.ChoiceQueue.TryDequeue(out int choiceIndex))
                 return false;
 
@@ -134,16 +137,17 @@ namespace Davicro.TerribleDialogue
         }
 
         /// <summary>
-        /// Advances the path to the next statement and resolves any branch backtracking.
+        /// Advances the path to the next statement and resolves any branch backtracking. Skips over unresolved branches.
         /// </summary>
-        /// <returns>The statement before advancing</returns>
+        /// <returns>The statement after advancing</returns>
         /// <exception cref="Exception"></exception>
         private DialogueStatement Advance()
         {
             if(state.StatementPath.Count == 0)
                 throw new Exception("No pointer path");
 
-            Stack<int> branchSizes = new Stack<int>();
+            // Build a stack of branches as we traverse the tree so that we can then resolve upwards when we exit a branch
+            Stack<DialogueStatement> branchStack = new Stack<DialogueStatement>();
 
             int depth = state.StatementPath.Count-1;
             DialogueStatement current = state.CurrentNode.Root;
@@ -151,40 +155,42 @@ namespace Davicro.TerribleDialogue
             // Build our stack of branch sizes up until our current depth
             for(int i = 0; i <= depth; i++)
             {
+                // Only push the parent statements (the ones that have branches, not the leafs)
+                branchStack.Push(current);
+
                 Pointer pointer = state.StatementPath[i];
-                DialogueStatement[] statements = current.Branches[pointer.Branch];
-                branchSizes.Push(statements.Length);
-                if(statements.Length == 0) // Nowhere else to go
+                DialogueStatement[] branch = current.Branches[pointer.Branch];
+                if(branch.Length == 0 || pointer.StatementIndex < 0) // Nowhere else to go
                     break;
-                current = statements[pointer.StatementIndex];
+
+                current = branch[pointer.StatementIndex];
             }
 
-            // Can't move past unresolved (non-empty) branches
-            if(current.Branches.Length > 0 && branchSizes.Peek() > 0)
-                return current;
-
             // Undo our steps propagating any out of bounds pointers
-            while(branchSizes.Count > 0)
+            while(branchStack.Count > 0)
             {
                 // Try to advance the last pointer in the path, every time a pointer goes out of bounds,
                 // the next pointer will get advanced, and so forth
                 Pointer pointer = state.StatementPath[depth].Next();
 
-                int branchSize = branchSizes.Pop();
-                if(pointer.StatementIndex >= branchSize)
+                DialogueStatement parent = branchStack.Pop();
+                if(pointer.StatementIndex >= parent.Branches[pointer.Branch].Length)
                 {
                     // If the pointer is out of bounds we remove it and advance the next one
                     state.StatementPath.RemoveAt(depth);
+                    current = null;
                 }
                 else
                 {
                     // If the pointer is still in bounds, we leave the rest as-is
                     state.StatementPath[depth] = pointer;
+                    current = parent.Branches[pointer.Branch][pointer.StatementIndex];
                     break;
                 }
 
                 depth--;
             }
+
 
             return current;
         }

@@ -6,7 +6,7 @@ namespace TerribleDialogue
 {
     internal readonly struct Pointer
     {
-        public static Pointer BranchStart(int branch) => new Pointer(0, branch);
+        public static Pointer BranchStart(int branch) => new Pointer(-1, branch);
 
         public int StatementIndex { get; }
         public int Branch { get; }

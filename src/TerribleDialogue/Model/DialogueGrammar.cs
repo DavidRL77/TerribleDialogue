@@ -100,7 +100,7 @@ namespace Davicro.TerribleDialogue.Model
             from open in Parse.Char('*')
             from space in OptionalWhitespace
             from text in QuotedText
-            from statements in Statement.AtLeastOnce()
+            from statements in Statement.Many()
             select KeyValuePair.Create(text, statements.ToArray());
 
         private static readonly Parser<DialogueStatement.Choice> ChoiceStatement =

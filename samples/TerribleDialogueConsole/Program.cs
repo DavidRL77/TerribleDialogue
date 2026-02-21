@@ -23,30 +23,31 @@ namespace TerribleDialogueConsole
 
         static void Main(string[] args)
         {
-            DialogueObject obj = new DialogueObject(new(){
-                {"default", new DialogueSet("default", new()
-                {
-                    {"0", new DialogueNode("0", [
-                        new DialogueStatement.Line("Test", new()),
-                        new DialogueStatement.Choice(["Hello"], [[
-                        ]])
-                    ])}
-                }
+            //DialogueObject obj = new DialogueObject(new(){
+            //    {"default", new DialogueSet("default", new()
+            //    {
+            //        {"0", new DialogueNode("0", [
+            //            new DialogueStatement.Line("Test", new()),
+            //            new DialogueStatement.Choice(["Hello"], [[
+            //            ]]),
+            //            new DialogueStatement.Line("BYEBYE", new())
+            //        ])}
+            //    }
                 
-                , new FlowAction.NodeAction("0"))}
-            });
-            DialogueEngine engine = new DialogueEngine(obj, random.Next);
+            //    , new FlowAction.NodeAction("0"))}
+            //});
+            //DialogueEngine engine = new DialogueEngine(obj, random.Next);
 
-            engine.AddChoice(0);
-            while (!engine.IsDialogueOver)
-            {
-                engine.Step();
-                if(engine.HasLine)
-                    Console.WriteLine(engine.CurrentText);
-                if(engine.PendingChoices.Length > 0)
-                    Console.WriteLine(String.Join(',',engine.PendingChoices));
-            }
-            return;
+            //engine.AddChoice(0);
+            //while (!engine.IsDialogueOver)
+            //{
+            //    engine.Step();
+            //    if(engine.HasLine)
+            //        Console.WriteLine(engine.CurrentText);
+            //    if(engine.PendingChoices.Length > 0)
+            //        Console.WriteLine(String.Join(',',engine.PendingChoices));
+            //}
+            //return;
 
             Console.OutputEncoding = Encoding.UTF8;
 
@@ -100,14 +101,15 @@ namespace TerribleDialogueConsole
 
         private static void OnChoices(string[] choices)
         {
-            for(int i = 0; i < choices.Length; i++)
-            {
+            int totalChoices = 0;
+            for(int i = 0; i < choices.Length; i++) {
                 // Can't support more than what we display
                 if(i >= choiceDisplayIndexes.Length)
                     break;
 
                 char displayChar = choiceDisplayIndexes[i];
                 Console.WriteLine($"{displayChar}. {choices[i]}");
+                totalChoices++;
             }
 
             int choiceIndex = -1;
@@ -117,7 +119,12 @@ namespace TerribleDialogueConsole
                 choiceIndex = choiceDisplayIndexes.IndexOf(choice);
             }
 
-            Console.WriteLine(choices[choiceIndex]);
+            for(int i = totalChoices - 1; i >= 0; i--) {
+                Console.SetCursorPosition(0, Console.CursorTop - 1);
+                Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
+            }
+
+            Console.WriteLine($"> {choices[choiceIndex]}");
             dialogueManager.AddChoice(choiceIndex);
             dialogueManager.Next();
         }

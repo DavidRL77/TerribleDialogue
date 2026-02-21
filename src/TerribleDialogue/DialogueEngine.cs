@@ -2,8 +2,6 @@ using Davicro.TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Security;
 using TerribleDialogue;
 namespace Davicro.TerribleDialogue
 {
@@ -17,7 +15,7 @@ namespace Davicro.TerribleDialogue
         // so that the project is better integrated into wherever it might be used.
         // Unity for example has its own Random that uses its own seed.
         public delegate int RandProvider(int inclusiveMin, int exclusiveMax);
-        
+
         // Pointer at the root of a dialogue tree, branch 0, statement 0
         private static Pointer RootPointer = Pointer.BranchStart(0);
 
@@ -29,21 +27,19 @@ namespace Davicro.TerribleDialogue
         public string CurrentSetId => state.CurrentSet?.Id;
         public string CurrentNodeId => state.CurrentNode?.Id;
         public string[] PendingChoices => state.PendingChoices;
-        
+
 
         private readonly DialogueObject dialogueObject;
         private DialogueState state = new DialogueState();
         private readonly RandProvider randProvider;
 
-        public DialogueEngine(DialogueObject obj, RandProvider randProvider, string startSet = "default")
-        {
+        public DialogueEngine(DialogueObject obj, RandProvider randProvider, string startSet = "default") {
             this.dialogueObject = obj;
             this.randProvider = randProvider;
             SetSet(startSet);
         }
 
-        private bool HasNextStatement()
-        {
+        private bool HasNextStatement() {
             return state.StatementPath.Count > 0;
         }
 
@@ -51,10 +47,8 @@ namespace Davicro.TerribleDialogue
         /// Advances the dialogue to the next stopping point.
         /// When stopping check <see cref="HasLine"/> to see if there's a line available to read.
         /// </summary>
-        public void Step()
-        {
-            if(!HasNextStatement())
-            {
+        public void Step() {
+            if(!HasNextStatement()) {
                 EndDialogue();
                 return;
             }
@@ -63,8 +57,7 @@ namespace Davicro.TerribleDialogue
             if(PendingChoices.Length > 0 && !TryResolveChoice())
                 return;
 
-            do
-            {
+            do {
                 // Reset values
                 state.CurrentText = null;
                 state.CurrentTags = null;
@@ -72,14 +65,12 @@ namespace Davicro.TerribleDialogue
                 state.PendingChoices = new string[0];
 
                 DialogueStatement statement = Advance();
-                if(statement == null)
-                {
+                if(statement == null) {
                     EndDialogue();
                     return;
                 }
 
-                switch(statement)
-                {
+                switch(statement) {
                     case DialogueStatement.Goto g:
                         ProcessFlowAction(g.Action);
                         break;
@@ -100,11 +91,9 @@ namespace Davicro.TerribleDialogue
 
             } while(HasNextStatement());
         }
-        
-        private void ProcessFlowAction(FlowAction action)
-        {
-            switch(action)
-            {
+
+        private void ProcessFlowAction(FlowAction action) {
+            switch(action) {
                 case FlowAction.NodeAction n:
                     SetNode(n.Id);
                     break;
@@ -127,8 +116,7 @@ namespace Davicro.TerribleDialogue
             }
         }
 
-        private bool TryResolveChoice()
-        {
+        private bool TryResolveChoice() {
             if(!state.ChoiceQueue.TryDequeue(out int choiceIndex))
                 return false;
 
@@ -141,20 +129,18 @@ namespace Davicro.TerribleDialogue
         /// </summary>
         /// <returns>The statement after advancing</returns>
         /// <exception cref="Exception"></exception>
-        private DialogueStatement Advance()
-        {
+        private DialogueStatement Advance() {
             if(state.StatementPath.Count == 0)
                 throw new Exception("No pointer path");
 
             // Build a stack of branches as we traverse the tree so that we can then resolve upwards when we exit a branch
             Stack<DialogueStatement> branchStack = new Stack<DialogueStatement>();
 
-            int depth = state.StatementPath.Count-1;
+            int depth = state.StatementPath.Count - 1;
             DialogueStatement current = state.CurrentNode.Root;
 
             // Build our stack of branch sizes up until our current depth
-            for(int i = 0; i <= depth; i++)
-            {
+            for(int i = 0; i <= depth; i++) {
                 // Only push the parent statements (the ones that have branches, not the leafs)
                 branchStack.Push(current);
 
@@ -167,21 +153,17 @@ namespace Davicro.TerribleDialogue
             }
 
             // Undo our steps propagating any out of bounds pointers
-            while(branchStack.Count > 0)
-            {
+            while(branchStack.Count > 0) {
                 // Try to advance the last pointer in the path, every time a pointer goes out of bounds,
                 // the next pointer will get advanced, and so forth
                 Pointer pointer = state.StatementPath[depth].Next();
 
                 DialogueStatement parent = branchStack.Pop();
-                if(pointer.StatementIndex >= parent.Branches[pointer.Branch].Length)
-                {
+                if(pointer.StatementIndex >= parent.Branches[pointer.Branch].Length) {
                     // If the pointer is out of bounds we remove it and advance the next one
                     state.StatementPath.RemoveAt(depth);
                     current = null;
-                }
-                else
-                {
+                } else {
                     // If the pointer is still in bounds, we leave the rest as-is
                     state.StatementPath[depth] = pointer;
                     current = parent.Branches[pointer.Branch][pointer.StatementIndex];
@@ -199,31 +181,23 @@ namespace Davicro.TerribleDialogue
         /// Add a choice to the queue to be processed when a choice statement is reached
         /// </summary>
         /// <param name="choiceIndex"></param>
-        public void AddChoice(int choiceIndex)
-        {
+        public void AddChoice(int choiceIndex) {
             state.ChoiceQueue.Enqueue(choiceIndex);
         }
 
-        public void SetNode(string id)
-        {
-            if(state.CurrentSet.Nodes.TryGetValue(id, out DialogueNode node))
-            {
+        public void SetNode(string id) {
+            if(state.CurrentSet.Nodes.TryGetValue(id, out DialogueNode node)) {
                 state.CurrentNode = node;
                 state.StatementPath.Clear();
                 state.StatementPath.Add(RootPointer);
-            }
-            else
-            {
+            } else {
                 throw new Exception($"No node with id '{id}'");
             }
         }
 
-        public void SetSet(string id)
-        {
-            if(dialogueObject.Sets.TryGetValue(id, out DialogueSet set))
-            {
-                if(CurrentSetId != null)
-                {
+        public void SetSet(string id) {
+            if(dialogueObject.Sets.TryGetValue(id, out DialogueSet set)) {
+                if(CurrentSetId != null) {
                     state.PreviousSet = CurrentSetId;
                     state.PreviousNode = CurrentNodeId;
                 }
@@ -232,28 +206,23 @@ namespace Davicro.TerribleDialogue
                 state.IsDialogueOver = false; // Re-enables dialogue if explicitely setting a new set
                 state.DiscardedNodes.Clear(); // Doesn't make sense to keep nodes discarded when changing sets, even if back to the same one
                 ProcessFlowAction(set.StartFlowAction);
-            }
-            else
-            {
+            } else {
                 throw new Exception($"No set with id '{id}'");
             }
 
         }
 
-        public bool HasSet(string id)
-        {
+        public bool HasSet(string id) {
             return dialogueObject.Sets.ContainsKey(id);
         }
 
-        public void SetRandomNode(bool discardCurrent)
-        {
+        public void SetRandomNode(bool discardCurrent) {
             if(state.CurrentNode != null && discardCurrent)
                 state.DiscardedNodes.Add(CurrentNodeId);
 
             // All nodes except the discarded ones
             string[] availableNodes = state.DiscardedNodes.Count == 0 ? state.CurrentSet.Nodes.Keys.ToArray() : state.CurrentSet.Nodes.Select(kvp => kvp.Key).Where(id => !state.DiscardedNodes.Contains(id)).ToArray();
-            if(availableNodes.Length == 0)
-            {
+            if(availableNodes.Length == 0) {
                 EndDialogue();
                 return;
             }
@@ -261,8 +230,7 @@ namespace Davicro.TerribleDialogue
             SetNode(availableNodes[randProvider.Invoke(0, availableNodes.Length)]);
         }
 
-        public void EndDialogue()
-        {
+        public void EndDialogue() {
             this.state = DialogueState.END_STATE;
         }
     }

@@ -6,18 +6,15 @@ namespace TerribleDialogueConsole
     {
         private Player player = new Player();
 
-        public void Play(string path)
-        {
+        public void Play(string path) {
             player.Play(path);
         }
 
-        public void Stop()
-        {
+        public void Stop() {
             player.Stop();
         }
 
-        public void SetVolume(float value)
-        {
+        public void SetVolume(float value) {
             player.SetVolume((byte)value);
         }
     }

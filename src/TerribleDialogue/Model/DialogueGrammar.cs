@@ -1,6 +1,5 @@
 using Sprache;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 
 namespace Davicro.TerribleDialogue.Model
@@ -143,7 +142,7 @@ namespace Davicro.TerribleDialogue.Model
             from header in Parse.String("previous")
             select new FlowAction.PreviousAction();
 
-        private static readonly Parser<FlowAction.EndAction> EndAction = 
+        private static readonly Parser<FlowAction.EndAction> EndAction =
             from header in Parse.String("END")
             select new FlowAction.EndAction();
 

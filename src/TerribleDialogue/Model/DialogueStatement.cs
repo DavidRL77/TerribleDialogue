@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Davicro.TerribleDialogue.Model
 {
@@ -19,8 +18,7 @@ namespace Davicro.TerribleDialogue.Model
         {
             public override bool IsYielding => false;
 
-            public Root(DialogueStatement[] statements)
-            {
+            public Root(DialogueStatement[] statements) {
                 this.Branches = new DialogueStatement[1][];
                 this.Branches[0] = statements;
             }
@@ -34,8 +32,7 @@ namespace Davicro.TerribleDialogue.Model
             public string Text { get; }
             public Dictionary<string, string> Tags { get; }
 
-            public Line(string text, Dictionary<string, string> tags)
-            {
+            public Line(string text, Dictionary<string, string> tags) {
                 Text = text;
                 Tags = tags;
             }
@@ -49,8 +46,7 @@ namespace Davicro.TerribleDialogue.Model
             public FlowAction Action { get; }
             private readonly bool isYielding;
 
-            public Goto(FlowAction action, bool isYielding = true)
-            {
+            public Goto(FlowAction action, bool isYielding = true) {
                 Action = action;
                 this.isYielding = isYielding;
             }
@@ -61,8 +57,7 @@ namespace Davicro.TerribleDialogue.Model
             public override bool IsYielding => true;
             public string[] Choices { get; }
 
-            public Choice(string[] choices, DialogueStatement[][] branches)
-            {
+            public Choice(string[] choices, DialogueStatement[][] branches) {
                 Choices = choices;
                 this.Branches = branches;
             }

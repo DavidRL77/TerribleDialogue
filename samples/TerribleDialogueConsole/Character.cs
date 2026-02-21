@@ -7,8 +7,7 @@ namespace TerribleDialogueConsole
         public string Name { get; }
         public DialogueEngine Engine { get; }
 
-        public Character(string name, DialogueEngine engine)
-        {
+        public Character(string name, DialogueEngine engine) {
             Name = name;
             Engine = engine;
         }

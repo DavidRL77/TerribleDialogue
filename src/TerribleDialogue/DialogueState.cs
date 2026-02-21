@@ -1,13 +1,11 @@
 ﻿using Davicro.TerribleDialogue.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TerribleDialogue
 {
     internal sealed class DialogueState
     {
-        public static readonly DialogueState END_STATE = new DialogueState() {IsDialogueOver = true}; 
+        public static readonly DialogueState END_STATE = new DialogueState() { IsDialogueOver = true };
 
         /// <summary>
         /// Has dialogue run out or been explicitly ended 

@@ -25,6 +25,8 @@ namespace TerribleDialogueConsole
         {
             Console.OutputEncoding = Encoding.UTF8;
 
+            DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/byte.tdlg"));
+
             dialogueManager.OnStart += OnDialogueStart;
             dialogueManager.OnLine += DisplayLine;
             dialogueManager.OnChoices += OnChoices;

@@ -12,12 +12,6 @@ namespace Davicro.TerribleDialogue.Model
         private static FlowAction DEFAULT_SET_FLOW_ACTION = new FlowAction.NodeAction("0");
 
         /// <summary>
-        /// Eat all the whitespace and just return like one whitespace idk
-        /// </summary>
-        private static readonly Parser<char> OptionalWhitespace =
-            Parse.WhiteSpace.Many().Optional().Return(' ');
-
-        /// <summary>
         /// A special character preceded by a backslash that needs to be escaped
         /// </summary>
         private static readonly Parser<char> EscapedChar =
@@ -37,10 +31,10 @@ namespace Davicro.TerribleDialogue.Model
         /// Text within "quotes"
         /// </summary>
         private static readonly Parser<string> QuotedText =
-            from open in Parse.Char('"')
+           (from open in Parse.Char('"')
             from content in EscapedChar.Or(Parse.CharExcept('"')).Many().Text()
             from end in Parse.Char('"')
-            select content;
+            select content).Token();
 
         /// <summary>
         /// An id that is composed of only letter, digits or underscores.
@@ -64,17 +58,16 @@ namespace Davicro.TerribleDialogue.Model
         /// [Attribute=Value,Attribute=Value]
         /// </summary>
         private static readonly Parser<Dictionary<string, string>> Attributes =
-            from open in Parse.Char('[')
+            (from open in Parse.Char('[')
             from kvp in KeyValue.DelimitedBy(Parse.Char(','))
             from close in Parse.Char(']')
-            select new Dictionary<string, string>(kvp);
+            select new Dictionary<string, string>(kvp)).Token();
 
         /// <summary>
         /// Quoted text and a dictionary of tags
         /// </summary>
         private static readonly Parser<DialogueStatement.Line> LineStatement =
             from text in QuotedText
-            from space in OptionalWhitespace
             from tags in Attributes.Optional()
             select new DialogueStatement.Line(text, tags.GetOrElse(new Dictionary<string, string>()));
 
@@ -89,34 +82,29 @@ namespace Davicro.TerribleDialogue.Model
                 from w1 in Parse.WhiteSpace
                 from now in Parse.IgnoreCase("now")
                 select now
-
             ).Optional()
             select new DialogueStatement.Goto(action, !now.IsDefined);
 
         //TODO: Optimize this
         private static readonly Parser<KeyValuePair<string, DialogueStatement[]>> SingleChoice =
-            from leading in OptionalWhitespace
-            from open in Parse.Char('*')
-            from space in OptionalWhitespace
+            from open in Parse.Char('*').Token()
             from text in QuotedText
             from statements in Statement.Many()
             select KeyValuePair.Create(text, statements.ToArray());
 
         private static readonly Parser<DialogueStatement.Choice> ChoiceStatement =
-            from open in Parse.String("choice")
-            from newline in Parse.LineEnd
+            from open in Parse.String("choice").Token()
             from choices in SingleChoice.AtLeastOnce()
-            from leading in OptionalWhitespace
-            from close in Parse.String("endchoice")
+            from close in Parse.String("endchoice").Token()
             select new DialogueStatement.Choice(choices.Select(kvp => kvp.Key).ToArray(), choices.Select(kvp => kvp.Value).ToArray());
 
         /// <summary>
         /// General statement (line, goto, if...)
         /// </summary>
         private static readonly Parser<DialogueStatement> Statement =
-            from leading in OptionalWhitespace
+            from leading in Parse.WhiteSpace.Many()
             from statement in LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement)
-            from newLine in Parse.LineEnd.Optional()
+            from trailing in Parse.WhiteSpace.Many()
             select statement;
 
 
@@ -160,9 +148,7 @@ namespace Davicro.TerribleDialogue.Model
         /// >> action
         /// </summary>
         private static readonly Parser<FlowAction> SetFlowAction =
-            from leading in OptionalWhitespace
-            from start in Parse.String(">>")
-            from whiteSpace in OptionalWhitespace
+            from start in Parse.String(">>").Token()
             from action in NodeAction.Or<FlowAction>(RandomAction).Or(SetAction)
             select action;
 
@@ -171,7 +157,7 @@ namespace Davicro.TerribleDialogue.Model
         /// Why a key value pair? Because Node doesn't contain an id in itself, but it needs an id to be mapped later into a dictionary
         /// </summary>
         private static readonly Parser<DialogueNode> Node =
-            from leading in OptionalWhitespace
+            from leading in Parse.WhiteSpace.Many()
             from header in Parse.String("node")
             from space in Parse.WhiteSpace
             from id in Id

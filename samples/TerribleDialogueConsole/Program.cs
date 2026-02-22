@@ -7,7 +7,7 @@ namespace TerribleDialogueConsole
 {
     internal class Program
     {
-        private static readonly string choiceDisplayIndexes = "123456789abcdefghijklmnopqrstuvwxyz";
+        private static readonly string choiceDisplayChars = "123456789abcdefghijklmnopqrstuvwxyz";
 
         private static readonly Random random = new Random();
         private static readonly DialogueManager dialogueManager = new DialogueManager();
@@ -67,24 +67,20 @@ namespace TerribleDialogueConsole
         }
 
         private static void OnChoices(string[] choices) {
-            int totalChoices = 0;
-            for(int i = 0; i < choices.Length; i++) {
-                // Can't support more than what we display
-                if(i >= choiceDisplayIndexes.Length)
-                    break;
-
-                char displayChar = choiceDisplayIndexes[i];
+            // Can't support more than what we display
+            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(choiceDisplayChars.Length,choices.Length));
+            for(int i = 0; i < displayableChoices.Count; i++) {
+                char displayChar = choiceDisplayChars[i];
                 Console.WriteLine($"{displayChar}. {choices[i]}");
-                totalChoices++;
             }
 
             int choiceIndex = -1;
-            while(choiceIndex < 0) {
+            while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count) {
                 char choice = Console.ReadKey(true).KeyChar;
-                choiceIndex = choiceDisplayIndexes.IndexOf(choice);
+                choiceIndex = choiceDisplayChars.IndexOf(choice);
             }
 
-            for(int i = totalChoices - 1; i >= 0; i--) {
+            for(int i = displayableChoices.Count - 1; i >= 0; i--) {
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
             }

@@ -21,7 +21,8 @@ namespace Davicro.TerribleDialogue
 
         private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
 
-        public void BeginDialogue(DialogueEngine engine) {
+        public void BeginDialogue(DialogueEngine engine)
+        {
             OnStart.Invoke();
 
             this.engine = engine;
@@ -31,20 +32,24 @@ namespace Davicro.TerribleDialogue
         /// <summary>
         /// Process dialogue until the next stop
         /// </summary>
-        public void Next() {
+        public void Next()
+        {
             engine.Step();
 
-            if(engine.PendingChoices.Length > 0) {
+            if(engine.PendingChoices.Length > 0)
+            {
                 OnChoices?.Invoke(engine.PendingChoices);
                 return;
             }
 
 
-            if(engine.IsDialogueOver || !engine.HasLine) {
+            if(engine.IsDialogueOver || !engine.HasLine)
+            {
                 EndDialogue();
                 return;
             }
-            foreach(KeyValuePair<string, string> kvp in engine.CurrentTags) {
+            foreach(KeyValuePair<string, string> kvp in engine.CurrentTags)
+            {
                 CallTagProcessors(kvp.Key, kvp.Value);
             }
 
@@ -53,13 +58,16 @@ namespace Davicro.TerribleDialogue
 
         public void AddChoice(int choiceIndex) => engine.AddChoice(choiceIndex);
 
-        public void EndDialogue() {
+        public void EndDialogue()
+        {
             engine = null;
             OnEnd?.Invoke();
         }
 
-        public void AddTagProcessor(string tagType, TagProcessor tagProcessor) {
-            if(!tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors)) {
+        public void AddTagProcessor(string tagType, TagProcessor tagProcessor)
+        {
+            if(!tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            {
                 processors = new List<TagProcessor>();
                 tagProcessors[tagType] = processors;
             }
@@ -67,17 +75,23 @@ namespace Davicro.TerribleDialogue
             processors.Add(tagProcessor);
         }
 
-        public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor) {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors)) {
-                if(processors.Remove(tagProcessor) && processors.Count == 0) {
+        public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor)
+        {
+            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            {
+                if(processors.Remove(tagProcessor) && processors.Count == 0)
+                {
                     tagProcessors.Remove(tagType);
                 }
             }
         }
 
-        private void CallTagProcessors(string tagType, string value) {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors)) {
-                foreach(TagProcessor tagProcessor in processors) {
+        private void CallTagProcessors(string tagType, string value)
+        {
+            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
+            {
+                foreach(TagProcessor tagProcessor in processors)
+                {
                     tagProcessor.Invoke(tagType, value);
                 }
             }

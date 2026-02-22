@@ -21,7 +21,8 @@ namespace TerribleDialogueConsole
             CreateCharacter("Someone", "Dialogue/someone.tdlg")
         };
 
-        static void Main(string[] args) {
+        static void Main(string[] args)
+        {
             Console.OutputEncoding = Encoding.UTF8;
 
             dialogueManager.OnStart += OnDialogueStart;
@@ -31,16 +32,19 @@ namespace TerribleDialogueConsole
             dialogueManager.AddTagProcessor("music", ProcessMusicTag);
             dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
 
-            while(true) {
+            while(true)
+            {
                 Console.WriteLine("Who do you want to talk to?");
-                for(int i = 0; i < characters.Length; i++) {
+                for(int i = 0; i < characters.Length; i++)
+                {
                     Console.WriteLine(characters[i].Name);
                 }
                 Console.Write("> ");
 
                 string answer = Console.ReadLine();
                 Character character = characters.FirstOrDefault(c => c.Name.ToLower() == answer.ToLower().Trim());
-                if(character == null) {
+                if(character == null)
+                {
                     Console.WriteLine("No character by that name");
                     Console.WriteLine();
                     continue;
@@ -50,37 +54,44 @@ namespace TerribleDialogueConsole
             }
         }
 
-        private static void OnDialogueStart() {
+        private static void OnDialogueStart()
+        {
             Console.Clear();
         }
 
-        private static void OnDialogueEnd() {
+        private static void OnDialogueEnd()
+        {
             Console.Clear();
             soundPlayer.Stop();
         }
 
-        private static void DisplayLine(string line) {
+        private static void DisplayLine(string line)
+        {
             Console.ForegroundColor = ColorByName(dialogueManager.CurrentTags.GetValueOrDefault("color", "white"));
             Console.Write(line);
 
             Console.ResetColor();
         }
 
-        private static void OnChoices(string[] choices) {
+        private static void OnChoices(string[] choices)
+        {
             // Can't support more than what we display
-            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(choiceDisplayChars.Length,choices.Length));
-            for(int i = 0; i < displayableChoices.Count; i++) {
+            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(choiceDisplayChars.Length, choices.Length));
+            for(int i = 0; i < displayableChoices.Count; i++)
+            {
                 char displayChar = choiceDisplayChars[i];
                 Console.WriteLine($"{displayChar}. {choices[i]}");
             }
 
             int choiceIndex = -1;
-            while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count) {
+            while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count)
+            {
                 char choice = Console.ReadKey(true).KeyChar;
                 choiceIndex = choiceDisplayChars.IndexOf(choice);
             }
 
-            for(int i = displayableChoices.Count - 1; i >= 0; i--) {
+            for(int i = displayableChoices.Count - 1; i >= 0; i--)
+            {
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
             }
@@ -90,8 +101,10 @@ namespace TerribleDialogueConsole
             dialogueManager.Next();
         }
 
-        private static void TalkToCharacter(Character c) {
-            if(c.Engine.IsDialogueOver) {
+        private static void TalkToCharacter(Character c)
+        {
+            if(c.Engine.IsDialogueOver)
+            {
                 Console.Clear();
                 Console.Write($"{c.Name} has nothing else to say.");
                 Console.ReadLine();
@@ -101,14 +114,17 @@ namespace TerribleDialogueConsole
 
             dialogueManager.BeginDialogue(c.Engine);
 
-            while(dialogueManager.InDialogue) {
+            while(dialogueManager.InDialogue)
+            {
                 Console.ReadLine();
                 dialogueManager.Next();
             }
         }
 
-        private static void ProcessMusicTag(string key, string value) {
-            switch(value) {
+        private static void ProcessMusicTag(string key, string value)
+        {
+            switch(value)
+            {
                 case "stop":
                     soundPlayer.Stop();
                     break;
@@ -118,20 +134,25 @@ namespace TerribleDialogueConsole
             }
         }
 
-        private static void ProcessSfxTag(string key, string value) {
+        private static void ProcessSfxTag(string key, string value)
+        {
             soundPlayer.Play(Path.Join("Sfx", value + ".wav"));
         }
 
-        private static Character CreateCharacter(string name, string dialogueFile) {
+        private static Character CreateCharacter(string name, string dialogueFile)
+        {
             return new Character(name, new DialogueEngine(DialogueGrammar.Dialogue.Parse(
                 File.ReadAllText(Path.Combine(AppContext.BaseDirectory, dialogueFile))),
                 random.Next));
         }
 
-        private static ConsoleColor ColorByName(string name) {
-            if(Enum.TryParse(name, true, out ConsoleColor color)) {
+        private static ConsoleColor ColorByName(string name)
+        {
+            if(Enum.TryParse(name, true, out ConsoleColor color))
+            {
                 return color;
-            } else {
+            } else
+            {
                 return ConsoleColor.White;
             }
         }

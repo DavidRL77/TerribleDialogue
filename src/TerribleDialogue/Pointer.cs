@@ -7,7 +7,8 @@
         public int StatementIndex { get; }
         public int Branch { get; }
 
-        public Pointer(int statementIndex, int branch) {
+        public Pointer(int statementIndex, int branch)
+        {
             StatementIndex = statementIndex;
             Branch = branch;
         }

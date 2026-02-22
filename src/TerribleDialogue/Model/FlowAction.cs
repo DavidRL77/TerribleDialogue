@@ -6,7 +6,8 @@ namespace Davicro.TerribleDialogue.Model
         {
             public string Id { get; }
 
-            public NodeAction(string id) {
+            public NodeAction(string id)
+            {
                 Id = id;
             }
         }
@@ -16,7 +17,8 @@ namespace Davicro.TerribleDialogue.Model
             public string Id { get; }
             public bool RandomNode { get; }
 
-            public SetAction(string id, bool randomNode) {
+            public SetAction(string id, bool randomNode)
+            {
                 Id = id;
                 RandomNode = randomNode;
             }
@@ -26,7 +28,8 @@ namespace Davicro.TerribleDialogue.Model
         {
             public bool Discard { get; }
 
-            public RandomAction(bool discard) {
+            public RandomAction(bool discard)
+            {
                 Discard = discard;
             }
         }

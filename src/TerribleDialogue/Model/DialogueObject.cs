@@ -6,7 +6,8 @@ namespace Davicro.TerribleDialogue.Model
     {
         public Dictionary<string, DialogueSet> Sets { get; }
 
-        public DialogueObject(Dictionary<string, DialogueSet> sets) {
+        public DialogueObject(Dictionary<string, DialogueSet> sets)
+        {
             Sets = sets;
         }
     }

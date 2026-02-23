@@ -24,10 +24,13 @@ namespace Davicro.TerribleDialogue
         public bool HasLine => state.HasLine;
         public string CurrentText => state.CurrentText;
         public IReadOnlyDictionary<string, string> CurrentTags => state.CurrentTags;
-        public string CurrentSetId => state.CurrentSet?.Id;
-        public string CurrentNodeId => state.CurrentNode?.Id;
+        public string CurrentSetId => state.CurrentSet;
+        public string CurrentNodeId => state.CurrentNode;
         public string[] PendingChoices => state.PendingChoices;
 
+
+        private DialogueSet CurrentSet => dialogueObject.Sets[CurrentSetId];
+        private DialogueNode CurrentNode => CurrentSet.Nodes[CurrentNodeId];
 
         private readonly DialogueObject dialogueObject;
         private DialogueState state = new DialogueState();
@@ -156,7 +159,7 @@ namespace Davicro.TerribleDialogue
             Stack<DialogueStatement> branchStack = new Stack<DialogueStatement>();
 
             int depth = state.StatementPath.Count - 1;
-            DialogueStatement current = state.CurrentNode.Root;
+            DialogueStatement current = CurrentNode.Root;
 
             // Build our stack of branch sizes up until our current depth
             for(int i = 0; i <= depth; i++)
@@ -211,9 +214,9 @@ namespace Davicro.TerribleDialogue
 
         public void SetNode(string id)
         {
-            if(state.CurrentSet.Nodes.TryGetValue(id, out DialogueNode node))
+            if(CurrentSet.Nodes.ContainsKey(id))
             {
-                state.CurrentNode = node;
+                state.CurrentNode = id;
                 state.StatementPath.Clear();
                 state.StatementPath.Add(RootPointer);
             } else
@@ -224,7 +227,7 @@ namespace Davicro.TerribleDialogue
 
         public void SetSet(string id)
         {
-            if(dialogueObject.Sets.TryGetValue(id, out DialogueSet set))
+            if(dialogueObject.Sets.ContainsKey(id))
             {
                 if(CurrentSetId != null)
                 {
@@ -232,10 +235,10 @@ namespace Davicro.TerribleDialogue
                     state.PreviousNode = CurrentNodeId;
                 }
 
-                state.CurrentSet = set;
+                state.CurrentSet = id;
                 state.IsDialogueOver = false; // Re-enables dialogue if explicitely setting a new set
                 state.DiscardedNodes.Clear(); // Doesn't make sense to keep nodes discarded when changing sets, even if back to the same one
-                ProcessFlowAction(set.StartFlowAction);
+                ProcessFlowAction(CurrentSet.StartFlowAction);
             } else
             {
                 throw new Exception($"No set with id '{id}'");
@@ -254,7 +257,7 @@ namespace Davicro.TerribleDialogue
                 state.DiscardedNodes.Add(CurrentNodeId);
 
             // All nodes except the discarded ones
-            string[] availableNodes = state.DiscardedNodes.Count == 0 ? state.CurrentSet.Nodes.Keys.ToArray() : state.CurrentSet.Nodes.Select(kvp => kvp.Key).Where(id => !state.DiscardedNodes.Contains(id)).ToArray();
+            string[] availableNodes = state.DiscardedNodes.Count == 0 ? CurrentSet.Nodes.Keys.ToArray() : CurrentSet.Nodes.Select(kvp => kvp.Key).Where(id => !state.DiscardedNodes.Contains(id)).ToArray();
             if(availableNodes.Length == 0)
             {
                 EndDialogue();

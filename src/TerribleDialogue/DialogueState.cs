@@ -23,8 +23,8 @@ namespace TerribleDialogue
         /// The tags of the statement we're currently in
         /// </summary>
         public IReadOnlyDictionary<string, string> CurrentTags { get; internal set; }
-        public DialogueSet CurrentSet { get; internal set; }
-        public DialogueNode CurrentNode { get; internal set; }
+        public string CurrentSet { get; internal set; }
+        public string CurrentNode { get; internal set; }
         /// <summary>
         /// Path that points us down to the current statment
         /// </summary>

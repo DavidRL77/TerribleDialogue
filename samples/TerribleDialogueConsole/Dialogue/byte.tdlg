@@ -4,10 +4,10 @@
     choice
     * "Ya me lo has dicho"
         "Pues te lo digo otra vez"
-        goto node:explain now
+        goto node:explain
     * "No"
         "Pues escucha..."
-        goto node:explain now
+        goto node:explain
     endchoice
 
     node explain:
@@ -18,7 +18,7 @@
     choice
     * "Si..."
     * "No"
-        goto node:explain now
+        goto node:explain
     endchoice
 
     "Es INCREIBLE BRO PERO ALUCINANTE"
@@ -29,7 +29,7 @@
     * "Si..."
     * "No"
         "Joder, pues te lo explico otra vez"
-        goto node:explain now
+        goto node:explain
     endchoice
 
     "Bueno pues aparte de comprar cosas de la fortyshop™ puedes comprar fortyexplosivos™ que usas para bombardear los ordenadores de otras personas"
@@ -47,5 +47,5 @@
     * "Osea un culto"
         "Bro bro bro bro bro"
         "Bro bro bro"
-        goto node:explain now
+        goto node:explain
     endchoice

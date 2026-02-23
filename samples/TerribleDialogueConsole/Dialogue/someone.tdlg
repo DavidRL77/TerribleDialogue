@@ -15,18 +15,18 @@ set default:
                 choice
                 * "Just fucking say it!"
                     "Okay, okay..."
-                    goto node:accept now
+                    goto node:accept
                 endchoice
             * "Dude, shut the fuck up"
-                goto node:decline now
+                goto node:decline
             endchoice
         * "I don't promise"
-            goto node:decline now
+            goto node:decline
         endchoice
     * "I don't have time for this"
-        goto node:decline now
+        goto node:decline
     endchoice
-    goto node:decline now
+    goto node:decline
 
     node decline:
     "Ugh, I knew it was stupid to ask..."

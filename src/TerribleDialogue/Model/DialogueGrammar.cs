@@ -85,12 +85,12 @@ namespace Davicro.TerribleDialogue.Model
             from keyword in Parse.String("goto")
             from whiteSpace in Parse.WhiteSpace
             from action in FlowAction
-            from now in ( // Grouped like this to account for the space
+            from @break in ( // Grouped like this to account for the space
                 from w1 in Parse.WhiteSpace
-                from now in Parse.IgnoreCase("now")
-                select now
+                from @break in Parse.IgnoreCase("break")
+                select @break
             ).Optional()
-            select new DialogueStatement.Goto(action, !now.IsDefined);
+            select new DialogueStatement.Goto(action, @break.IsDefined);
 
         //TODO: Optimize this
         private static readonly Parser<KeyValuePair<string, DialogueStatement[]>> SingleChoice =

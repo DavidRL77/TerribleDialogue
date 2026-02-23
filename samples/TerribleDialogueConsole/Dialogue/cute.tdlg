@@ -3,7 +3,7 @@ set default:
     "O-Oh... Hi!" [music="kawaii"]
     "Y-Y-You wanted t-t-to talk to me?! (∩˃o˂∩)♡"
     "I-I hope I'm not bothering you! I-I'm a little bit shy... (⌯˃̶᷄ ﹏ ˂̶᷄⌯)"
-    goto node:1
+    goto node:1 break
 
     node 1:
     "W-Wow, y-you're really muscular and r-really toned..." [music="kawaii"]
@@ -12,7 +12,7 @@ set default:
     "I-I can tell you take care of yourself... (*´∀`*)"
     ""
     "S-SORRY, I DIDN'T MEAN TO STARE! (*´艸`)"
-    goto node:2
+    goto node:2 break
 
     node 2:
     "S-Senpai..." [music="kawaii"]
@@ -20,14 +20,14 @@ set default:
     "I-I also like t-talking to you..."
     "It's really easy to talk to you, senpai~"
     "Please talk to me whenever you feel lonely~"
-    goto node:3
+    goto node:3 break
 
     node 3:
     "✧♡(◕‿◕✿)" [music="kawaii"]
     "(◍＞◡＜◍)⋈。✧♡"
     "( ๑ ❛ ڡ ❛ ๑ )❤"
     "【≽ܫ≼】"
-    goto node:4
+    goto node:4 break
 
     node 4:
     "Senpaiiiiiiii" [music="kawaii"]

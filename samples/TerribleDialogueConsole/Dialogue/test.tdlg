@@ -6,16 +6,16 @@ set default:
     "Black" [color=black]
     "White" [color=white]
     "Cool, that's all the colors I wanted to test."
-    goto node:1
+    goto node:1 break
 
     node 1:
     "Wait I forgot one thing."
     "Cyan" [color=cyan]
-    goto node:2
+    goto node:2 break
 
     node 2:
     "I just wanted to test if the colors reset properly after the dialogue ends."
-    goto set:banter now
+    goto set:banter
 
 set banter:
     >> random
@@ -35,7 +35,7 @@ set banter:
     node 3:
     "Have a terrible day!"
     "I'm just kidding by the way, this was my real, final test."
-    goto random now
+    goto random
 
     node 4:
     "Bye bye!"

@@ -76,6 +76,7 @@ namespace Davicro.TerribleDialogue
                     return;
                 }
 
+                bool yield = statement.IsYielding;
                 switch(statement)
                 {
                     case DialogueStatement.Goto g:
@@ -88,12 +89,19 @@ namespace Davicro.TerribleDialogue
                         break;
                     case DialogueStatement.Choice c:
                         if(!TryResolveChoice())
+                        {
                             state.PendingChoices = c.Choices;
+                        } 
+                        else
+                        {
+                            // Choices that are resolved automatically shouldn't yield
+                            yield = false;
+                        }
                         break;
                 }
 
                 // A yielding statement returns control until prompted to step again
-                if(statement.IsYielding)
+                if(yield)
                     return;
 
             } while(HasNextStatement());

@@ -11,6 +11,7 @@ namespace Davicro.TerribleDialogue.Model
         // Every set starts at node 0 by default
         private static FlowAction DEFAULT_SET_FLOW_ACTION = new FlowAction.NodeAction("0");
 
+        #region PRIMITIVES
         /// <summary>
         /// A special character preceded by a backslash that needs to be escaped
         /// </summary>
@@ -44,6 +45,10 @@ namespace Davicro.TerribleDialogue.Model
             from id in Parse.LetterOrDigit.Or(Parse.Char('_')).AtLeastOnce().Text()
             select id;
 
+        private static readonly Parser<string> FlowActionId =
+        from colon in Parse.Char(':')
+        from id in Id
+        select id;
 
         /// <summary>
         /// Key=Value
@@ -59,10 +64,12 @@ namespace Davicro.TerribleDialogue.Model
         /// </summary>
         private static readonly Parser<Dictionary<string, string>> Attributes =
             (from open in Parse.Char('[')
-            from kvp in KeyValue.DelimitedBy(Parse.Char(','))
-            from close in Parse.Char(']')
-            select new Dictionary<string, string>(kvp)).Token();
+             from kvp in KeyValue.DelimitedBy(Parse.Char(','))
+             from close in Parse.Char(']')
+             select new Dictionary<string, string>(kvp)).Token();
+        #endregion
 
+        #region GRAMMAR
         /// <summary>
         /// Quoted text and a dictionary of tags
         /// </summary>
@@ -137,12 +144,6 @@ namespace Davicro.TerribleDialogue.Model
         private static readonly Parser<FlowAction> FlowAction =
             NodeAction.Or<FlowAction>(SetAction).Or(RandomActionDiscard).Or(PreviousAction).Or(EndAction);
 
-
-        private static readonly Parser<string> FlowActionId =
-            from colon in Parse.Char(':')
-            from id in Id
-            select id;
-
         /// <summary>
         /// A way to specify where a set starts (only set and random action is allowed)
         /// >> action
@@ -200,6 +201,8 @@ namespace Davicro.TerribleDialogue.Model
         public static readonly Parser<DialogueObject> Dialogue =
             from sets in SetDictionary.End()
             select new DialogueObject(sets);
+
+        #endregion
 
     }
 }

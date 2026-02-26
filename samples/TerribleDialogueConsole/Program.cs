@@ -30,6 +30,7 @@ namespace TerribleDialogueConsole
             dialogueManager.OnStart += OnDialogueStart;
             dialogueManager.OnLine += DisplayLine;
             dialogueManager.OnChoices += OnChoices;
+            dialogueManager.OnStop += OnStop;
             dialogueManager.OnEnd += OnDialogueEnd;
             dialogueManager.AddTagProcessor("music", ProcessMusicTag);
             dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
@@ -59,6 +60,11 @@ namespace TerribleDialogueConsole
         private static void OnDialogueStart()
         {
             Console.Clear();
+        }
+
+        private static void OnStop()
+        {
+            dialogueManager.EndDialogue();
         }
 
         private static void OnDialogueEnd()

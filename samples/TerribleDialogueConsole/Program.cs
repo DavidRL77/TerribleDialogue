@@ -125,7 +125,8 @@ namespace TerribleDialogueConsole
         private static Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {
             return new Character(name, new DialogueEngine(DialogueGrammar.Dialogue.Parse(
-                File.ReadAllText(dialogueFile)),
+                File.ReadAllText(
+                    Path.Combine(AppContext.BaseDirectory,dialogueFile))),
                 random.Next),
                 deleteWhenOver);
         }

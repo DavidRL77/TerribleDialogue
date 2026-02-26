@@ -44,7 +44,7 @@ namespace TerribleDialogue
                 choiceIndex = choiceDisplayChars.IndexOf(choice);
             }
 
-            for(int i = displayableChoices.Count - 1; i >= 0; i--)
+            for(int i = displayableChoices.Count - 1; i >= 0 && Console.CursorTop > 0; i--)
             {
                 Console.SetCursorPosition(0, Console.CursorTop - 1);
                 Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");

@@ -1,0 +1,38 @@
+set default:
+    >> node:start
+    node start:
+    "I open my eyes."
+    "I look up at the ceiling looking down on me."
+    "My chest hurts."
+
+    choice
+    * "Get up"
+        "I get up."
+        "After all, what other choice do I really have?"
+    * "Sleep"
+        "I close my eyes."
+        "After all, what point is there in doing anything else?"
+        "I sink into the sheets underneath and feel as the ground swallows me whole."
+        "I feel the walls closing in on me, trapping my body in a lock and crushing my bones down to dust."
+        "I feel my breath shortening as my lungs collapse in on themselves."
+        "Everything crumbles and I die."
+        goto node:start
+    endchoice
+
+    "I roll off my messy bed and flinch as my body hits the ground with a loud thud."
+    "Maybe I should have softened the blow?"
+    "I stand up on my own two feet, bones creaking and cracking as they struggle to keep themselves from crumbling, and I start to walk with no particular destination in mind."
+    "The bathroom seems like a good place to start the day."
+    "Start?"
+    "Is it daytime?"
+    "I look out the living room window as I walk past it down the hallway."
+    
+    choice
+    * "There are no windows"
+    endchoice
+
+    "There are no windows..."
+    "That's right, how could I forget?"
+    "Let me try again..."
+    "I look into the living room for no reason in particular as I walk past it down the hallway."
+    "I find great enjoyment in looking at things for no particular reason..."

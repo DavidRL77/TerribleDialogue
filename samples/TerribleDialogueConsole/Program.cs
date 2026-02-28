@@ -3,30 +3,51 @@ using Davicro.TerribleDialogue.Model;
 using Sprache;
 using System.Text;
 using TerribleDialogue;
+using TerribleDialogueConsole.SoundPlayer;
 
 namespace TerribleDialogueConsole
 {
     internal class Program
     {
+        private readonly Random random;
+        private readonly DialogueManager dialogueManager;
+        private readonly ConsoleDialogueDisplay display;
+        private readonly ISoundPlayer soundPlayer;
+        private readonly List<Character> characters;
 
-        private static readonly Random random = new Random();
-        private static readonly DialogueManager dialogueManager = new DialogueManager();
-        private static readonly ConsoleDialogueDisplay display = new ConsoleDialogueDisplay(dialogueManager);
-        private static ISoundPlayer soundPlayer = new NetCoreAdioPlayer();
-
-        private static Character activeCharacter;
-
-        private static readonly List<Character> characters = new() {
-            CreateCharacter("John", "Dialogue/john.tdlg"),
-            CreateCharacter("Byte", "Dialogue/byte.tdlg"),
-            CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
-            CreateCharacter("Test guy", "Dialogue/test.tdlg"),
-            CreateCharacter("Someone", "Dialogue/someone.tdlg"),
-            CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true)
-        };
+        private Character activeCharacter;
 
         static void Main(string[] args)
         {
+            using(var player = new LibVLCAudioPlayer())
+            {
+                Program p = new Program(player);
+                p.Run();
+            }
+        }
+
+        public Program(ISoundPlayer soundPlayer)
+        {
+            this.soundPlayer = soundPlayer;
+
+            random = new Random();
+            dialogueManager = new DialogueManager();
+            display = new ConsoleDialogueDisplay(dialogueManager);
+
+            characters = new() {
+                CreateCharacter("John", "Dialogue/john.tdlg"),
+                CreateCharacter("Byte", "Dialogue/byte.tdlg"),
+                CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
+                CreateCharacter("Test guy", "Dialogue/test.tdlg"),
+                CreateCharacter("Someone", "Dialogue/someone.tdlg"),
+                CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true)
+            };
+        }
+
+        public void Run()
+        {
+            
+
             Console.OutputEncoding = Encoding.UTF8;
 
             DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/byte.tdlg"));
@@ -59,17 +80,17 @@ namespace TerribleDialogueConsole
             }
         }
 
-        private static void OnDialogueStart()
+        private void OnDialogueStart()
         {
             Console.Clear();
         }
 
-        private static void OnStop()
+        private void OnStop()
         {
             dialogueManager.EndDialogue();
         }
 
-        private static void OnDialogueEnd()
+        private void OnDialogueEnd()
         {
             Console.Clear();
             soundPlayer.Stop();
@@ -80,7 +101,7 @@ namespace TerribleDialogueConsole
             }
         }
 
-        private static void TalkToCharacter(Character c)
+        private void TalkToCharacter(Character c)
         {
             if(c.Engine.IsDialogueOver)
             {
@@ -104,7 +125,7 @@ namespace TerribleDialogueConsole
             activeCharacter = null;
         }
 
-        private static void ProcessMusicTag(string key, string value)
+        private void ProcessMusicTag(string key, string value)
         {
             switch(value)
             {
@@ -112,17 +133,17 @@ namespace TerribleDialogueConsole
                     soundPlayer.Stop();
                     break;
                 default:
-                    soundPlayer.PlayLooping(Path.Join("Music", value + ".wav"));
+                    soundPlayer.PlayLooping(Path.Join(AppContext.BaseDirectory, "Music", value + ".wav"));
                     break;
             }
         }
 
-        private static void ProcessSfxTag(string key, string value)
+        private void ProcessSfxTag(string key, string value)
         {
             soundPlayer.Play(Path.Join("Sfx", value + ".wav"));
         }
 
-        private static Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
+        private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {
             return new Character(name, new DialogueEngine(DialogueGrammar.Dialogue.Parse(
                 File.ReadAllText(
@@ -131,7 +152,7 @@ namespace TerribleDialogueConsole
                 deleteWhenOver);
         }
 
-        private static ConsoleColor ColorByName(string name)
+        private ConsoleColor ColorByName(string name)
         {
             if(Enum.TryParse(name, true, out ConsoleColor color))
             {

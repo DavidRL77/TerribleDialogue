@@ -1,4 +1,4 @@
-namespace TerribleDialogueConsole
+namespace TerribleDialogueConsole.SoundPlayer
 {
     internal interface ISoundPlayer
     {

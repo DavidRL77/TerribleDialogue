@@ -1,6 +1,6 @@
 using NetCoreAudio;
 
-namespace TerribleDialogueConsole
+namespace TerribleDialogueConsole.SoundPlayer
 {
     internal class NetCoreAudioPlayer : ISoundPlayer
     {

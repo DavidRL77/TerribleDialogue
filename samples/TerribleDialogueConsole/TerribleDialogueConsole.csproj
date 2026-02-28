@@ -34,8 +34,4 @@
     <ProjectReference Include="..\..\src\TerribleDialogue\TerribleDialogue.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Music\" />
-  </ItemGroup>
-
 </Project>

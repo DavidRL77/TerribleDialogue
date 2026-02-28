@@ -112,7 +112,7 @@ namespace TerribleDialogueConsole
                     soundPlayer.Stop();
                     break;
                 default:
-                    soundPlayer.Play(Path.Join("Music", value + ".wav"));
+                    soundPlayer.PlayLooping(Path.Join("Music", value + ".wav"));
                     break;
             }
         }

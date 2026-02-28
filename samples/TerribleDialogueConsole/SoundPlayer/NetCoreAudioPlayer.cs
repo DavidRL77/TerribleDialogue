@@ -5,14 +5,17 @@ namespace TerribleDialogueConsole
     internal class NetCoreAdioPlayer : ISoundPlayer
     {
         private Player player = new Player();
+        private string currentSoundPath;
 
         public void Play(string path)
         {
+            currentSoundPath = path;
             player.Play(path);
         }
 
         public void Stop()
         {
+            currentSoundPath = null;
             player.Stop();
         }
 
@@ -20,5 +23,20 @@ namespace TerribleDialogueConsole
         {
             player.SetVolume((byte)value);
         }
+
+        public void PlayLooping(string path)
+        {
+            Play(path);
+
+            player.PlaybackFinished += Player_PlaybackFinished;
+        }
+
+        private void Player_PlaybackFinished(object sender, EventArgs e)
+        {
+            player.PlaybackFinished -= Player_PlaybackFinished;
+
+            PlayLooping(currentSoundPath);
+        }
+
     }
 }

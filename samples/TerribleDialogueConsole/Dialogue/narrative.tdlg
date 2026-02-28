@@ -1,7 +1,7 @@
 set default:
     >> node:start
     node start:
-    "I open my eyes."
+    "I open my eyes." [music=ambient]
     "I look up at the ceiling looking down on me."
     "My chest hurts."
 
@@ -41,7 +41,7 @@ set default:
     "Are eyes organs?"
     "I take that question and store it in my pocket for later."
     "I'm not really in the mood for philosophy right now."
-    ""
+    "..."
     "I find myself standing in the middle of the bathroom with no idea why I came here in the first place."
     "I mean, I remember the events that lead up to this very moment, but the reasoning was quite flimsy in the first place."
     "I came here because I felt it was the right thing to do..."
@@ -55,15 +55,7 @@ set default:
     choice
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
-    * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     endchoice
 
     "I get out of the bathroom."
+    "The light behind me goes out and I suddenly remember I'm terrified of the dark."

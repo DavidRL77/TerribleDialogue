@@ -17,7 +17,7 @@ namespace TerribleDialogueConsole.SoundPlayer
             libVLC = new LibVLC();
             player = new MediaPlayer(libVLC);
 
-            libVLC.Log += (obj, e) => { }; // Disable stderr output
+            //libVLC.Log += (obj, e) => { }; // Disable stderr output
         }
 
         public void Play(string path)

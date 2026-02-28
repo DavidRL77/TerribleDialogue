@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,18 @@ namespace TerribleDialogueConsole.SoundPlayer
 
         public LibVLCAudioPlayer()
         {
-            libVLC = new LibVLC();
+        	string[] args;
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+            && !RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) //LINUX
+            {
+                args = ["--aout=alsa"];
+            } 
+            else
+            {
+                args = [];
+            }
+            libVLC = new LibVLC(args);
             player = new MediaPlayer(libVLC);
 
             //libVLC.Log += (obj, e) => { }; // Disable stderr output

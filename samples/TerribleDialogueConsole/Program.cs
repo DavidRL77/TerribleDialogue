@@ -16,6 +16,7 @@ namespace TerribleDialogueConsole
         private readonly List<Character> characters;
 
         private Character activeCharacter;
+        private string activeMusic = null;
 
         static void Main(string[] args)
         {
@@ -46,8 +47,6 @@ namespace TerribleDialogueConsole
 
         public void Run()
         {
-            
-
             Console.OutputEncoding = Encoding.UTF8;
 
             DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/byte.tdlg"));
@@ -127,15 +126,20 @@ namespace TerribleDialogueConsole
 
         private void ProcessMusicTag(string key, string value)
         {
-            switch(value)
+            if(value == "stop")
             {
-                case "stop":
-                    soundPlayer.Stop();
-                    break;
-                default:
-                    soundPlayer.PlayLooping(Path.Join(AppContext.BaseDirectory, "Music", value + ".wav"));
-                    break;
+                soundPlayer.Stop();
+                activeMusic = null;
+                return;
             }
+
+            if(value == activeMusic)
+            {
+                return;
+            }
+
+            soundPlayer.PlayLooping(Path.Join(AppContext.BaseDirectory, "Music", value + ".wav"));
+            activeMusic = value;
         }
 
         private void ProcessSfxTag(string key, string value)

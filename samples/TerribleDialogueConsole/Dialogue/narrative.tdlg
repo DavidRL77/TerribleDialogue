@@ -57,5 +57,5 @@ set default:
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     endchoice
 
-    "I get out of the bathroom."
+    "I get out of the bathroom." [music=stop]
     "The light behind me goes out and I suddenly remember I'm terrified of the dark."

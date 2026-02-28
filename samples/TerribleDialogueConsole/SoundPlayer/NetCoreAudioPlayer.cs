@@ -2,7 +2,7 @@ using NetCoreAudio;
 
 namespace TerribleDialogueConsole
 {
-    internal class NetCoreAdioPlayer : ISoundPlayer
+    internal class NetCoreAudioPlayer : ISoundPlayer
     {
         private Player player = new Player();
         private string currentSoundPath;

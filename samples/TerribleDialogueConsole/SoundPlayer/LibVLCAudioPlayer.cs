@@ -22,17 +22,21 @@ namespace TerribleDialogueConsole.SoundPlayer
 
         public void Play(string path)
         {
-            Stop();
-            player.Media?.Dispose();
-
-            player.Media = new Media(libVLC, new Uri(path));
-            player.Play();
+            PlayInternal(new Media(libVLC, new Uri(path)));
         }
 
         public void PlayLooping(string path)
         {
-            Play(path);
-            player.Media.AddOption(":input-repeat=999"); // Basically infinite
+            PlayInternal(new Media(libVLC, new Uri(path), ":input-repeat=9999"));
+        }
+
+        private void PlayInternal(Media media)
+        {
+            Stop();
+            player.Media?.Dispose();
+
+            player.Media = media;
+            player.Play();
         }
 
         public void SetVolume(float value)

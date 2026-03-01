@@ -58,4 +58,117 @@ set default:
     endchoice
 
     "I get out of the bathroom." [music=stop]
-    "The light behind me goes out and I suddenly remember I'm terrified of the dark."
+    "The light behind me goes out and I'm suddenly reminded of how terrified I am of the dark."
+    "The light that once threaten to blind me has now left me blinded all the same."
+    "I feel the shadows envelop my body with a freezing graze."
+    "I'm scared."
+    choice
+    * "Run"
+        goto node:run
+    * "Hide"
+        goto node:hide
+    endchoice
+
+    node run:
+    "I burst out in a sprint." [music=scary_fast]
+    "I don't why why I run, but my legs move without reason."
+    "I feel something chasing behind me, just barely stepping on my ankles."
+    "I feel its long, slim arms reaching out toward me just enough to brush against the back of my neck."
+    "I run and my legs feel sore."
+    "I run and my breath runs out."
+    "I feel hazy."
+    "My heart is beating in my throat and in my ears and in my stomach."
+    "I keep running."
+    "Where am I?"
+    "Where am I going?"
+    "How can I keep running even though I've already reached the end?"
+    "Yet I feel it."
+    "It follows closely behind me."
+    "I run." [display=inline]
+    "I run." [display=inline]
+    "I run."
+    "Help me."
+    "Someone please help me."
+    "I can't feel my legs."
+    "I can't breathe."
+    "I can't see."
+    "It's getting closer."
+    "I can feel the blood pooling in my lungs as I run out of oxygen."
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me." [display=inline]
+    "Help me."
+    "The ground beneath me disappears and I fall into the void."
+    goto node:kitchen
+
+    node hide:
+    "I drop myself to the ground and crawl under the first thing I can find." [music=scary_slow]
+    "What am I hiding under?"
+    "What am I hiding from?"
+    "I don't know the answer to those questions, but I feel something, somewhere searching for me."
+    "I can hear its loud thudding steps walking up and down the hallway, slow and methodical."
+    "Searching in every corner of every room, leaving no door unopened."
+    "I hold my breath as I hear its footsteps growing closer."
+    "Louder." [display=inline]
+    "Heavier." [display=inline]
+    "I feel the ground beneath me shake with every thump."
+    "Closer." [display=inline]
+    " And closer." [display=inline]
+    " And closer."
+    "Until it stops."
+    "I can't hear and I can't see."
+    "And my chest contracts and begs me to breathe."
+    "But I feel it right in front of me."
+    "Taunting, playing with its prey."
+    "It knows where I am, even if I don't."
+    "My chest begins to collapse on itself."
+    "My ribs crack as they fracture into my lungs, poking holes into each lobe."
+    "The blood from my lobes spills out into the rest of my organs, coating my insides in a coat of red."
+    "My body dissolves on itself and I die."
+    goto node:kitchen
+
+    node kitchen:
+    "I open my eyes." [music=ambient]
+    "I find myself standing in the middle of the kitchen with no idea why I came here in the first place."
+    "I mean, I remember the events that lead up-" [display=inline]
+    "I actually don't remember the events that lead up to this very moment..."
+    "I take that thought and shove it into my..."
+    "My pockets are full."
+    "Well, some thoughts aren't even worth saving."
+    "I chew the thought up and spit it into the sink."
+    "I chewed it up so it had a better chance of going down the pipes."
+    "I have a tendency to throw things into them and then they get clogged and it's a whole thing."
+    "So chewing something up—or rather, grinding something up in general—so it occupies a smaller physical space is only logical when you want to discard of it, is it not?"
+    "In that same regard, I could have maybe burnt the thought and thrown the ashes out..."
+    "Out somewhere."
+    "Where do you throw ashes anyway?"
+    "AHHH-"
+    "I rip that thought out of my brain along with some of its flesh and burn it on the stove."
+    "I can't be asking any more questions when I have so many in my pockets already."
+    "I am in the kitchen."
+    "For no particular reason—or rather, for a particular reason I cannot remember..."
+    "My memory has been acting up as of late."
+    "I'll pretend I came here for a reason."
+    "Food."
+    "Kitchen has fridge, fridge has food, food is usually consumed by humans to survive."
+    "Therefore, me being a human, the only logical explanation to show up at a kitchen without recollection of ever doing so, is food!"
+    "I love puzzles."
+    "I walk over to the fridge and open its door."
+    "I shiver as the refrigerated air brushes my skin as it jumps out."
+    "It seems the food must have jumped out as well, as there looks to be nothing but a few specs of dust, and-"
+    "Huh."
+    "Now, forgive me for my ignorance—and feel free to correct me if I'm wrong—but using my extensive knowledge of the human condition and their expected behaviors,"
+    "along with the logical steps to categorize what items must be placed within a refrigerated environment,"
+    "I can deduce with a ninety-percent certainty" [display=inline]
+    " that a key" [display=inline]
+    " does not go in the fridge..."
+    "Who put a key in here?"
+    "My pockets are full of thoughts already, and my brain is still sore from tearing at it earlier, so I need an answer now."
+    choice
+    * "Pick it up"
+    * "Leave it"
+    endchoice

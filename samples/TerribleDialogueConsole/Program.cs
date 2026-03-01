@@ -20,8 +20,11 @@ namespace TerribleDialogueConsole
 
         static void Main(string[] args)
         {
+            // Loading libvlc takes a while
+            Console.WriteLine("Loading...");
             using(var player = new LibVLCAudioPlayer())
             {
+                Console.Clear();
                 Program p = new Program(player);
                 p.Run();
             }
@@ -93,6 +96,7 @@ namespace TerribleDialogueConsole
         {
             Console.Clear();
             soundPlayer.Stop();
+            activeMusic = null;
 
             if(activeCharacter.DeleteWhenOver)
             {
@@ -117,8 +121,11 @@ namespace TerribleDialogueConsole
 
             while(dialogueManager.InDialogue)
             {
-                Console.ReadLine();
-                dialogueManager.Next();
+                if(Console.ReadKey(true).Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    dialogueManager.Next();
+                }
             }
 
             activeCharacter = null;

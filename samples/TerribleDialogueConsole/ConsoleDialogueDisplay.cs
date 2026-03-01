@@ -7,7 +7,8 @@ namespace TerribleDialogue
 {
     internal class ConsoleDialogueDisplay
     {
-        private static readonly string choiceDisplayChars = "123456789abcdefghijklmnopqrstuvwxyz";
+        private const string CHOICE_DISPLAY_CHARS = "1234567890abcdefghijklmnopqrstuvwxyz";
+        private const string LINE_BREAK = "<br>";
 
         private readonly DialogueManager dialogueManager;
 
@@ -21,7 +22,10 @@ namespace TerribleDialogue
 
         private void DialogueManager_OnLine(string line)
         {
+            string displayType = dialogueManager.CurrentTags.GetValueOrDefault("display", "newline");
+
             Console.ForegroundColor = ColorByName(dialogueManager.CurrentTags.GetValueOrDefault("color", "white"));
+
             Console.Write(line);
 
             Console.ResetColor();
@@ -30,10 +34,10 @@ namespace TerribleDialogue
         private void DialogueManager_OnChoices(string[] choices)
         {
             // Can't support more than what we display
-            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(choiceDisplayChars.Length, choices.Length));
+            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(CHOICE_DISPLAY_CHARS.Length, choices.Length));
             for(int i = 0; i < displayableChoices.Count; i++)
             {
-                char displayChar = choiceDisplayChars[i];
+                char displayChar = CHOICE_DISPLAY_CHARS[i];
                 Console.WriteLine($"{displayChar}. {choices[i]}");
             }
 
@@ -41,7 +45,7 @@ namespace TerribleDialogue
             while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count)
             {
                 char choice = Console.ReadKey(true).KeyChar;
-                choiceIndex = choiceDisplayChars.IndexOf(choice);
+                choiceIndex = CHOICE_DISPLAY_CHARS.IndexOf(choice);
             }
 
             for(int i = displayableChoices.Count - 1; i >= 0 && Console.CursorTop > 0; i--)

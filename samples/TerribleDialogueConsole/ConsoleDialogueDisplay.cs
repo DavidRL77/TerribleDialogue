@@ -23,12 +23,18 @@ namespace TerribleDialogue
         private void DialogueManager_OnLine(string line)
         {
             string displayType = dialogueManager.CurrentTags.GetValueOrDefault("display", "newline");
+            string[] splitLines = line.Split(LINE_BREAK);
 
             Console.ForegroundColor = ColorByName(dialogueManager.CurrentTags.GetValueOrDefault("color", "white"));
 
-            Console.Write(line);
+            foreach(string linePart in splitLines)
+            {
+                Console.Write(linePart);
+                while(Console.ReadKey(true).Key != ConsoleKey.Enter) { } // Read enter but swallow it
+            }
 
             Console.ResetColor();
+            Console.WriteLine();
         }
 
         private void DialogueManager_OnChoices(string[] choices)

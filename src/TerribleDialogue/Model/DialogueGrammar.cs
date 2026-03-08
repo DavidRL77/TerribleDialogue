@@ -172,7 +172,7 @@ namespace Davicro.TerribleDialogue.Model
         /// A dictionary of nodes mapped by its id
         /// </summary>
         private static readonly Parser<Dictionary<string, DialogueNode>> NodeDictionary =
-            from nodes in Node.AtLeastOnce()
+            from nodes in Node.Many()
             select nodes.ToDictionary(node => node.Id, node => node);
 
         /// <summary>

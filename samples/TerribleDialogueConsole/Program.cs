@@ -121,11 +121,9 @@ namespace TerribleDialogueConsole
 
             while(dialogueManager.InDialogue)
             {
-                if(Console.ReadKey(true).Key == ConsoleKey.Enter)
-                {
-                    Console.WriteLine();
-                    dialogueManager.Next();
-                }
+                // Remember that ConsoleDialogueDisplay handles blocking the input
+                // Should be reworked
+                dialogueManager.Next();
             }
 
             activeCharacter = null;

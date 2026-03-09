@@ -2,7 +2,7 @@ using Sprache;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Davicro.TerribleDialogue.Model
+namespace TerribleDialogue.Model
 {
     // For future reference: ORDER MATTERS! Parsers need to be defined before they're used or they'll be null.
 

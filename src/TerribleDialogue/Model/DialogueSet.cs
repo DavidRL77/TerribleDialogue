@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Davicro.TerribleDialogue.Model
+namespace TerribleDialogue.Model
 {
     public record DialogueSet
     {

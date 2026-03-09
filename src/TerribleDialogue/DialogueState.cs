@@ -1,4 +1,4 @@
-﻿using Davicro.TerribleDialogue.Model;
+﻿using TerribleDialogue.Data;
 using System.Collections.Generic;
 
 namespace TerribleDialogue
@@ -11,6 +11,7 @@ namespace TerribleDialogue
         /// Has dialogue run out or been explicitly ended 
         /// </summary>
         public bool IsDialogueOver { get; internal set; }
+
         /// <summary>
         /// Has a line available to read
         /// </summary>
@@ -23,6 +24,7 @@ namespace TerribleDialogue
         /// The tags of the statement we're currently in
         /// </summary>
         public IReadOnlyDictionary<string, string> CurrentTags { get; internal set; }
+
         public string CurrentSet { get; internal set; }
         public string CurrentNode { get; internal set; }
         /// <summary>

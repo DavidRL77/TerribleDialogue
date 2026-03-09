@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Davicro.TerribleDialogue
+namespace TerribleDialogue
 {
     /// <summary>
     /// Provides an easy way to manage multiple dialogue engines, exposing several useful callbacks.

@@ -1,4 +1,4 @@
-namespace Davicro.TerribleDialogue.Model
+namespace TerribleDialogue.Model
 {
     public record DialogueNode
     {

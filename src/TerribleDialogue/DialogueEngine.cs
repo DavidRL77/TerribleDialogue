@@ -1,9 +1,10 @@
-using Davicro.TerribleDialogue.Model;
+using TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerribleDialogue;
-namespace Davicro.TerribleDialogue
+
+namespace TerribleDialogue
 {
 
     /// <summary>

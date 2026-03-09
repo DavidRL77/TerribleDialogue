@@ -1,5 +1,6 @@
 ﻿using TerribleDialogue.Data;
 using System.Collections.Generic;
+using System;
 
 namespace TerribleDialogue
 {
@@ -11,20 +12,11 @@ namespace TerribleDialogue
         /// Has dialogue run out or been explicitly ended 
         /// </summary>
         public bool IsDialogueOver { get; internal set; }
-
         /// <summary>
-        /// Has a line available to read
+        /// Information about the line we are currently at (null if none)
         /// </summary>
-        public bool HasLine { get; internal set; }
-        /// <summary>
-        /// The text of the statement we're currently in
-        /// </summary>
-        public string CurrentText { get; internal set; }
-        /// <summary>
-        /// The tags of the statement we're currently in
-        /// </summary>
-        public IReadOnlyDictionary<string, string> CurrentTags { get; internal set; }
-
+        public LineData? CurrentLine { get; internal set; }
+        public string[] PendingChoices { get; internal set; } = Array.Empty<string>();
         public string CurrentSet { get; internal set; }
         public string CurrentNode { get; internal set; }
         /// <summary>
@@ -34,9 +26,8 @@ namespace TerribleDialogue
         public string PreviousSet { get; internal set; }
         public string PreviousNode { get; internal set; }
         public HashSet<string> DiscardedNodes { get; internal set; } = new HashSet<string>();
-        public string[] PendingChoices { get; internal set; } = new string[0];
         /// <summary>
-        /// Whenever a choice is hit, use the first element in queue
+        /// Whenever a choice is hit, use the next element in queue
         /// </summary>
         public Queue<int> ChoiceQueue { get; internal set; } = new Queue<int>();
     }

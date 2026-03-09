@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerribleDialogue;
+using TerribleDialogue.Data;
 
 namespace TerribleDialogue
 {
@@ -22,9 +23,8 @@ namespace TerribleDialogue
 
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
-        public bool HasLine => state.HasLine;
-        public string CurrentText => state.CurrentText;
-        public IReadOnlyDictionary<string, string> CurrentTags => state.CurrentTags;
+        public bool HasLine => state.CurrentLine != null;
+        public LineData? CurrentLine => state.CurrentLine;
         public string CurrentSetId => state.CurrentSet;
         public string CurrentNodeId => state.CurrentNode;
         public string[] PendingChoices => state.PendingChoices;
@@ -68,10 +68,8 @@ namespace TerribleDialogue
             do
             {
                 // Reset values
-                state.CurrentText = null;
-                state.CurrentTags = null;
-                state.HasLine = false;
-                state.PendingChoices = new string[0];
+                state.CurrentLine = null;
+                state.PendingChoices = Array.Empty<string>();
 
                 DialogueStatement statement = Advance();
                 if(statement == null)
@@ -87,9 +85,7 @@ namespace TerribleDialogue
                         ProcessFlowAction(g.Action);
                         break;
                     case DialogueStatement.Line l:
-                        state.CurrentText = l.Text;
-                        state.CurrentTags = l.Tags;
-                        state.HasLine = true;
+                        state.CurrentLine = new LineData(l.Text, l.Tags);
                         break;
                     case DialogueStatement.Choice c:
                         if(!TryResolveChoice())

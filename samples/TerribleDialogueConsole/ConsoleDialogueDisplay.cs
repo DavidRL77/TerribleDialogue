@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TerribleDialogue.Data;
 
 namespace TerribleDialogue
 {
@@ -20,12 +21,12 @@ namespace TerribleDialogue
             this.dialogueManager.OnLine += DialogueManager_OnLine;
         }
 
-        private void DialogueManager_OnLine(string line)
+        private void DialogueManager_OnLine(LineData line)
         {
-            string displayType = dialogueManager.CurrentTags.GetValueOrDefault("display", "newline");
-            string[] splitLines = line.Split(LINE_BREAK);
+            string displayType = line.Tags.GetValueOrDefault("display", "newline");
+            string[] splitLines = line.Text.Split(LINE_BREAK);
 
-            Console.ForegroundColor = ColorByName(dialogueManager.CurrentTags.GetValueOrDefault("color", "white"));
+            Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "white"));
 
             foreach(string linePart in splitLines)
             {

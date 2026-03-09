@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TerribleDialogue.Data;
 
 namespace TerribleDialogue
 {
@@ -11,7 +12,6 @@ namespace TerribleDialogue
         public delegate void TagProcessor(string key, string value);
 
         public bool InDialogue => engine != null;
-        public IReadOnlyDictionary<string, string> CurrentTags => engine.CurrentTags;
 
         private DialogueEngine engine;
 
@@ -23,7 +23,7 @@ namespace TerribleDialogue
         /// <summary>
         /// Called when the engine lands on dialogue line
         /// </summary>
-        public event Action<string> OnLine;
+        public event Action<LineData> OnLine;
 
         /// <summary>
         /// Called when the engine lands on a set of choices
@@ -65,9 +65,14 @@ namespace TerribleDialogue
                 return;
             }
 
-            if(!engine.HasLine)
+            if(engine.HasLine)
             {
-                OnStop?.Invoke();
+                foreach(KeyValuePair<string, string> kvp in engine.CurrentLine.Value.Tags)
+                {
+                    CallTagProcessors(kvp.Key, kvp.Value);
+                }
+
+                OnLine?.Invoke(engine.CurrentLine.Value);
                 return;
             }
 
@@ -77,12 +82,8 @@ namespace TerribleDialogue
                 return;
             }
 
-            foreach(KeyValuePair<string, string> kvp in engine.CurrentTags)
-            {
-                CallTagProcessors(kvp.Key, kvp.Value);
-            }
-
-            OnLine?.Invoke(engine.CurrentText);
+            // If engine doesn't have anything of the above, it means we've stopped somewhere.
+            OnStop?.Invoke();
         }
 
         public void AddChoice(int choiceIndex) => engine.AddChoice(choiceIndex);

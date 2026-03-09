@@ -1,4 +1,4 @@
-﻿using Davicro.TerribleDialogue;
+﻿using TerribleDialogue;
 
 namespace TerribleDialogueConsole
 {

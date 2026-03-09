@@ -1,8 +1,7 @@
-﻿using Davicro.TerribleDialogue;
-using Davicro.TerribleDialogue.Model;
+﻿using TerribleDialogue;
+using TerribleDialogue.Model;
 using Sprache;
 using System.Text;
-using TerribleDialogue;
 using TerribleDialogueConsole.SoundPlayer;
 
 namespace TerribleDialogueConsole

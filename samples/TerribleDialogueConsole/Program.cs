@@ -1,7 +1,8 @@
-﻿using TerribleDialogue;
-using TerribleDialogue.Model;
-using Sprache;
+﻿using Sprache;
 using System.Text;
+using System.Threading.Channels;
+using TerribleDialogue;
+using TerribleDialogue.Model;
 using TerribleDialogueConsole.SoundPlayer;
 
 namespace TerribleDialogueConsole
@@ -11,7 +12,7 @@ namespace TerribleDialogueConsole
         private readonly Random random;
         private readonly DialogueManager dialogueManager;
         private readonly ConsoleDialogueDisplay display;
-        private readonly ISoundPlayer soundPlayer;
+        private readonly ISoundPlayer musicPlayer;
         private readonly List<Character> characters;
 
         private Character activeCharacter;
@@ -31,7 +32,7 @@ namespace TerribleDialogueConsole
 
         public Program(ISoundPlayer soundPlayer)
         {
-            this.soundPlayer = soundPlayer;
+            this.musicPlayer = soundPlayer;
 
             random = new Random();
             dialogueManager = new DialogueManager();
@@ -40,8 +41,8 @@ namespace TerribleDialogueConsole
             dialogueManager.OnStart += OnDialogueStart;
             dialogueManager.OnStop += OnStop;
             dialogueManager.OnEnd += OnDialogueEnd;
-            dialogueManager.AddTagProcessor("music", ProcessMusicTag);
-            dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
+            dialogueManager.AddCallHandler("play", PlayCallHandler);
+            dialogueManager.AddCallHandler("stop", StopCallHandler);
             dialogueManager.AddCallHandler("screen", ScreenCallHandler);
 
             characters = new() {
@@ -93,7 +94,7 @@ namespace TerribleDialogueConsole
         private void OnDialogueEnd()
         {
             Console.Clear();
-            soundPlayer.Stop();
+            musicPlayer.Stop();
             activeMusic = null;
 
             if(activeCharacter.DeleteWhenOver && activeCharacter.Engine.IsDialogueOver)
@@ -135,28 +136,50 @@ namespace TerribleDialogueConsole
                 Console.Clear();
         }
 
-        private void ProcessMusicTag(string key, string value)
+        private void PlayCallHandler(string name, object[] args)
         {
-            if(value == "stop")
-            {
-                soundPlayer.Stop();
-                activeMusic = null;
-                return;
-            }
+            string channel = args[0] as string;
+            string audioFile = args[1] as string;
 
-            if(value == activeMusic)
-            {
+            if(channel == null || audioFile == null)
                 return;
-            }
 
-            soundPlayer.PlayLooping(Path.Join(AppContext.BaseDirectory, "Music", value + ".wav"));
-            activeMusic = value;
+            ISoundPlayer soundPlayer = GetSoundPlayer(channel);
+
+            string folder = channel switch
+            {
+                "sfx" => "Sfx",
+                "music" => "Music",
+                _ => null
+            };
+
+            if(soundPlayer == null || musicPlayer == null)
+                return;
+
+            string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile + ".wav");
+            soundPlayer.PlayLooping(filePath);
         }
 
-        private void ProcessSfxTag(string key, string value)
+        private void StopCallHandler(string name, object[] args)
         {
-            soundPlayer.Play(Path.Join("Sfx", value + ".wav"));
+            string channel = args[0] as string;
+            
+            if(channel == null)
+                return;
+
+            ISoundPlayer soundPlayer = GetSoundPlayer(channel);
+            soundPlayer.Stop();
         }
+
+        private ISoundPlayer GetSoundPlayer(string channel) =>
+         channel switch
+         {
+             "sfx" => musicPlayer, // TODO: Change to different player
+             "music" => musicPlayer,
+             _ => null
+         };
+
+
 
         private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {

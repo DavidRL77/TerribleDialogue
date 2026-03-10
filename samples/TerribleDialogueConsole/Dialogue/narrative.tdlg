@@ -5,6 +5,7 @@ set wakeup:
     >> node:start
     node start:
     call screen clear
+    call play music "ambient"
     "I open my eyes." [music=ambient]
     "I look up at the ceiling looking down on me."
     "My chest hurts."
@@ -56,6 +57,8 @@ set wakeup:
     "Time to get on with my day."
     "Day?"
     "Is it daytime?"
+    
+    call stop music
     choice
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 

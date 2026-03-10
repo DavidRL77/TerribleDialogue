@@ -63,7 +63,20 @@ namespace TerribleDialogue.Model
             public Choice(string[] choices, DialogueStatement[][] branches)
             {
                 Choices = choices;
-                this.Branches = branches;
+                Branches = branches;
+            }
+        }
+
+        public sealed record Call : DialogueStatement
+        {
+            public override bool IsYielding => true;
+            public string Name { get; }
+            public object[] Args { get; }
+
+            public Call(string name, object[] args)
+            {
+                Name = name;
+                Args = args;
             }
         }
     }

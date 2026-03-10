@@ -16,6 +16,7 @@ namespace TerribleDialogue
         /// Information about the line we are currently at (null if none)
         /// </summary>
         public LineData? CurrentLine { get; internal set; }
+        public CallData? CurrentCall { get; internal set; }
         public string[] PendingChoices { get; internal set; } = Array.Empty<string>();
         public string CurrentSet { get; internal set; }
         public string CurrentNode { get; internal set; }

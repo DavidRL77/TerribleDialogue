@@ -10,6 +10,7 @@ namespace TerribleDialogue
     public class DialogueManager
     {
         public delegate void TagProcessor(string key, string value);
+        public delegate void CallHandler(string name, object[] args);
 
         public bool InDialogue => engine != null;
 
@@ -41,7 +42,8 @@ namespace TerribleDialogue
         /// </summary>
         public event Action OnEnd;
 
-        private Dictionary<string, List<TagProcessor>> tagProcessors = new Dictionary<string, List<TagProcessor>>();
+        private MappedCallbacks<string, TagProcessor> tagProcessors = new MappedCallbacks<string, TagProcessor>();
+        private MappedCallbacks<string, CallHandler> callHandlers = new MappedCallbacks<string, CallHandler>();
 
         public void BeginDialogue(DialogueEngine engine)
         {
@@ -58,6 +60,14 @@ namespace TerribleDialogue
         {
             engine.Step();
 
+            if(engine.HasCall)
+            {
+                CallData callData = engine.CurrentCall.Value;
+                callHandlers.Invoke(callData.Name, c => c.Invoke(callData.Name, callData.Args));
+                Next(); // Don't stop at calls since those should be handled at once
+                return;
+            }
+
             // When the engine has choices, it won't have a line, so check the choices first
             if(engine.PendingChoices.Length > 0)
             {
@@ -69,7 +79,7 @@ namespace TerribleDialogue
             {
                 foreach(KeyValuePair<string, string> kvp in engine.CurrentLine.Value.Tags)
                 {
-                    CallTagProcessors(kvp.Key, kvp.Value);
+                    tagProcessors.Invoke(kvp.Key, c => c.Invoke(kvp.Key, kvp.Value));
                 }
 
                 OnLine?.Invoke(engine.CurrentLine.Value);
@@ -97,37 +107,12 @@ namespace TerribleDialogue
             OnEnd?.Invoke();
         }
 
-        public void AddTagProcessor(string tagType, TagProcessor tagProcessor)
-        {
-            if(!tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
-            {
-                processors = new List<TagProcessor>();
-                tagProcessors[tagType] = processors;
-            }
+        public void AddTagProcessor(string tagType, TagProcessor tagProcessor) => tagProcessors.AddCallback(tagType, tagProcessor);
 
-            processors.Add(tagProcessor);
-        }
+        public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor) => tagProcessors.RemoveCallback(tagType, tagProcessor);
 
-        public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor)
-        {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
-            {
-                if(processors.Remove(tagProcessor) && processors.Count == 0)
-                {
-                    tagProcessors.Remove(tagType);
-                }
-            }
-        }
+        public void AddCallHandler(string name, CallHandler callHandler) => callHandlers.AddCallback(name, callHandler);
 
-        private void CallTagProcessors(string tagType, string value)
-        {
-            if(tagProcessors.TryGetValue(tagType, out List<TagProcessor> processors))
-            {
-                foreach(TagProcessor tagProcessor in processors)
-                {
-                    tagProcessor.Invoke(tagType, value);
-                }
-            }
-        }
+        public void RemoveCallHandler(string name, CallHandler callHandler) => callHandlers.RemoveCallback(name, callHandler);
     }
 }

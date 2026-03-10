@@ -50,6 +50,24 @@ namespace TerribleDialogue.Model
         from id in Id
         select id;
 
+        private static readonly Parser<int> Integer =
+            from num in Parse.Number
+            select int.Parse(num);
+
+        private static readonly Parser<float> Float =
+            from num in Parse.DecimalInvariant
+            select float.Parse(num);
+
+        /// <summary>
+        /// Value of type string, int or float downcast as an object. <br></br>
+        /// String can be quoted text or an id.
+        /// </summary>
+        private static readonly Parser<object> PrimitiveValue =
+            QuotedText.Select(v => (object)v)
+            .Or(Id.Select(v => (object)v))
+            .Or(Integer.Select(v => (object)v))
+            .Or(Float.Select(v => (object)v));
+
         /// <summary>
         /// Key=Value
         /// </summary>
@@ -106,11 +124,24 @@ namespace TerribleDialogue.Model
             select new DialogueStatement.Choice(choices.Select(kvp => kvp.Key).ToArray(), choices.Select(kvp => kvp.Value).ToArray());
 
         /// <summary>
+        /// <c> <![CDATA[call <name> [<args>...]]]> </c>
+        /// </summary>
+        private static readonly Parser<DialogueStatement.Call> CallStatement =
+            from keyword in Parse.String("call")
+            from w1 in Parse.WhiteSpace
+            from name in Id
+            from args in
+                (from w2 in Parse.WhiteSpace
+                 from args in PrimitiveValue.DelimitedBy(Parse.Char(' '))
+                 select args).Optional()
+            select new DialogueStatement.Call(name, args.GetOrDefault().ToArray());
+
+        /// <summary>
         /// General statement (line, goto, if...)
         /// </summary>
         private static readonly Parser<DialogueStatement> Statement =
             from leading in Parse.WhiteSpace.Many()
-            from statement in LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement)
+            from statement in LineStatement.Or<DialogueStatement>(GotoStatement).Or(ChoiceStatement).Or(CallStatement)
             from trailing in Parse.WhiteSpace.Many()
             select statement;
 

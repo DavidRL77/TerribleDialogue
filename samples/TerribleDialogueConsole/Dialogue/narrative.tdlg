@@ -4,6 +4,7 @@ set default:
 set wakeup:
     >> node:start
     node start:
+    call screen clear
     "I open my eyes." [music=ambient]
     "I look up at the ceiling looking down on me."
     "My chest hurts."

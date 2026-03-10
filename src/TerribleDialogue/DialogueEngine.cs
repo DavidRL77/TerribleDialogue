@@ -24,7 +24,9 @@ namespace TerribleDialogue
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
         public bool HasLine => state.CurrentLine != null;
+        public bool HasCall => state.CurrentCall != null;
         public LineData? CurrentLine => state.CurrentLine;
+        public CallData? CurrentCall => state.CurrentCall;
         public string CurrentSetId => state.CurrentSet;
         public string CurrentNodeId => state.CurrentNode;
         public string[] PendingChoices => state.PendingChoices;
@@ -69,6 +71,7 @@ namespace TerribleDialogue
             {
                 // Reset values
                 state.CurrentLine = null;
+                state.CurrentCall = null;
                 state.PendingChoices = Array.Empty<string>();
 
                 DialogueStatement statement = Advance();
@@ -97,6 +100,9 @@ namespace TerribleDialogue
                             // Choices that are resolved automatically shouldn't yield
                             yield = false;
                         }
+                        break;
+                    case DialogueStatement.Call c:
+                        state.CurrentCall = new CallData(c.Name, c.Args);
                         break;
                 }
 

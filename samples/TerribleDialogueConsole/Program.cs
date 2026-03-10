@@ -37,6 +37,13 @@ namespace TerribleDialogueConsole
             dialogueManager = new DialogueManager();
             display = new ConsoleDialogueDisplay(dialogueManager);
 
+            dialogueManager.OnStart += OnDialogueStart;
+            dialogueManager.OnStop += OnStop;
+            dialogueManager.OnEnd += OnDialogueEnd;
+            dialogueManager.AddTagProcessor("music", ProcessMusicTag);
+            dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
+            dialogueManager.AddCallHandler("screen", ScreenCallHandler);
+
             characters = new() {
                 CreateCharacter("John", "Dialogue/john.tdlg"),
                 CreateCharacter("Byte", "Dialogue/byte.tdlg"),
@@ -50,14 +57,6 @@ namespace TerribleDialogueConsole
         public void Run()
         {
             Console.OutputEncoding = Encoding.UTF8;
-
-            DialogueGrammar.Dialogue.Parse(File.ReadAllText("Dialogue/byte.tdlg"));
-
-            dialogueManager.OnStart += OnDialogueStart;
-            dialogueManager.OnStop += OnStop;
-            dialogueManager.OnEnd += OnDialogueEnd;
-            dialogueManager.AddTagProcessor("music", ProcessMusicTag);
-            dialogueManager.AddTagProcessor("sfx", ProcessSfxTag);
 
             while(true)
             {
@@ -97,7 +96,7 @@ namespace TerribleDialogueConsole
             soundPlayer.Stop();
             activeMusic = null;
 
-            if(activeCharacter.DeleteWhenOver)
+            if(activeCharacter.DeleteWhenOver && activeCharacter.Engine.IsDialogueOver)
             {
                 characters.Remove(activeCharacter);
             }
@@ -126,6 +125,14 @@ namespace TerribleDialogueConsole
             }
 
             activeCharacter = null;
+        }
+
+        private void ScreenCallHandler(string name, object[] args)
+        {
+            string action = args[0] as string;
+
+            if(action == "clear")
+                Console.Clear();
         }
 
         private void ProcessMusicTag(string key, string value)

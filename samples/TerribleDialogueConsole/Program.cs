@@ -153,11 +153,17 @@ namespace TerribleDialogueConsole
                 _ => null
             };
 
+
             if(soundPlayer == null || musicPlayer == null)
                 return;
 
+            bool loop = channel == "music";
             string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile + ".wav");
-            soundPlayer.PlayLooping(filePath);
+
+            if(loop)
+                soundPlayer.PlayLooping(filePath);
+            else
+                soundPlayer.Play(filePath);
         }
 
         private void StopCallHandler(string name, object[] args)

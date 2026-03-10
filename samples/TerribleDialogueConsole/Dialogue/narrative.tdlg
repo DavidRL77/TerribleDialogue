@@ -5,8 +5,8 @@ set wakeup:
     >> node:start
     node start:
     call screen clear
-    call play music "ambient"
-    "I open my eyes." [music=ambient]
+    call play music ambient
+    "I open my eyes."
     "I look up at the ceiling looking down on me."
     "My chest hurts."
 
@@ -57,14 +57,14 @@ set wakeup:
     "Time to get on with my day."
     "Day?"
     "Is it daytime?"
-    
+
     call stop music
     choice
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     endchoice
 
-    "I get out of the bathroom." [music=stop]
+    "I get out of the bathroom."
     "The light behind me goes out and I'm suddenly reminded of how terrified I am of the dark."
     "The light that once threatened to blind me has now left me blinded all the same."
     "I feel the shadows envelop my body with a freezing graze."
@@ -77,7 +77,8 @@ set wakeup:
     endchoice
 
     node run:
-    "I burst out into a sprint." [music=scary_fast]
+    call play music scary_fast
+    "I burst out into a sprint."
     "I don't know why I run, but my legs move without reason."
     "I feel something chasing behind me, just barely stepping on my ankles."
     "I feel its long, slim arms reaching out toward me just enough to brush against the back of my neck."
@@ -105,7 +106,8 @@ set wakeup:
     goto node:kitchen
 
     node hide:
-    "I drop myself to the ground and crawl under the first thing I can find." [music=scary_slow]
+    call play music scary_slow
+    "I drop myself to the ground and crawl under the first thing I can find."
     "What am I hiding under?"
     "What am I hiding from?"
     "I don't know the answer to those questions, but I feel something, somewhere, searching for me."
@@ -128,7 +130,9 @@ set wakeup:
     goto node:kitchen
 
     node kitchen:
-    "I open my eyes." [music=ambient]
+    call screen clear
+    call play music ambient
+    "I open my eyes."
     "I find myself standing in the middle of the kitchen with no idea why I came here in the first place."
     "I mean, I remember the events that lead up-"
     "I actually don't remember the events that lead up to this very moment..."
@@ -192,6 +196,7 @@ set wakeup:
     "It seems I still have some unanswered questions..."
     "How unfortunate."
     "It looks like I won't be getting any sleep tonight."
-    "I close my eyes." [music=stop]
+    call stop music
+    "I close my eyes."
     "After all, what point is there in doing anything else?"
     goto node:start

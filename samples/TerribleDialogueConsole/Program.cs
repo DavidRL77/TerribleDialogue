@@ -21,7 +21,7 @@ namespace TerribleDialogueConsole
         static void Main(string[] args)
         {
             // Loading libvlc takes a while
-            Console.WriteLine("Loading...");
+            Console.WriteLine("Loading LibVLC...");
             using(var player = new LibVLCAudioPlayer())
             {
                 Console.Clear();

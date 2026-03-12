@@ -1,12 +1,14 @@
 set default:
     node 0:
-    "O-Oh... Hi!" [music="kawaii"]
+    call play music kawaii
+    "O-Oh... Hi!"
     "Y-Y-You wanted t-t-to talk to me?! (∩˃o˂∩)♡"
     "I-I hope I'm not bothering you! I-I'm a little bit shy... (⌯˃̶᷄ ﹏ ˂̶᷄⌯)"
     goto node:1 break
 
     node 1:
-    "W-Wow, y-you're really muscular and r-really toned..." [music="kawaii"]
+    call play music kawaii
+    "W-Wow, y-you're really muscular and r-really toned..."
     "A-And your skin looks sooo soft..."
     "A-Also y-your hair is all fluffy and smells all nice~"
     "I-I can tell you take care of yourself... (*´∀`*)"
@@ -15,7 +17,8 @@ set default:
     goto node:2 break
 
     node 2:
-    "S-Senpai..." [music="kawaii"]
+    call play music kawaii
+    "S-Senpai..."
     "Y-You really like talking to me, don't you? (◍＞◡＜◍)⋈。✧♡"
     "I-I also like t-talking to you..."
     "It's really easy to talk to you, senpai~"
@@ -23,14 +26,16 @@ set default:
     goto node:3 break
 
     node 3:
-    "✧♡(◕‿◕✿)" [music="kawaii"]
+    call play music kawaii
+    "✧♡(◕‿◕✿)"
     "(◍＞◡＜◍)⋈。✧♡"
     "( ๑ ❛ ڡ ❛ ๑ )❤"
     "【≽ܫ≼】"
     goto node:4 break
 
     node 4:
-    "Senpaiiiiiiii" [music="kawaii"]
+    call play music kawaii
+    "Senpaiiiiiiii"
     "Daisukiiii i love youuuuuu"
     "Sen sen senpai~"
     "Sen sen senPAIIII!!!~"
@@ -38,5 +43,6 @@ set default:
     "Hehehe did u like my little kiss, senpai~"
     "Chuu chuu chuu chuu~"
     "SENPAIIIIII~"
-    "Okay I think that's enough." [music="stop"]
+    call stop music
+    "Okay I think that's enough."
     goto END

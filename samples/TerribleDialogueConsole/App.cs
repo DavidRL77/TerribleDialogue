@@ -2,18 +2,21 @@
 using System.Text;
 using System.Threading.Channels;
 using TerribleDialogue;
+using TerribleDialogue.Data;
 using TerribleDialogue.Model;
 using TerribleDialogueConsole.SoundPlayer;
+using TerribleDialogueConsole.View;
 
 namespace TerribleDialogueConsole
 {
     internal class App
     {
-        private readonly Random random;
-        private readonly DialogueManager dialogueManager;
-        private readonly ConsoleDialogueDisplay display;
         private readonly ISoundPlayer musicPlayer;
         private readonly ISoundPlayer sfxPlayer;
+        private readonly IDialogueView view;
+
+        private readonly Random random;
+        private readonly DialogueManager dialogueManager;
         private readonly List<Character> characters;
 
         private Character activeCharacter;
@@ -23,11 +26,13 @@ namespace TerribleDialogueConsole
         {
             this.musicPlayer = musicPlayer;
             this.sfxPlayer = sfxPlayer;
+            this.view = new ConsoleDialogueView();
 
             random = new Random();
             dialogueManager = new DialogueManager();
-            display = new ConsoleDialogueDisplay(dialogueManager);
 
+            dialogueManager.OnLine += DialogueManager_OnLine;
+            dialogueManager.OnChoices += DialogueManager_OnChoices;
             dialogueManager.OnStart += OnDialogueStart;
             dialogueManager.OnStop += OnStop;
             dialogueManager.OnEnd += OnDialogueEnd;
@@ -43,6 +48,18 @@ namespace TerribleDialogueConsole
                 CreateCharacter("Someone", "Dialogue/someone.tdlg"),
                 CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true)
             };
+        }
+
+        private void DialogueManager_OnLine(LineData lineData)
+        {
+            view.DisplayLine(lineData);
+        }
+
+        private void DialogueManager_OnChoices(string[] choices)
+        {
+            int choice = view.DisplayChoices(choices);
+            dialogueManager.AddChoice(choice);
+            dialogueManager.Next();
         }
 
         public void Run()
@@ -111,8 +128,6 @@ namespace TerribleDialogueConsole
 
             while(dialogueManager.InDialogue)
             {
-                // Remember that ConsoleDialogueDisplay handles blocking the input
-                // Should be reworked
                 dialogueManager.Next();
             }
 

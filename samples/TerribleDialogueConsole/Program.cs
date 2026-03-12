@@ -13,9 +13,10 @@ namespace TerribleDialogueConsole
         {
             // Loading libvlc takes a while
             Console.WriteLine("Loading LibVLC...");
-            using(var player = new LibVLCAudioPlayer())
+            using(var musicPlayer = new LibVLCAudioPlayer())
+            using(var sfxPlayer = new LibVLCAudioPlayer())
             {
-                App p = new App(player);
+                App p = new App(musicPlayer, sfxPlayer);
                 p.Run();
             }
         }

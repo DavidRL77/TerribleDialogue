@@ -13,14 +13,16 @@ namespace TerribleDialogueConsole
         private readonly DialogueManager dialogueManager;
         private readonly ConsoleDialogueDisplay display;
         private readonly ISoundPlayer musicPlayer;
+        private readonly ISoundPlayer sfxPlayer;
         private readonly List<Character> characters;
 
         private Character activeCharacter;
         private string activeMusic = null;
 
-        public App(ISoundPlayer soundPlayer)
+        public App(ISoundPlayer musicPlayer, ISoundPlayer sfxPlayer)
         {
-            this.musicPlayer = soundPlayer;
+            this.musicPlayer = musicPlayer;
+            this.sfxPlayer = sfxPlayer;
 
             random = new Random();
             dialogueManager = new DialogueManager();
@@ -140,7 +142,7 @@ namespace TerribleDialogueConsole
             {
                 case "sfx":
                     folder = "Sfx";
-                    soundPlayer = musicPlayer;
+                    soundPlayer = sfxPlayer;
                     loop = false;
                     break;
                 case "music":
@@ -170,7 +172,7 @@ namespace TerribleDialogueConsole
 
             ISoundPlayer soundPlayer = channel switch
             {
-                "sfx" => musicPlayer, // TODO: Change to different player
+                "sfx" => sfxPlayer,
                 "music" => musicPlayer,
                 _ => null
             };

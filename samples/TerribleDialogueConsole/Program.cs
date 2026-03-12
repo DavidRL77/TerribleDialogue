@@ -15,7 +15,6 @@ namespace TerribleDialogueConsole
             Console.WriteLine("Loading LibVLC...");
             using(var player = new LibVLCAudioPlayer())
             {
-                Console.Clear();
                 App p = new App(player);
                 p.Run();
             }

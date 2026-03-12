@@ -45,6 +45,7 @@ namespace TerribleDialogueConsole
 
         public void Run()
         {
+            Console.Clear();
             Console.OutputEncoding = Encoding.UTF8;
 
             while(true)

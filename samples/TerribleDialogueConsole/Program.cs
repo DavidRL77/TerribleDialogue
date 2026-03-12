@@ -144,20 +144,26 @@ namespace TerribleDialogueConsole
             if(channel == null || audioFile == null)
                 return;
 
-            ISoundPlayer soundPlayer = GetSoundPlayer(channel);
-
-            string folder = channel switch
+            ISoundPlayer soundPlayer;
+            bool loop;
+            string folder;
+            switch(channel)
             {
-                "sfx" => "Sfx",
-                "music" => "Music",
-                _ => null
-            };
+                case "sfx":
+                    folder = "Sfx";
+                    soundPlayer = musicPlayer;
+                    loop = false;
+                    break;
+                case "music":
+                    folder = "Music";
+                    soundPlayer = musicPlayer;
+                    loop = true;
+                    break;
+                default:
+                    return;
+            }
 
 
-            if(soundPlayer == null || musicPlayer == null)
-                return;
-
-            bool loop = channel == "music";
             string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile + ".wav");
 
             if(loop)
@@ -173,19 +179,14 @@ namespace TerribleDialogueConsole
             if(channel == null)
                 return;
 
-            ISoundPlayer soundPlayer = GetSoundPlayer(channel);
+            ISoundPlayer soundPlayer = channel switch
+            {
+                "sfx" => musicPlayer, // TODO: Change to different player
+                "music" => musicPlayer,
+                _ => null
+            };
             soundPlayer.Stop();
         }
-
-        private ISoundPlayer GetSoundPlayer(string channel) =>
-         channel switch
-         {
-             "sfx" => musicPlayer, // TODO: Change to different player
-             "music" => musicPlayer,
-             _ => null
-         };
-
-
 
         private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {
@@ -194,17 +195,6 @@ namespace TerribleDialogueConsole
                     Path.Combine(AppContext.BaseDirectory,dialogueFile))),
                 random.Next),
                 deleteWhenOver);
-        }
-
-        private ConsoleColor ColorByName(string name)
-        {
-            if(Enum.TryParse(name, true, out ConsoleColor color))
-            {
-                return color;
-            } else
-            {
-                return ConsoleColor.White;
-            }
         }
 
     }

@@ -5,7 +5,7 @@ set wakeup:
     >> node:start
     node start:
     call screen clear
-    call play music ambient
+    call play music milk
     "I open my eyes."
     "I look up at the ceiling looking down on me."
     "My chest hurts."
@@ -131,7 +131,7 @@ set wakeup:
 
     node kitchen:
     call screen clear
-    call play music ambient
+    call play music milk
     "I open my eyes."
     "I find myself standing in the middle of the kitchen with no idea why I came here in the first place."
     "I mean, I remember the events that lead up-"
@@ -166,10 +166,13 @@ set wakeup:
     choice
     * "Pick it up"
         "I extend my hand into the chilly box of refrigeration."
-        "A chilly air envelops my fingers, threatening to snap them off if I linger for too long."
+        "A cool air envelops my fingers, threatening to snap them off if I linger for too long."
         "I quickly snatch the key off the bottom shelf and shut the door with a soft thud."
         "The key feels oddly warm in my hand..."
-        ""
+        "It looks old and rusted, stained with years of oxidation and unnaturally bent out of shape."
+        "This doesn't belong here."
+        "I need to search for the answer as soon as I can."
+        goto set:search
     * "Leave it"
         "I slam the refrigerator door shut."
         "My hands are shaking."
@@ -200,3 +203,25 @@ set wakeup:
     "I close my eyes."
     "After all, what point is there in doing anything else?"
     goto node:start
+
+
+set search:
+    >> node:options
+    node options:
+    call screen clear
+    choice
+    * "Kitchen"
+        goto node:kitchen
+    * "Living room"
+        goto node:livingroom
+    * "Hallway"
+        goto node:hallway
+    * "Bedroom"
+        goto node:bathroom
+    * "Entrance"
+        goto node:entrance
+    endchoice
+
+    node kitchen:
+    "Of course, the most logical place to find the answer to something, is the very place you found it in."
+    ""

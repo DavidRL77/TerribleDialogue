@@ -10,7 +10,7 @@ namespace TerribleDialogue
     public class DialogueManager
     {
         public delegate void TagProcessor(string key, string value);
-        public delegate void CallHandler(string name, object[] args);
+        public delegate void CallHandler(CallData callData);
 
         public bool InDialogue => engine != null;
 
@@ -63,7 +63,7 @@ namespace TerribleDialogue
             if(engine.HasCall)
             {
                 CallData callData = engine.CurrentCall.Value;
-                callHandlers.Invoke(callData.Name, c => c.Invoke(callData.Name, callData.Args));
+                callHandlers.Invoke(callData.Name, c => c.Invoke(callData));
                 Next(); // Don't stop at calls since those should be handled at once
                 return;
             }

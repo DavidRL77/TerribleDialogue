@@ -15,6 +15,7 @@ namespace TerribleDialogue
         public void DisplayLine(LineData line)
         {
             string displayType = line.Tags.GetValueOrDefault("display", "newline");
+            string block = line.Tags.GetValueOrDefault("block", "yes");
             string[] splitLines = line.Text.Split(LINE_BREAK);
 
             Console.ForegroundColor = ColorByName(line.Tags.GetValueOrDefault("color", "white"));
@@ -22,11 +23,13 @@ namespace TerribleDialogue
             foreach(string linePart in splitLines)
             {
                 Console.Write(linePart);
-                while(Console.ReadKey(true).Key != ConsoleKey.Enter) { } // Read enter but swallow it
+                while(block == "yes" && Console.ReadKey(true).Key != ConsoleKey.Enter) { } // Read enter but swallow it
             }
 
             Console.ResetColor();
-            Console.WriteLine();
+            
+            if(displayType == "newline")
+                Console.WriteLine();
         }
 
         public int DisplayChoices(string[] choices)

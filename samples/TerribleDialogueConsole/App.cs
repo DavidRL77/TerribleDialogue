@@ -39,6 +39,7 @@ namespace TerribleDialogueConsole
             dialogueManager.AddCallHandler("play", PlayCallHandler);
             dialogueManager.AddCallHandler("stop", StopCallHandler);
             dialogueManager.AddCallHandler("screen", ScreenCallHandler);
+            dialogueManager.AddCallHandler("wait", WaitCallHandler);
 
             characters = new() {
                 CreateCharacter("John", "Dialogue/john.tdlg"),
@@ -124,6 +125,7 @@ namespace TerribleDialogueConsole
 
             activeCharacter = c;
 
+            c.Engine.SetNode("kitchen");
             dialogueManager.BeginDialogue(c.Engine);
 
             while(dialogueManager.InDialogue)
@@ -134,18 +136,18 @@ namespace TerribleDialogueConsole
             activeCharacter = null;
         }
 
-        private void ScreenCallHandler(string name, object[] args)
+        private void ScreenCallHandler(CallData callData)
         {
-            string action = args[0] as string;
+            string action = callData.Args.Get<string>(0);
 
             if(action == "clear")
                 Console.Clear();
         }
 
-        private void PlayCallHandler(string name, object[] args)
+        private void PlayCallHandler(CallData callData)
         {
-            string channel = args[0] as string;
-            string audioFile = args[1] as string;
+            string channel = callData.Args.GetOrDefault<string>(0);
+            string audioFile = callData.Args.GetOrDefault<string>(1);
 
             if(channel == null || audioFile == null)
                 return;
@@ -178,9 +180,9 @@ namespace TerribleDialogueConsole
                 soundPlayer.Play(filePath);
         }
 
-        private void StopCallHandler(string name, object[] args)
+        private void StopCallHandler(CallData callData)
         {
-            string channel = args[0] as string;
+            string channel = callData.Args.GetOrDefault<string>(0);
             
             if(channel == null)
                 return;
@@ -192,6 +194,12 @@ namespace TerribleDialogueConsole
                 _ => null
             };
             soundPlayer.Stop();
+        }
+
+        private void WaitCallHandler(CallData callData)
+        {
+            float seconds = callData.Args.GetOrDefault<float>(0);
+            Thread.Sleep((int)(seconds*1000));
         }
 
         private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)

@@ -209,6 +209,7 @@ set search:
     >> node:options
     node options:
     call screen clear
+    "Answers..." [block=no]
     choice
     * "Kitchen"
         goto node:kitchen
@@ -223,5 +224,28 @@ set search:
     endchoice
 
     node kitchen:
-    "Of course, the most logical place to find the answer to something, is the very place you found it in."
-    ""
+    "Of course, the most logical place to find an answer is where the very question was posed."
+    "My eyes saccadically jump between various objects within the kitchen."
+    "A knife thrown haphazardly on the counter."
+    "A shard of glass tucked away in a corner."
+    "A window." [block=no,display=inline]
+    call wait 0.2
+    call play sfx static
+    "\rA wall..." [display=inline]
+    "\rA wall that seems oddly unbelonging..." [display=inline]
+    "\rA wall that beckons me to come closer..."
+    "I take a step."
+    "I look out the window" [block=no,display=inline]
+    call wait 0.2
+    call play sfx static
+    "\rI look at the wall..."
+    "It does not speak to me, since it is a wall."
+    "It does not look at me, since it is a wall."
+    "It does not exist, since it is a wall."
+    "There is nothing here but a wall."
+    "I clutch the key in my hand until it bleeds."
+    "I need to keep looking."
+    goto node:options
+
+    node livingroom:
+    "AAA"

@@ -7,9 +7,9 @@ namespace TerribleDialogue.Data
     public readonly struct CallData
     {
         public string Name { get; }
-        public object[] Args { get; }
+        public ArgParser Args { get; }
 
-        public CallData(string name, object[] args)
+        public CallData(string name, ArgParser args)
         {
             Name = name;
             Args = args;

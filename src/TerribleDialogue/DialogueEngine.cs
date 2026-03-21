@@ -102,7 +102,7 @@ namespace TerribleDialogue
                         }
                         break;
                     case DialogueStatement.Call c:
-                        state.CurrentCall = new CallData(c.Name, c.Args);
+                        state.CurrentCall = new CallData(c.Name, new ArgParser(c.Args));
                         break;
                 }
 

@@ -62,11 +62,12 @@ namespace TerribleDialogue.Model
         /// Value of type string, int or float downcast as an object. <br></br>
         /// String can be quoted text or an id.
         /// </summary>
+        // Order matters! More specific parsers need to go first so they fail properly and not just parse part of the input.
         private static readonly Parser<object> PrimitiveValue =
             QuotedText.Select(v => (object)v)
-            .Or(Id.Select(v => (object)v))
+            .Or(Float.Select(v => (object)v))
             .Or(Integer.Select(v => (object)v))
-            .Or(Float.Select(v => (object)v));
+            .Or(Id.Select(v => (object)v));
 
         /// <summary>
         /// Key=Value

@@ -1,6 +1,6 @@
 ﻿namespace TerribleDialogue
 {
-    internal readonly struct Pointer
+    public readonly struct Pointer
     {
         public static Pointer BranchStart(int branch) => new Pointer(-1, branch);
 

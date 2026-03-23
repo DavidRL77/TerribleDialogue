@@ -21,10 +21,6 @@ namespace TerribleDialogue
         // Pointer at the root of a dialogue tree, branch 0, statement 0
         private static Pointer RootPointer = Pointer.BranchStart(0);
 
-        /// <summary>
-        /// The current state of the engine. Public for serialization purposes, should not be modified directly.
-        /// </summary>
-        public DialogueState State => state;
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
         public bool HasLine => state.CurrentLine != null;
@@ -48,11 +44,6 @@ namespace TerribleDialogue
             this.dialogueObject = obj;
             this.randProvider = randProvider;
             SetSet(startSet);
-        }
-
-        public void LoadState(DialogueState state)
-        {
-            this.state = state;
         }
 
         private bool HasNextStatement()
@@ -281,7 +272,7 @@ namespace TerribleDialogue
 
         public void EndDialogue()
         {
-            LoadState(DialogueState.END_STATE);
+            this.state = DialogueState.END_STATE;
         }
     }
 }

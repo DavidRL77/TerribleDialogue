@@ -4,7 +4,7 @@ using System;
 
 namespace TerribleDialogue
 {
-    public sealed class DialogueState
+    internal sealed class DialogueState
     {
         public static readonly DialogueState END_STATE = new DialogueState() { IsDialogueOver = true };
 

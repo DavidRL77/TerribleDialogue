@@ -125,7 +125,6 @@ namespace TerribleDialogueConsole
 
             activeCharacter = c;
 
-            c.Engine.SetNode("kitchen");
             dialogueManager.BeginDialogue(c.Engine);
 
             while(dialogueManager.InDialogue)
@@ -210,6 +209,5 @@ namespace TerribleDialogueConsole
                 random.Next),
                 deleteWhenOver);
         }
-
     }
 }

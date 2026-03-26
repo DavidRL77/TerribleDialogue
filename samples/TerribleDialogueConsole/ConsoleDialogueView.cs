@@ -34,6 +34,7 @@ namespace TerribleDialogue
 
         public int DisplayChoices(string[] choices)
         {
+        	Console.ForegroundColor = ConsoleColor.Gray;
             // Can't support more than what we display
             ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(CHOICE_DISPLAY_CHARS.Length, choices.Length));
             for(int i = 0; i < displayableChoices.Count; i++)
@@ -56,6 +57,7 @@ namespace TerribleDialogue
             }
 
             Console.WriteLine($"> {choices[choiceIndex]}");
+            Console.ResetColor();
             return choiceIndex;
         }
 

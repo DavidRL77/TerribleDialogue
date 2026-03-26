@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TerribleDialogue.Data
 {
-    public readonly struct LineData
+    public class LineData
     {
         public string Text { get; }
         public IReadOnlyDictionary<string, string> Tags { get; }

@@ -48,7 +48,7 @@ namespace TerribleDialogue.Model
             public FlowAction Action { get; }
             private readonly bool isYielding;
 
-            public Goto(FlowAction action, bool isYielding = true)
+            public Goto(FlowAction action, bool isYielding)
             {
                 Action = action;
                 this.isYielding = isYielding;

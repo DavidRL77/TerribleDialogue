@@ -7,6 +7,7 @@ namespace TerribleDialogue
     public class ArgParser
     {
         public int Count => args.Length;
+        public object[] Args => args;
 
         private object[] args;
 

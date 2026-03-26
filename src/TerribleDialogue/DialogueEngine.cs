@@ -2,7 +2,6 @@ using TerribleDialogue.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TerribleDialogue;
 using TerribleDialogue.Data;
 
 namespace TerribleDialogue
@@ -21,12 +20,17 @@ namespace TerribleDialogue
         // Pointer at the root of a dialogue tree, branch 0, statement 0
         private static Pointer RootPointer = Pointer.BranchStart(0);
 
+        /// <summary>
+        /// Current state of the engine, including but not limited to: Current line, current call, current set, curent node, pending choices, etc. <br></br>
+        /// Should not be mutated directly, unless you <i>want</i> bad things to happen.
+        /// </summary>
+        public DialogueState State => state;
         public DialogueObject DialogueObject => dialogueObject;
         public bool IsDialogueOver => state.IsDialogueOver;
         public bool HasLine => state.CurrentLine != null;
         public bool HasCall => state.CurrentCall != null;
-        public LineData? CurrentLine => state.CurrentLine;
-        public CallData? CurrentCall => state.CurrentCall;
+        public LineData CurrentLine => state.CurrentLine;
+        public CallData CurrentCall => state.CurrentCall;
         public string CurrentSetId => state.CurrentSet;
         public string CurrentNodeId => state.CurrentNode;
         public string[] PendingChoices => state.PendingChoices;

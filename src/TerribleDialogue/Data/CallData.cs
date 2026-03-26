@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TerribleDialogue.Data
 {
-    public readonly struct CallData
+    public class CallData
     {
         public string Name { get; }
         public ArgParser Args { get; }

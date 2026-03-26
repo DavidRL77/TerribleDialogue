@@ -1,16 +1,18 @@
-﻿namespace TerribleDialogue
+﻿using System.Runtime.Serialization;
+
+namespace TerribleDialogue
 {
-    internal readonly struct Pointer
+    public struct Pointer
     {
         public static Pointer BranchStart(int branch) => new Pointer(-1, branch);
 
-        public int StatementIndex { get; }
-        public int Branch { get; }
+        public int StatementIndex { get; set; }
+        public int Branch { get; set; }
 
         public Pointer(int statementIndex, int branch)
         {
-            StatementIndex = statementIndex;
-            Branch = branch;
+            this.StatementIndex = statementIndex;
+            this.Branch = branch;
         }
 
         public Pointer Next() => new Pointer(StatementIndex + 1, Branch);

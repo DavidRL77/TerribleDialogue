@@ -62,7 +62,7 @@ namespace TerribleDialogue
 
             if(engine.HasCall)
             {
-                CallData callData = engine.CurrentCall.Value;
+                CallData callData = engine.CurrentCall;
                 callHandlers.Invoke(callData.Name, c => c.Invoke(callData));
                 Next(); // Don't stop at calls since those should be handled at once
                 return;
@@ -77,12 +77,12 @@ namespace TerribleDialogue
 
             if(engine.HasLine)
             {
-                foreach(KeyValuePair<string, string> kvp in engine.CurrentLine.Value.Tags)
+                foreach(KeyValuePair<string, string> kvp in engine.CurrentLine.Tags)
                 {
                     tagProcessors.Invoke(kvp.Key, c => c.Invoke(kvp.Key, kvp.Value));
                 }
 
-                OnLine?.Invoke(engine.CurrentLine.Value);
+                OnLine?.Invoke(engine.CurrentLine);
                 return;
             }
 

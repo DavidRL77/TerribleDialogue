@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogue", "src\Ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogueConsole", "samples\TerribleDialogueConsole\TerribleDialogueConsole.csproj", "{40875A0F-5389-7482-0469-BD68954B1E50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogueTests", "tests\TerribleDialogueTests\TerribleDialogueTests.csproj", "{70E53655-3AD6-4703-B30D-332367193C70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{40875A0F-5389-7482-0469-BD68954B1E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40875A0F-5389-7482-0469-BD68954B1E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40875A0F-5389-7482-0469-BD68954B1E50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70E53655-3AD6-4703-B30D-332367193C70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70E53655-3AD6-4703-B30D-332367193C70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70E53655-3AD6-4703-B30D-332367193C70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70E53655-3AD6-4703-B30D-332367193C70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

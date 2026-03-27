@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace TerribleDialogue
+﻿namespace TerribleDialogue
 {
     public struct Pointer
     {

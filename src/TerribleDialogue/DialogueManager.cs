@@ -51,7 +51,6 @@ namespace TerribleDialogue
 
             this.engine = engine;
             Next();
-
         }
         /// <summary>
         /// Process dialogue until the next stop

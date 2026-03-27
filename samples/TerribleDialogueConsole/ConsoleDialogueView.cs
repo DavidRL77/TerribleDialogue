@@ -12,6 +12,21 @@ namespace TerribleDialogue
         private const string CHOICE_DISPLAY_CHARS = "1234567890abcdefghijklmnopqrstuvwxyz";
         private const string LINE_BREAK = "<br>";
 
+        private readonly Func<ConsoleKeyInfo, bool> inputHandler;
+
+        public ConsoleDialogueView() : this(DefaultInputHandler)
+        {
+        }
+
+        /// <summary>
+        /// Custom input handling, return true if the input has already been handled, false if the view should handle it instead.
+        /// </summary>
+        /// <param name="inputHandler"></param>
+        public ConsoleDialogueView(Func<ConsoleKeyInfo, bool> inputHandler)
+        {
+            this.inputHandler = inputHandler;
+        }
+
         public void DisplayLine(LineData line)
         {
             string displayType = line.Tags.GetValueOrDefault("display", "newline");
@@ -23,7 +38,17 @@ namespace TerribleDialogue
             foreach(string linePart in splitLines)
             {
                 Console.Write(linePart);
-                while(block == "yes" && Console.ReadKey(true).Key != ConsoleKey.Enter) { } // Read enter but swallow it
+                while(block == "yes") 
+                {
+                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+
+                    // If the input was handled outside, we need to ask for input again
+                    if(inputHandler.Invoke(keyInfo))
+                        continue;
+
+                    if(keyInfo.Key == ConsoleKey.Enter)
+                        break;
+                }
             }
 
             Console.ResetColor();
@@ -46,7 +71,12 @@ namespace TerribleDialogue
             int choiceIndex = -1;
             while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count)
             {
-                char choice = Console.ReadKey(true).KeyChar;
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                
+                if(inputHandler.Invoke(keyInfo))
+                    continue;
+
+                char choice = keyInfo.KeyChar;
                 choiceIndex = CHOICE_DISPLAY_CHARS.IndexOf(choice);
             }
 
@@ -60,6 +90,9 @@ namespace TerribleDialogue
             Console.ResetColor();
             return choiceIndex;
         }
+
+        // Always delegates the input to the view
+        private static bool DefaultInputHandler(ConsoleKeyInfo keyInfo) => false;
 
         private static ConsoleColor ColorByName(string name)
         {

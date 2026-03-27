@@ -1,5 +1,6 @@
 ﻿using Sprache;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Channels;
 using TerribleDialogue;
 using TerribleDialogue.Data;
@@ -11,6 +12,8 @@ namespace TerribleDialogueConsole
 {
     internal class App
     {
+        private static string SavePath => Path.Combine(AppContext.BaseDirectory, "saves");
+
         private readonly ISoundPlayer musicPlayer;
         private readonly ISoundPlayer sfxPlayer;
         private readonly IDialogueView view;
@@ -26,7 +29,7 @@ namespace TerribleDialogueConsole
         {
             this.musicPlayer = musicPlayer;
             this.sfxPlayer = sfxPlayer;
-            this.view = new ConsoleDialogueView();
+            this.view = new ConsoleDialogueView(InputHandler);
 
             random = new Random();
             dialogueManager = new DialogueManager();
@@ -49,6 +52,40 @@ namespace TerribleDialogueConsole
                 CreateCharacter("Someone", "Dialogue/someone.tdlg"),
                 CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true)
             };
+
+            foreach(Character character in characters)
+            {
+                string saveFile = GetCharacterSavePath(character);
+                if(File.Exists(saveFile))
+                {
+                    DialogueState state = JsonSerializer.Deserialize<DialogueState>(File.ReadAllText(saveFile));
+                    character.Engine.LoadState(state);
+                }
+            }
+        }
+
+        private bool InputHandler(ConsoleKeyInfo keyInfo)
+        {
+            // ALT + S = Save
+            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.S)
+            {
+                SaveCharacter(activeCharacter);
+                return true;
+            }
+
+            // ALT + D = Delete save
+            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.D && activeCharacter != null)
+            {
+                string saveFile = GetCharacterSavePath(activeCharacter);
+                if(File.Exists(saveFile))
+                {
+                    File.Delete(saveFile);
+                }
+            }
+
+
+
+            return false;
         }
 
         private void DialogueManager_OnLine(LineData lineData)
@@ -59,6 +96,9 @@ namespace TerribleDialogueConsole
         private void DialogueManager_OnChoices(string[] choices)
         {
             int choice = view.DisplayChoices(choices);
+            if(choice < 0)
+                return;
+
             dialogueManager.AddChoice(choice);
             dialogueManager.Next();
         }
@@ -200,6 +240,20 @@ namespace TerribleDialogueConsole
             float seconds = callData.Args.GetOrDefault<float>(0);
             Thread.Sleep((int)(seconds*1000));
         }
+
+        private static void SaveCharacter(Character character)
+        {
+            if(character == null)
+                return;
+
+            string saveFile = GetCharacterSavePath(character);
+            Directory.CreateDirectory(SavePath);
+
+            string stateJson = JsonSerializer.Serialize(character.Engine.State);
+            File.WriteAllText(saveFile, stateJson);
+        }
+
+        private static string GetCharacterSavePath(Character character) => Path.Combine(SavePath, character.Name);
 
         private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {

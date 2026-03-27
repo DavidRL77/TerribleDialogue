@@ -50,6 +50,11 @@ namespace TerribleDialogue
             SetSet(startSet);
         }
 
+        public void LoadState(DialogueState state)
+        {
+            this.state = state;
+        }
+
         private bool HasNextStatement()
         {
             return state.StatementPath.Count > 0;
@@ -276,7 +281,7 @@ namespace TerribleDialogue
 
         public void EndDialogue()
         {
-            this.state = DialogueState.END_STATE;
+            LoadState(DialogueState.END_STATE);
         }
     }
 }

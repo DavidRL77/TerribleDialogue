@@ -103,6 +103,7 @@ namespace TerribleDialogue
         public void EndDialogue()
         {
             engine = null;
+            OnStop?.Invoke(); // Technically we're also stopping
             OnEnd?.Invoke();
         }
 

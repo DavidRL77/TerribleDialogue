@@ -5,7 +5,7 @@
     <Nullable>disable</Nullable>
 	<LangVersion>9.0</LangVersion>
 	<Authors>Davicro</Authors>
-	<Version>0.0.1</Version>
+	<Version>0.0.1-alpha</Version>
 	<PackageId>$(AssemblyName)</PackageId>
 	<Description>Dialogue system for use in games</Description>
   </PropertyGroup>

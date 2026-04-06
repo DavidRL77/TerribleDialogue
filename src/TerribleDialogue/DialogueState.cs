@@ -6,8 +6,6 @@ namespace TerribleDialogue
 {
     public sealed class DialogueState
     {
-        public static readonly DialogueState END_STATE = new DialogueState() { IsDialogueOver = true };
-
         /// <summary>
         /// Has dialogue run out or been explicitly ended 
         /// </summary>

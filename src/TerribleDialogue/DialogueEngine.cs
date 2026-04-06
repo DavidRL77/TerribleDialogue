@@ -281,7 +281,7 @@ namespace TerribleDialogue
 
         public void EndDialogue()
         {
-            LoadState(DialogueState.END_STATE);
+            state.IsDialogueOver = true;
         }
     }
 }

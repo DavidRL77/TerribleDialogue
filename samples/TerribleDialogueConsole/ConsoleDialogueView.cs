@@ -1,8 +1,4 @@
-﻿using TerribleDialogue;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TerribleDialogue.Data;
+﻿using TerribleDialogue.Data;
 using TerribleDialogueConsole.View;
 
 namespace TerribleDialogue

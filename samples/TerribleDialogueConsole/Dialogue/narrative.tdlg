@@ -5,7 +5,7 @@ set wakeup:
     >> node:start
     node start:
     call screen clear
-    call play music milk
+    call play music "milk.wav"
     "I open my eyes."
     "I look up at the ceiling looking down on me."
     "My chest hurts."
@@ -77,7 +77,7 @@ set wakeup:
     endchoice
 
     node run:
-    call play music scary_fast
+    call play music "scary_fast.wav"
     "I burst out into a sprint."
     "I don't know why I run, but my legs move without reason."
     "I feel something chasing behind me, just barely stepping on my ankles."
@@ -106,7 +106,7 @@ set wakeup:
     goto node:kitchen
 
     node hide:
-    call play music scary_slow
+    call play music "scary_slow.wav"
     "I drop myself to the ground and crawl under the first thing I can find."
     "What am I hiding under?"
     "What am I hiding from?"
@@ -131,7 +131,7 @@ set wakeup:
 
     node kitchen:
     call screen clear
-    call play music milk
+    call play music "milk.wav"
     "I open my eyes."
     "I find myself standing in the middle of the kitchen with no idea why I came here in the first place."
     "I mean, I remember the events that lead up-"
@@ -230,14 +230,14 @@ set search:
     "A shard of glass tucked away in a corner."
     "A window." [block=no,display=inline]
     call wait 0.2
-    call play sfx static
+    call play sfx "static.wav"
     "\rA wall..." [display=inline]
     "\rA wall that seems oddly unbelonging..." [display=inline]
     "\rA wall that beckons me to come closer..."
     "I take a step."
     "I look out the window" [block=no,display=inline]
     call wait 0.2
-    call play sfx static
+    call play sfx "static.wav"
     "\rI look at the wall..."
     "It does not speak to me, since it is a wall."
     "It does not look at me, since it is a wall."

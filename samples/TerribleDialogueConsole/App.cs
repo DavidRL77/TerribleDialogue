@@ -210,7 +210,7 @@ namespace TerribleDialogueConsole
             }
 
 
-            string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile + ".wav");
+            string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile);
 
             if(loop)
                 soundPlayer.PlayLooping(filePath);

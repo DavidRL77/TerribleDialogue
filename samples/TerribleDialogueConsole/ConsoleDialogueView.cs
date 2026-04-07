@@ -5,10 +5,17 @@ namespace TerribleDialogue
 {
     internal class ConsoleDialogueView : IDialogueView
     {
+        public enum InputResult
+        {
+            Handled,
+            Unhandled,
+            Cancelled
+        }
+
         private const string CHOICE_DISPLAY_CHARS = "1234567890abcdefghijklmnopqrstuvwxyz";
         private const string LINE_BREAK = "<br>";
 
-        private readonly Func<ConsoleKeyInfo, bool> inputHandler;
+        private readonly Func<ConsoleKeyInfo, InputResult> inputHandler;
 
         public ConsoleDialogueView() : this(DefaultInputHandler)
         {
@@ -18,7 +25,7 @@ namespace TerribleDialogue
         /// Custom input handling, return true if the input has already been handled, false if the view should handle it instead.
         /// </summary>
         /// <param name="inputHandler"></param>
-        public ConsoleDialogueView(Func<ConsoleKeyInfo, bool> inputHandler)
+        public ConsoleDialogueView(Func<ConsoleKeyInfo, InputResult> inputHandler)
         {
             this.inputHandler = inputHandler;
         }
@@ -36,11 +43,8 @@ namespace TerribleDialogue
                 Console.Write(linePart);
                 while(block == "yes") 
                 {
-                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-
-                    // If the input was handled outside, we need to ask for input again
-                    if(inputHandler.Invoke(keyInfo))
-                        continue;
+                    if(!TryGetKey(out ConsoleKeyInfo keyInfo))
+                        return;
 
                     if(keyInfo.Key == ConsoleKey.Enter)
                         break;
@@ -67,10 +71,8 @@ namespace TerribleDialogue
             int choiceIndex = -1;
             while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count)
             {
-                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                
-                if(inputHandler.Invoke(keyInfo))
-                    continue;
+                if(!TryGetKey(out ConsoleKeyInfo keyInfo))
+                    return -1;
 
                 char choice = keyInfo.KeyChar;
                 choiceIndex = CHOICE_DISPLAY_CHARS.IndexOf(choice);
@@ -87,18 +89,38 @@ namespace TerribleDialogue
             return choiceIndex;
         }
 
-        // Always delegates the input to the view
-        private static bool DefaultInputHandler(ConsoleKeyInfo keyInfo) => false;
+
+        private bool TryGetKey(out ConsoleKeyInfo keyInfo)
+        {
+            // Read keys until the input is no longer handled outside
+           while(true)
+            {
+                keyInfo = Console.ReadKey(true);
+                switch(inputHandler.Invoke(keyInfo))
+                {
+                    case InputResult.Handled:
+                        continue;
+                    case InputResult.Unhandled:
+                        return true;
+                    case InputResult.Cancelled:
+                        return false;
+                }
+            }
+        }
 
         private static ConsoleColor ColorByName(string name)
         {
             if(Enum.TryParse(name, true, out ConsoleColor color))
             {
                 return color;
-            } else
+            } 
+            else
             {
                 return ConsoleColor.White;
             }
         }
+
+        // Always delegates the input to the view
+        private static InputResult DefaultInputHandler(ConsoleKeyInfo keyInfo) => InputResult.Unhandled;
     }
 }

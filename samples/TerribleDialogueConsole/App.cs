@@ -63,13 +63,13 @@ namespace TerribleDialogueConsole
             }
         }
 
-        private bool InputHandler(ConsoleKeyInfo keyInfo)
+        private ConsoleDialogueView.InputResult InputHandler(ConsoleKeyInfo keyInfo)
         {
             // ALT + S = Save
             if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.S)
             {
                 SaveCharacter(activeCharacter);
-                return true;
+                return ConsoleDialogueView.InputResult.Handled;
             }
 
             // ALT + D = Delete save
@@ -79,12 +79,30 @@ namespace TerribleDialogueConsole
                 if(File.Exists(saveFile))
                 {
                     File.Delete(saveFile);
+                    return ConsoleDialogueView.InputResult.Handled;
                 }
             }
 
+            // ALT + W = Change set
+            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.W && activeCharacter != null)
+            {
+                Console.Clear();
+                Console.Write($"Set to jump to: ({String.Join(',',activeCharacter.Engine.DialogueObject.Sets.Keys)}): ");
+                string set = Console.ReadLine();
+                if(activeCharacter.Engine.HasSet(set))
+                {
+                    activeCharacter.Engine.SetSet(set);
+                    Console.Clear();
+                    return ConsoleDialogueView.InputResult.Cancelled;
+                }
+                else
+                {
+                    Console.WriteLine("No set with that name");
+                    return ConsoleDialogueView.InputResult.Handled;
+                }
+            }
 
-
-            return false;
+            return ConsoleDialogueView.InputResult.Unhandled;
         }
 
         private void DialogueManager_OnLine(LineData lineData)

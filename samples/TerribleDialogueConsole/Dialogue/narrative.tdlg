@@ -142,22 +142,22 @@ set wakeup:
     "I chew the thought up and spit it into the sink."
     "I chewed it up so it had a better chance of going down the pipes."
     "I have a tendency to throw things into them and then they get clogged up and it's a whole thing."
-    "So chewing something up—or rather, grinding something up in general—so it occupies a smaller physical space is only logical when you want to discard of it, is it not?"
+    "So chewing something up--or rather, grinding something up in general--so it occupies a smaller physical space is only logical when you want to discard of it, is it not?"
     "In that same regard, I could have maybe burnt the thought and thrown the ashes out-"
     "Out somewhere."
     "Where do you throw ashes anyway?"
-    "AHHH-"
+    "AHHH!"
     "I rip that thought out of my brain along with some of its flesh and burn it on the stove."
     "I can't be asking any more questions when I have my pockets full already."
     "I am in the kitchen."
-    "For no particular reason—or rather, for a particular reason I cannot remember..."
+    "For no particular reason--or rather, for a particular reason I cannot remember..."
     "My memory has been acting up as of late."
     "I'll pretend I came here for a reason."
     "Food."
-    "Kitchen has fridge, fridge has food, food is usually consumed by humans to survive."
-    "Therefore, me being a human, the only logical explanation to show up at a kitchen without recollection of ever doing so, is food!"
+    "Kitchens have fridges, fridges contain food, food is consumed by humans to survive."
+    "Therefore, assuming I'm human, the only logical explanation to show up at a kitchen without recollection of ever doing so, is food!"
     "I love puzzles."
-    "I walk over to the fridge and open its door."
+    "I walk over to the fridge with a pep in my step and open its door."
     "I shiver as the refrigerated air brushes my skin as it breezes out."
     "It seems the food must have breezed out as well, since there looks to be nothing but a few specs of dust, and-"
     "Huh."
@@ -165,7 +165,7 @@ set wakeup:
     "My pockets are full of thoughts already, and my brain is still sore from tearing at it earlier, so I need an answer now."
     choice
     * "Pick it up"
-        "I extend my hand into the chilly box of refrigeration."
+        "I extend my hand toward the strangely placed key."
         "A cool air envelops my fingers, threatening to snap them off if I linger for too long."
         "I quickly snatch the key off the bottom shelf and shut the door with a soft thud."
         "The key feels oddly warm in my hand..."
@@ -209,11 +209,14 @@ set search:
     >> node:options
     node options:
     call screen clear
+    call stop music
+    call stop sfx
     "Answers..." [block=no]
     choice
     * "Kitchen"
         goto node:kitchen
     * "Living room"
+        call screen clear
         goto node:livingroom
     * "Hallway"
         goto node:hallway
@@ -224,6 +227,7 @@ set search:
     endchoice
 
     node kitchen:
+    call play music "drip.wav"
     "Of course, the most logical place to find an answer is where the very question was posed."
     "My eyes saccadically jump between various objects within the kitchen."
     "A knife thrown haphazardly on the counter."
@@ -248,4 +252,46 @@ set search:
     goto node:options
 
     node livingroom:
-    "AAA"
+    call play music "beauty.wav"
+    "She looked dazzling as ever as she stepped into my living room."
+    "Her dress flowed freely behind her like the wind itself."
+    "She spun around to greet my gaze with a warm smile."
+    "I smiled back."
+    "The orange-tinged afternoon light found its way through the windows and settled on her fair skin."
+    "If only for a moment, things looked perfect."
+    "'What a beautiful place you have,' she said with bright tone."
+    "'█ █████ ██ ████ ██ █████████ ██ ███ ████████ ███ ████ ██ ██,' I responded, with a slight strain in my voice."
+    "She could tell something was off about the way I'd been acting, but neither of us had said anything all day."
+    "We just looked at each other with a faltering smile and a forced act of normalcy."
+    "Maybe we didn't want to stain this beautiful picture."
+    "Maybe this moment was worth holding onto for as long as we could, even as the brush strokes began to smear."
+    "But I could already hear the glass cracking beneath my feet."
+    "She kept looking at me with that smile of hers, head tilted slightly to the side as her eyes examined my expression."
+    "I stared at my feet."
+    "'What's wrong?' she finally asked."
+    "She looked about to step closer, before hesitating and remaining in place."
+    "When I lifted my head, the light was already gone and the room was soaked in an unpleasant moonlight."
+    "'Hey, are you okay?' she now whispered, sounding more concerned."
+    "She didn't move."
+    "Neither did I."
+    "Because both of us saw that the bridge we were standing on was already falling apart."
+    "And yet we remained on it pretending we wouldn't fall."
+    "Hoping that the other would plunge first and one of us would be able to hold on for a little longer."
+    "But I knew we were both plummeting together, ten feet apart."
+    "I opened my mouth, knowing this was the last time I'd ever get to see her smile."
+    call stop music
+    "'█ ████ ████████ █ █████████ ████'"
+    "'█ █████ ██ ██████ ████ █████ ████ ███ █████ ████'"
+    "'█ ████ ██ ████ ████████ ███ █████ ██ █████ █████████ ██ ███████'"
+    "'████ ███████ ██ ███████ ██████ ████ █████ ████ ████ ███████ ██ ████ ██ ███'"
+    "'████ ████ ██████'"
+    "'███ ████ ████ ██████'"
+    "'████ ███████████ ██ █████ ███████████'"
+    "'███ █ ████ █ █████ ██ ██ █████'"
+    "'███ ██████ █ █████ ██ ████ ███ █████ ███ ███ ████ ███'"
+    "I will never forget the look of sheer hatred in her eyes."
+    goto node:options
+
+    node hallway:
+    call play music "pipes.wav"
+    "The smell was horrible coming from the boiler room."

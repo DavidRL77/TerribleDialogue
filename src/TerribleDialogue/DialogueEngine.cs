@@ -55,10 +55,12 @@ namespace TerribleDialogue
             this.state = state;
         }
 
-        private bool HasNextStatement()
+        private bool CanStep()
         {
             return state.StatementPath.Count > 0;
         }
+
+        public bool IsAtValidStatement() =>  state.StatementPath.Count == 1 && state.StatementPath[0].StatementIndex < 0;
 
         /// <summary>
         /// Advances the dialogue to the next stopping point.
@@ -66,7 +68,7 @@ namespace TerribleDialogue
         /// </summary>
         public void Step()
         {
-            if(!HasNextStatement())
+            if(!CanStep())
             {
                 EndDialogue();
                 return;
@@ -119,7 +121,7 @@ namespace TerribleDialogue
                 if(yield)
                     return;
 
-            } while(HasNextStatement());
+            } while(CanStep());
         }
 
         private void ProcessFlowAction(FlowAction action)

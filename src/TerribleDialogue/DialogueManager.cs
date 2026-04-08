@@ -50,7 +50,12 @@ namespace TerribleDialogue
             OnStart?.Invoke();
 
             this.engine = engine;
-            Next();
+            
+            // If the engine is already at a valid statement, avoid skipping over it
+            if(engine.IsAtValidStatement())
+                Next();
+            else
+                ProcessEngine();
         }
         /// <summary>
         /// Process dialogue until the next stop
@@ -59,6 +64,11 @@ namespace TerribleDialogue
         {
             engine.Step();
 
+            ProcessEngine();
+        }
+
+        private void ProcessEngine()
+        {
             if(engine.HasCall)
             {
                 CallData callData = engine.CurrentCall;

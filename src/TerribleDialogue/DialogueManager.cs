@@ -42,7 +42,6 @@ namespace TerribleDialogue
         /// </summary>
         public event Action OnEnd;
 
-        private MappedCallbacks<string, TagProcessor> tagProcessors = new MappedCallbacks<string, TagProcessor>();
         private MappedCallbacks<string, CallHandler> callHandlers = new MappedCallbacks<string, CallHandler>();
 
         public void BeginDialogue(DialogueEngine engine)
@@ -86,11 +85,6 @@ namespace TerribleDialogue
 
             if(engine.HasLine)
             {
-                foreach(KeyValuePair<string, string> kvp in engine.CurrentLine.Tags)
-                {
-                    tagProcessors.Invoke(kvp.Key, c => c.Invoke(kvp.Key, kvp.Value));
-                }
-
                 OnLine?.Invoke(engine.CurrentLine);
                 return;
             }
@@ -115,10 +109,6 @@ namespace TerribleDialogue
             engine = null;
             OnEnd?.Invoke();
         }
-
-        public void AddTagProcessor(string tagType, TagProcessor tagProcessor) => tagProcessors.AddCallback(tagType, tagProcessor);
-
-        public void RemoveTagProcessor(string tagType, TagProcessor tagProcessor) => tagProcessors.RemoveCallback(tagType, tagProcessor);
 
         public void AddCallHandler(string name, CallHandler callHandler) => callHandlers.AddCallback(name, callHandler);
 

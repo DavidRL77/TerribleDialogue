@@ -230,6 +230,7 @@ namespace TerribleDialogue
         {
             if(CurrentSet.Nodes.ContainsKey(id))
             {
+                state.PendingChoices = Array.Empty<string>();
                 state.CurrentNode = id;
                 state.StatementPath.Clear();
                 state.StatementPath.Add(RootPointer);

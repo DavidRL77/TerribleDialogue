@@ -5,9 +5,9 @@ VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogue", "src\TerribleDialogue\TerribleDialogue.csproj", "{28D2CA1F-6073-D273-6BAA-EEBBC092A54F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogueConsole", "samples\TerribleDialogueConsole\TerribleDialogueConsole.csproj", "{40875A0F-5389-7482-0469-BD68954B1E50}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogueConsole", "sample\TerribleDialogueConsole\TerribleDialogueConsole.csproj", "{40875A0F-5389-7482-0469-BD68954B1E50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogueTests", "tests\TerribleDialogueTests\TerribleDialogueTests.csproj", "{70E53655-3AD6-4703-B30D-332367193C70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerribleDialogue.Tests", "test\TerribleDialogue.Tests\TerribleDialogue.Tests.csproj", "{70E53655-3AD6-4703-B30D-332367193C70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

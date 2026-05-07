@@ -23,7 +23,7 @@ namespace TerribleDialogue.Tests
         [TestCase(@"delimiters are 2imporant", false)]
         public void TokenizerTest(string input, bool shouldTokenize)
         {
-            var result = TerribleDialogueTokenizer.Tokenizer.TryTokenize(input);
+            var result = TerribleDialogueTokenizer.Instance.TryTokenize(input);
             TestContext.Out.WriteLine($"Result: {result}");
 
             Assert.That(result.HasValue, Is.EqualTo(shouldTokenize));
@@ -33,7 +33,7 @@ namespace TerribleDialogue.Tests
         public void FileTokenizerTest(string file)
         {
             string input = File.ReadAllText(file);
-            var result = TerribleDialogueTokenizer.Tokenizer.TryTokenize(input);
+            var result = TerribleDialogueTokenizer.Instance.TryTokenize(input);
             TestContext.Out.WriteLine($"Result: {result}");
 
             Assert.That(result.HasValue, Is.True);

@@ -21,6 +21,10 @@ namespace TerribleDialogue.Parser
             from close in Character.EqualTo('"')
             select Unit.Value;
 
+        /// <summary>
+        /// Matches any negative/positive number with optional decimals.
+        /// <para>ONLY matches, does not return anything.</para>
+        /// </summary>
         internal static readonly TextParser<Unit> NumberToken =
             from sign in Character.EqualTo('-').OptionalOrDefault()
             from first in Character.Digit
@@ -28,7 +32,7 @@ namespace TerribleDialogue.Parser
             select Unit.Value;
 
 
-        public static readonly Tokenizer<TerribleDialogueToken> Tokenizer =
+        public static readonly Tokenizer<TerribleDialogueToken> Instance =
             new TokenizerBuilder<TerribleDialogueToken>()
             .Ignore(Span.WhiteSpace)
             .Match(Character.EqualTo('['), TerribleDialogueToken.LSquareBracket)

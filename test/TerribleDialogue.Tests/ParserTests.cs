@@ -17,7 +17,7 @@ namespace TerribleDialogue.Tests
             Assert.That(result.HasValue, Is.EqualTo(shouldParse));
         }
 
-        [TestCase(@"""quoted text"" : , identifier 12.5 [""more quoted text""]", true)]
+        [TestCase(@"""quoted text"" : , identifier +12.5 -2 [""more quoted text""]", true)]
         [TestCase(@"""incomplete text", false)]
         [TestCase(@"""what is this"" ?", false)]
         [TestCase(@"delimiters are 2imporant", false)]

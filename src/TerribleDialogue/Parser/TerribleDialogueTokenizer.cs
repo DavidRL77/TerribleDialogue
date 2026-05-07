@@ -26,7 +26,7 @@ namespace TerribleDialogue.Parser
         /// <para>ONLY matches, does not return anything.</para>
         /// </summary>
         internal static readonly TextParser<Unit> NumberToken =
-            from sign in Character.EqualTo('-').OptionalOrDefault()
+            from sign in Character.In('-', '+').OptionalOrDefault()
             from first in Character.Digit
             from rest in Character.Digit.Or(Character.EqualTo('.')).IgnoreMany()
             select Unit.Value;

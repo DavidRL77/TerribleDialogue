@@ -21,6 +21,13 @@ namespace TerribleDialogue.Parser
             from close in Character.EqualTo('"')
             select Unit.Value;
 
+        internal static readonly TextParser<Unit> NumberToken =
+            from sign in Character.EqualTo('-').OptionalOrDefault()
+            from first in Character.Digit
+            from rest in Character.Digit.Or(Character.EqualTo('.')).IgnoreMany()
+            select Unit.Value;
+
+
         public static readonly Tokenizer<TerribleDialogueToken> Tokenizer =
             new TokenizerBuilder<TerribleDialogueToken>()
             .Ignore(Span.WhiteSpace)
@@ -29,8 +36,11 @@ namespace TerribleDialogue.Parser
             .Match(Character.EqualTo(':'), TerribleDialogueToken.Colon)
             .Match(Character.EqualTo(','), TerribleDialogueToken.Comma)
             .Match(Character.EqualTo('='), TerribleDialogueToken.Equals)
+            .Match(Character.EqualTo('*'), TerribleDialogueToken.Choice)
+            .Match(Span.EqualTo(">>"), TerribleDialogueToken.FlowStart)
             .Match(QuotedTextToken, TerribleDialogueToken.QuotedText)
-            .Match(Identifier.CStyle, TerribleDialogueToken.Identifier)
+            .Match(NumberToken, TerribleDialogueToken.Number, requireDelimiters: true)
+            .Match(Identifier.CStyle, TerribleDialogueToken.Identifier, requireDelimiters: true)
             .Build();
     }
 }

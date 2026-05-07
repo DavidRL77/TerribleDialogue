@@ -1,0 +1,40 @@
+set default:
+    >> set:start
+
+set start:
+    >> node:wakeup
+    node wakeup:
+    call screen clear 1.0 fadeout
+    call play music "music.wav"
+    "My alarm rings, ripping me straight out of a dream I can't quite remember anymore."
+    "Ugh, my head hurts..." [color=red, animation="shake"]
+    "What should I do?"
+    choice
+    * "Take it easy"
+        "Yeah, that's probably for the best"
+        goto node:easy
+    * "Tough it out"
+        "..."
+        goto node:hard
+    * "Go back to sleep"
+        goto node:0
+    endchoice
+
+    node easy:
+    "I take it easy, my headache disappears and I live happily ever after"
+    call play sfx "win.wav"
+    goto END
+
+    node hard:
+    "I decide to torture myself for some reason, and end up dying of exhaustion."
+    call play sfx "death.wav"
+    goto set:death
+
+set death:
+    >> random
+    node 0:
+    "I somehow come back to life."
+    goto set:start
+
+    node 1:
+    goto END

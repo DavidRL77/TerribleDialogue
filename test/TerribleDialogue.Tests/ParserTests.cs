@@ -17,15 +17,26 @@ namespace TerribleDialogue.Tests
             Assert.That(result.HasValue, Is.EqualTo(shouldParse));
         }
 
-        [TestCase(@"""quoted text"" : , [""more quoted text""]", true)]
+        [TestCase(@"""quoted text"" : , identifier 12.5 [""more quoted text""]", true)]
         [TestCase(@"""incomplete text", false)]
         [TestCase(@"""what is this"" ?", false)]
+        [TestCase(@"delimiters are 2imporant", false)]
         public void TokenizerTest(string input, bool shouldTokenize)
         {
             var result = TerribleDialogueTokenizer.Tokenizer.TryTokenize(input);
             TestContext.Out.WriteLine($"Result: {result}");
 
             Assert.That(result.HasValue, Is.EqualTo(shouldTokenize));
+        }
+
+        [TestCase("data/parser_test.tdlg")]
+        public void FileTokenizerTest(string file)
+        {
+            string input = File.ReadAllText(file);
+            var result = TerribleDialogueTokenizer.Tokenizer.TryTokenize(input);
+            TestContext.Out.WriteLine($"Result: {result}");
+
+            Assert.That(result.HasValue, Is.True);
         }
     }
 }

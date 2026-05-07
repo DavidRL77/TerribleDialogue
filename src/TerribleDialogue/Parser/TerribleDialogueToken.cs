@@ -6,7 +6,7 @@ namespace TerribleDialogue.Parser
     {
         QuotedText,
 
-        [Token(Description="Any letter or underscore")]
+        [Token(Description="Only letters and underscore allowed")]
         Identifier,
 
         Number,
@@ -24,6 +24,12 @@ namespace TerribleDialogue.Parser
         Colon,
 
         [Token(Example="=")]
-        Equals
+        Equals,
+
+        [Token(Example=">>")]
+        FlowStart,
+
+        [Token(Example="*")]
+        Choice
     }
 }

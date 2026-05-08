@@ -9,7 +9,7 @@ namespace TerribleDialogue.Parser
     // We need to map string representations of tokens into their primitive values,
     internal static class TerribleDialogueTextParsers
     {
-        internal static readonly TextParser<string> String =
+        internal static readonly TextParser<string> QuotedText =
             from open in Character.EqualTo('"')
             from content in Character.ExceptIn('"', '\\')
             .Or(Character.EqualTo('\\').IgnoreThen(

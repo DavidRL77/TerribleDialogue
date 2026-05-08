@@ -43,7 +43,7 @@ namespace TerribleDialogue.Tests
         [TestCase(@"""Some nasty \r \""escape\"" \\ sequences!!! \n """, "Some nasty \r \"escape\" \\ sequences!!! \n ")]
         public void StringParserTest(string input, string expected) 
         {
-            string result = TerribleDialogueTextParsers.String.Parse(input);
+            string result = TerribleDialogueTextParsers.QuotedText.Parse(input);
             Assert.That(expected, Is.EqualTo(result));
         }
 

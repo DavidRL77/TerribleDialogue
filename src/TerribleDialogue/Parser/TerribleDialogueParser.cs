@@ -1,19 +1,104 @@
 ﻿using Superpower;
 using Superpower.Parsers;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using TerribleDialogue.Model;
 
 namespace TerribleDialogue.Parser
 {
     internal static class TerribleDialogueParser
     {
+        internal static TokenListParser<TerribleDialogueToken, Superpower.Model.Token<TerribleDialogueToken>> Keyword(string keyword) =>
+        Token.EqualToValue(TerribleDialogueToken.Identifier, keyword);
+
         internal static TokenListParser<TerribleDialogueToken, string> QuotedText =
             Token.EqualTo(TerribleDialogueToken.QuotedText).Apply(TerribleDialogueTextParsers.QuotedText);
 
         // Just return the text content of the token since it encapsulates the entire id
         internal static TokenListParser<TerribleDialogueToken, string> Id =
             Token.EqualTo(TerribleDialogueToken.Identifier).Select(t => t.Span.ToStringValue());
+
+        internal static TokenListParser<TerribleDialogueToken, float> Number =
+        Token.EqualTo(TerribleDialogueToken.Number).Apply(TerribleDialogueTextParsers.Number);
+
+        internal static TokenListParser<TerribleDialogueToken, object> PrimitiveValue =
+        QuotedText.Select(o => (object)o)
+        .Or(Number.Select(o => (object)o))
+        .Or(Id.Select(o => (object)o));
+
+        internal static TokenListParser<TerribleDialogueToken, KeyValuePair<string, string>> KeyValue =
+        from key in Id
+        from eq in Token.EqualTo(TerribleDialogueToken.Equals)
+        from value in QuotedText.Or(Id)
+        select KeyValuePair.Create(key, value);
+
+        internal static TokenListParser<TerribleDialogueToken, Dictionary<string, string>> Tags =
+        from open in Token.EqualTo(TerribleDialogueToken.LSquareBracket)
+        from kvps in KeyValue.AtLeastOnceDelimitedBy(Token.EqualTo(TerribleDialogueToken.Comma))
+        from close in Token.EqualTo(TerribleDialogueToken.RSquareBracket)
+        select new Dictionary<string, string>(kvps);
+
+        internal static TokenListParser<TerribleDialogueToken, (string, DialogueStatement[])> SingleChoice =
+        from delimiter in Token.EqualTo(TerribleDialogueToken.Choice)
+        from text in QuotedText
+        from statements in Parse.Ref(() => Statement).Many()
+        select (text, statements);
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> EndAction =
+        from keyword in Keyword("END")
+        select (FlowAction)new FlowAction.EndAction();
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> RandomAction =
+        from keyword in Keyword("random")
+        select (FlowAction)new FlowAction.RandomAction(true);
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> PreviousAction =
+        from keyword in Keyword("previous")
+        select (FlowAction)new FlowAction.PreviousAction();
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> NodeAction =
+        from keyword in Keyword("node")
+        from colon in Token.EqualTo(TerribleDialogueToken.Colon)
+        from id in Id
+        select (FlowAction)new FlowAction.NodeAction(id);
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> SetAction =
+        from keyword in Keyword("set")
+        from colon in Token.EqualTo(TerribleDialogueToken.Colon)
+        from id in Id
+        select (FlowAction)new FlowAction.SetAction(id);
+
+        internal static TokenListParser<TerribleDialogueToken, FlowAction> FlowAction =
+        NodeAction.Or(SetAction).Or(RandomAction).Or(PreviousAction).Or(EndAction);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueStatement> LineStatement =
+        from text in QuotedText
+        from tags in Tags.OptionalOrDefault()
+        select (DialogueStatement)new DialogueStatement.Line(text, tags ?? new());
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueStatement> GotoStatement =
+        from keyword in Keyword("goto")
+        from flowAction in FlowAction
+        from @break in Keyword("break").Optional()
+        select (DialogueStatement)new DialogueStatement.Goto(flowAction, @break.HasValue);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueStatement> ChoiceStatement =
+        from open in Keyword("choice")
+        from choices in SingleChoice.AtLeastOnce()
+        from close in Keyword("endchoice")
+        select (DialogueStatement)new DialogueStatement.Choice( // TODO: Improve choice parsing
+            choices.Select(c => c.Item1).ToArray(), 
+            choices.Select(c => c.Item2).ToArray());
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueStatement> CallStatement =
+        from keyword in Keyword("call")
+        from callName in Id
+        from args in PrimitiveValue.Many()
+        select (DialogueStatement)new DialogueStatement.Call(callName, args);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueStatement> Statement =
+        LineStatement.Or(GotoStatement).Or(ChoiceStatement).Or(CallStatement);
 
     }
 }

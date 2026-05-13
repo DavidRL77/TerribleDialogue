@@ -1,5 +1,6 @@
 using Superpower;
 using Superpower.Parsers;
+using TerribleDialogue.Model;
 using TerribleDialogue.Parser;
 
 namespace TerribleDialogue.Tests
@@ -55,6 +56,11 @@ namespace TerribleDialogue.Tests
         {
             float result = TerribleDialogueTextParsers.Number.Parse(input);
             Assert.That(expected, Is.EqualTo(result));
+        }
+
+        public void StatementTest()
+        {
+        
         }
     }
 }

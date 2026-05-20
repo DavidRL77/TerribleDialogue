@@ -1,5 +1,6 @@
 using Superpower;
 using Superpower.Parsers;
+using TerribleDialogue.Data;
 using TerribleDialogue.Model;
 using TerribleDialogue.Parser;
 
@@ -58,9 +59,32 @@ namespace TerribleDialogue.Tests
             Assert.That(expected, Is.EqualTo(result));
         }
 
+        [Test]
         public void StatementTest()
         {
-        
+            ParsedStatementEquals("\"Hello!\"[color=red, emotion=\"happy\"]", new DialogueStatement.Line("Hello!", new()
+            {
+                {"color", "red"},
+                {"emotion", "happy"}
+            }));
+
+            // Same test, different spacing
+            ParsedStatementEquals("\"Hello!\"   [color=red,emotion=\"happy\"]", new DialogueStatement.Line("Hello!", new()
+            {
+                {"color", "red"},
+                {"emotion", "happy"}
+            }));
+
+            ParsedStatementEquals("goto node:test", new DialogueStatement.Goto(new FlowAction.NodeAction("test"), false));
+            ParsedStatementEquals("goto set:test break", new DialogueStatement.Goto(new FlowAction.SetAction("test"), true));
+            ParsedStatementEquals("goto random break", new DialogueStatement.Goto(new FlowAction.RandomAction(true), true));
+            ParsedStatementEquals("call play music \"test.wav\"", new DialogueStatement.Call("play", ["music", "test.wav"]));
+        }
+
+        private void ParsedStatementEquals(string input, DialogueStatement expected)
+        {
+            DialogueStatement parsed = TerribleDialogueParser.Statement.Parse(TerribleDialogueTokenizer.Instance.Tokenize(input));
+            Assert.That(parsed, Is.EqualTo(expected).UsingPropertiesComparer());
         }
     }
 }

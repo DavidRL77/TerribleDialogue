@@ -42,7 +42,7 @@ namespace TerribleDialogue.Parser
         internal static TokenListParser<TerribleDialogueToken, (string, DialogueStatement[])> SingleChoice =
         from delimiter in Token.EqualTo(TerribleDialogueToken.Choice)
         from text in QuotedText
-        from statements in Parse.Ref(() => Statement).Many()
+        from statements in Superpower.Parse.Ref(() => Statement).Many()
         select (text, statements);
 
         internal static TokenListParser<TerribleDialogueToken, FlowAction> EndAction =
@@ -99,6 +99,51 @@ namespace TerribleDialogue.Parser
 
         internal static TokenListParser<TerribleDialogueToken, DialogueStatement> Statement =
         LineStatement.Or(GotoStatement).Or(ChoiceStatement).Or(CallStatement);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueNode> Node =
+        from keyword in Keyword("node")
+        from id in Id
+        from colon in Token.EqualTo(TerribleDialogueToken.Colon)
+        from statements in Statement.AtLeastOnce()
+        select new DialogueNode(id, statements);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueSet> Set =
+        from keyword in Keyword("set")
+        from id in Id
+        from colon in Token.EqualTo(TerribleDialogueToken.Colon)
+        from flowAction in Token.EqualTo(TerribleDialogueToken.FlowStart).IgnoreThen(FlowAction)
+        from nodes in Node.AtLeastOnce()
+        select new DialogueSet(id, nodes.ToDictionary(n => n.Id), flowAction);
+
+        internal static TokenListParser<TerribleDialogueToken, DialogueObject> DialogueObject =
+        from sets in Set.AtLeastOnce()
+        select new DialogueObject(sets.ToDictionary(s => s.Id));
+
+        public static bool TryParse(string input, out DialogueObject value)
+        {
+            var tokens = TerribleDialogueTokenizer.Instance.TryTokenize(input);
+            if(!tokens.HasValue)
+            {
+                value = null;
+                return false;
+            }
+
+            var parsed = DialogueObject.TryParse(tokens.Value);
+            if(!parsed.HasValue)
+            {
+                value = null;
+                return false;
+            }
+
+            value = parsed.Value;
+            return true;
+        }
+
+        public static DialogueObject Parse(string input)
+        {
+            var tokens = TerribleDialogueTokenizer.Instance.Tokenize(input);
+            return DialogueObject.Parse(tokens);
+        }
 
     }
 }

@@ -76,9 +76,22 @@ namespace TerribleDialogue.Tests
             }));
 
             ParsedStatementEquals("goto node:test", new DialogueStatement.Goto(new FlowAction.NodeAction("test"), false));
+            ParsedStatementEquals("goto node:1 break", new DialogueStatement.Goto(new FlowAction.NodeAction("1"), true));
+            ParsedStatementEquals("goto set:0", new DialogueStatement.Goto(new FlowAction.SetAction("0"), false));
             ParsedStatementEquals("goto set:test break", new DialogueStatement.Goto(new FlowAction.SetAction("test"), true));
             ParsedStatementEquals("goto random break", new DialogueStatement.Goto(new FlowAction.RandomAction(true), true));
             ParsedStatementEquals("call play music \"test.wav\"", new DialogueStatement.Call("play", ["music", "test.wav"]));
+            ParsedStatementEquals(@"choice
+                                    * ""Get up""
+                                        ""I get up""
+                                        goto node:0 break
+                                    endchoice",
+                                    new DialogueStatement.Choice(["Get up"], [
+                                        [
+                                            new DialogueStatement.Line("I get up", new()),
+                                            new DialogueStatement.Goto(new FlowAction.NodeAction("0"), true)
+                                        ]
+                                        ]));
         }
 
         private void ParsedStatementEquals(string input, DialogueStatement expected)

@@ -7,8 +7,11 @@ using TerribleDialogue.Model;
 
 namespace TerribleDialogue.Parser
 {
-    internal static class TerribleDialogueParser
+    public static class TerribleDialogueParser
     {
+        // Every set starts at node 0 by default
+        private static FlowAction DEFAULT_START_ACTION = new FlowAction.NodeAction("0");
+
         internal static TokenListParser<TerribleDialogueToken, Superpower.Model.Token<TerribleDialogueToken>> Keyword(string keyword) =>
         Token.EqualToValue(TerribleDialogueToken.Identifier, keyword);
 
@@ -18,6 +21,16 @@ namespace TerribleDialogue.Parser
         // Just return the text content of the token since it encapsulates the entire id
         internal static TokenListParser<TerribleDialogueToken, string> Id =
             Token.EqualTo(TerribleDialogueToken.Identifier).Select(t => t.Span.ToStringValue());
+
+        internal static TokenListParser<TerribleDialogueToken, string> NumericId =
+            Token.EqualTo(TerribleDialogueToken.Number).Select(n => n.Span.ToStringValue());
+
+        // This is needed because I'm fucking stupid and made most of my nodes have numeric ids, which get tokenized as numbers,
+        // and I either change every node id to have a proper name, or just support numeric ids as well.
+        /// <summary>
+        /// Supports text and numeric ids
+        /// </summary>
+        internal static TokenListParser<TerribleDialogueToken, string> FlexibleId = Id.Or(NumericId);
 
         internal static TokenListParser<TerribleDialogueToken, float> Number =
         Token.EqualTo(TerribleDialogueToken.Number).Apply(TerribleDialogueTextParsers.Number);
@@ -60,13 +73,13 @@ namespace TerribleDialogue.Parser
         internal static TokenListParser<TerribleDialogueToken, FlowAction> NodeAction =
         from keyword in Keyword("node")
         from colon in Token.EqualTo(TerribleDialogueToken.Colon)
-        from id in Id
+        from id in FlexibleId
         select (FlowAction)new FlowAction.NodeAction(id);
 
         internal static TokenListParser<TerribleDialogueToken, FlowAction> SetAction =
         from keyword in Keyword("set")
         from colon in Token.EqualTo(TerribleDialogueToken.Colon)
-        from id in Id
+        from id in FlexibleId
         select (FlowAction)new FlowAction.SetAction(id);
 
         internal static TokenListParser<TerribleDialogueToken, FlowAction> FlowAction =
@@ -95,6 +108,7 @@ namespace TerribleDialogue.Parser
         from keyword in Keyword("call")
         from callName in Id
         from args in PrimitiveValue.Many()
+        from close in Keyword("endcall")
         select (DialogueStatement)new DialogueStatement.Call(callName, args);
 
         internal static TokenListParser<TerribleDialogueToken, DialogueStatement> Statement =
@@ -102,21 +116,21 @@ namespace TerribleDialogue.Parser
 
         internal static TokenListParser<TerribleDialogueToken, DialogueNode> Node =
         from keyword in Keyword("node")
-        from id in Id
+        from id in FlexibleId
         from colon in Token.EqualTo(TerribleDialogueToken.Colon)
         from statements in Statement.AtLeastOnce()
         select new DialogueNode(id, statements);
 
         internal static TokenListParser<TerribleDialogueToken, DialogueSet> Set =
         from keyword in Keyword("set")
-        from id in Id
+        from id in FlexibleId
         from colon in Token.EqualTo(TerribleDialogueToken.Colon)
-        from flowAction in Token.EqualTo(TerribleDialogueToken.FlowStart).IgnoreThen(FlowAction)
-        from nodes in Node.AtLeastOnce()
+        from flowAction in Token.EqualTo(TerribleDialogueToken.FlowStart).IgnoreThen(FlowAction).OptionalOrDefault(DEFAULT_START_ACTION)
+        from nodes in Node.Many()
         select new DialogueSet(id, nodes.ToDictionary(n => n.Id), flowAction);
 
         internal static TokenListParser<TerribleDialogueToken, DialogueObject> DialogueObject =
-        from sets in Set.AtLeastOnce()
+        from sets in Set.AtLeastOnce().AtEnd()
         select new DialogueObject(sets.ToDictionary(s => s.Id));
 
         public static bool TryParse(string input, out DialogueObject value)

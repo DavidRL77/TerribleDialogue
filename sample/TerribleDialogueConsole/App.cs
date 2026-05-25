@@ -4,6 +4,7 @@ using System.Text.Json;
 using TerribleDialogue;
 using TerribleDialogue.Data;
 using TerribleDialogue.Model;
+using TerribleDialogue.Parser;
 using TerribleDialogueConsole.SoundPlayer;
 using TerribleDialogueConsole.View;
 
@@ -49,7 +50,7 @@ namespace TerribleDialogueConsole
                 CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
                 CreateCharacter("Test guy", "Dialogue/test.tdlg"),
                 CreateCharacter("Someone", "Dialogue/someone.tdlg"),
-                CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true)
+                CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true),
             };
 
             foreach(Character character in characters)
@@ -274,7 +275,7 @@ namespace TerribleDialogueConsole
 
         private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
         {
-            return new Character(name, new DialogueEngine(DialogueGrammar.Dialogue.Parse(
+            return new Character(name, new DialogueEngine(TerribleDialogueParser.Parse(
                 File.ReadAllText(
                     Path.Combine(AppContext.BaseDirectory,dialogueFile))),
                 random.Next),

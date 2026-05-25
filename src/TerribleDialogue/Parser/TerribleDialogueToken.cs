@@ -6,7 +6,7 @@ namespace TerribleDialogue.Parser
     {
         QuotedText,
 
-        [Token(Description="Only letters and underscore allowed")]
+        [Token(Description="only letters and underscore")]
         Identifier,
 
         Number,

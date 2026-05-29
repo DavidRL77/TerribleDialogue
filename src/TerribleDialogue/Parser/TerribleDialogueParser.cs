@@ -108,7 +108,7 @@ namespace TerribleDialogue.Parser
         from keyword in Keyword("call")
         from callName in Id
         from args in PrimitiveValue.Many()
-        from close in Keyword("endcall")
+        from close in Token.EqualTo(TerribleDialogueToken.Semicolon)
         select (DialogueStatement)new DialogueStatement.Call(callName, args);
 
         internal static TokenListParser<TerribleDialogueToken, DialogueStatement> Statement =

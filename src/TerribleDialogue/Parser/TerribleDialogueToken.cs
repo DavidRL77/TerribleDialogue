@@ -20,8 +20,11 @@ namespace TerribleDialogue.Parser
         [Token(Example=",")]
         Comma,
 
-        [Token(Example=":")]
+        [Token(Description = "colon")]
         Colon,
+
+        [Token(Description="semicolon")]
+        Semicolon,
 
         [Token(Example="=")]
         Equals,

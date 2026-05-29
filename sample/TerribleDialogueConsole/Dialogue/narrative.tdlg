@@ -4,8 +4,8 @@ set default:
 set wakeup:
     >> node:start
     node start:
-    call screen clear
-    call play music "milk.wav"
+    call screen clear;
+    call play music "milk.wav";
     "I open my eyes."
     "I look up at the ceiling looking down on me."
     "My chest hurts."
@@ -58,7 +58,7 @@ set wakeup:
     "Day?"
     "Is it daytime?"
 
-    call stop music
+    call stop music;
     choice
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
     * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" * "Get out" 
@@ -77,7 +77,7 @@ set wakeup:
     endchoice
 
     node run:
-    call play music "scary_fast.wav"
+    call play music "scary_fast.wav";
     "I burst out into a sprint."
     "I don't know why I run, but my legs move without reason."
     "I feel something chasing behind me, just barely stepping on my ankles."
@@ -106,7 +106,7 @@ set wakeup:
     goto node:kitchen
 
     node hide:
-    call play music "scary_slow.wav"
+    call play music "scary_slow.wav";
     "I drop myself to the ground and crawl under the first thing I can find."
     "What am I hiding under?"
     "What am I hiding from?"
@@ -130,8 +130,8 @@ set wakeup:
     goto node:kitchen
 
     node kitchen:
-    call screen clear
-    call play music "milk.wav"
+    call screen clear;
+    call play music "milk.wav";
     "I open my eyes."
     "I find myself standing in the middle of the kitchen with no idea why I came here in the first place."
     "I mean, I remember the events that lead up-"
@@ -199,7 +199,7 @@ set wakeup:
     "It seems I still have some unanswered questions..."
     "How unfortunate."
     "It looks like I won't be getting any sleep tonight."
-    call stop music
+    call stop music;
     "I close my eyes."
     "After all, what point is there in doing anything else?"
     goto node:start
@@ -208,15 +208,15 @@ set wakeup:
 set search:
     >> node:options
     node options:
-    call screen clear
-    call stop music
-    call stop sfx
+    call screen clear;
+    call stop music;
+    call stop sfx;
     "Answers..." [block=no]
     choice
     * "Kitchen"
         goto node:kitchen
     * "Living room"
-        call screen clear
+        call screen clear;
         goto node:livingroom
     * "Hallway"
         goto node:hallway
@@ -227,22 +227,22 @@ set search:
     endchoice
 
     node kitchen:
-    call play music "drip.wav"
+    call play music "drip.wav";
     "Of course, the most logical place to find an answer is where the very question was posed."
     "My eyes saccadically jump between various objects within the kitchen."
     "A knife thrown haphazardly on the counter."
     "A shard of glass tucked away in a corner."
     "A calendar torn to shreds, scattered along the floor."
     "A window." [block=no,display=inline]
-    call wait 0.2
-    call play sfx "static.wav"
+    call wait 0.2;
+    call play sfx "static.wav";
     "\rA wall..." [display=inline]
     "\rA wall that seems oddly unbelonging..." [display=inline]
     "\rA wall that beckons me to come closer..."
     "I take a step."
     "I look out the window" [block=no,display=inline]
-    call wait 0.2
-    call play sfx "static.wav"
+    call wait 0.2;
+    call play sfx "static.wav";
     "\rI look at the wall..."
     "It does not speak to me, since it is a wall."
     "It does not look at me, since it is a wall."
@@ -256,7 +256,7 @@ set search:
     goto node:options
 
     node livingroom:
-    call play music "beauty.wav"
+    call play music "beauty.wav";
     "She looked dazzling as ever as she stepped into my living room."
     "Her dress flowed freely behind her like the wind itself."
     "She spun around to greet my gaze with a warm smile."
@@ -283,7 +283,7 @@ set search:
     "Hoping that the other would plunge first and one of us would be able to hold on for a little longer."
     "But I knew we were both plummeting together, ten feet apart."
     "I opened my mouth, knowing this was the last time I'd ever get to see her smile."
-    call stop music
+    call stop music;
     "'█ ████ ████████ █ █████████ ████'"
     "'█ █████ ██ ██████ ████ █████ ████ ███ █████ ████'"
     "'█ ████ ██ ████ ████████ ███ █████ ██ █████ █████████ ██ ███████'"
@@ -297,7 +297,7 @@ set search:
     goto node:options
 
     node hallway:
-    call play music "pipes.wav"
+    call play music "pipes.wav";
     "The smell was horrible coming from the boiler room."
     "A strange mix of burnt rubber and rotting flesh."
     "A stench so repugnant it managed to pierce through the clothing I'd wrapped around my nose."
@@ -328,11 +328,11 @@ set search:
     "I clutched my stomach as it churned and twisted painfully."
     "My throat burned from the acids so desperately trying to leave my body."
     "I stared at the door in front of me." [display=inline]
-    call play sfx "static.wav"
+    call play sfx "static.wav";
     "\rI stare at the door in front of me. "
 
     node bedroom:
-    call screen clear
+    call screen clear;
     "...b... asleep f..."
     "...pills..."
     "-sn't responded...looks to be..."
@@ -351,6 +351,6 @@ set search:
     "You're right."
     "Hey, can you hear me?"
     "Can you open you eyes?"
-    call screen clear
-    call play music "milk.wav"
+    call screen clear;
+    call play music "milk.wav";
     "I open my eyes"

@@ -35,6 +35,7 @@ namespace TerribleDialogue.Parser
         public static readonly Tokenizer<TerribleDialogueToken> Instance =
             new TokenizerBuilder<TerribleDialogueToken>()
             .Ignore(Span.WhiteSpace)
+            .Match(Character.EqualTo(';'), TerribleDialogueToken.Semicolon)
             .Match(Character.EqualTo('['), TerribleDialogueToken.LSquareBracket)
             .Match(Character.EqualTo(']'), TerribleDialogueToken.RSquareBracket)
             .Match(Character.EqualTo(':'), TerribleDialogueToken.Colon)

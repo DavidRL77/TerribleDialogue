@@ -346,7 +346,7 @@ set search:
     "Can you hear me?"
     "No response."
     "Hey, can you hear me?"
-    "Can you open you eyes?"
+    "Can you open your eyes?"
     call screen clear;
     call play music "milk.wav";
     "I open my eyes"

@@ -80,7 +80,7 @@ namespace TerribleDialogue.Tests
             ParsedStatementEquals("goto set:0", new DialogueStatement.Goto(new FlowAction.SetAction("0"), false));
             ParsedStatementEquals("goto set:test break", new DialogueStatement.Goto(new FlowAction.SetAction("test"), true));
             ParsedStatementEquals("goto random break", new DialogueStatement.Goto(new FlowAction.RandomAction(true), true));
-            ParsedStatementEquals("call play music \"test.wav\"", new DialogueStatement.Call("play", ["music", "test.wav"]));
+            ParsedStatementEquals("call play music \"test.wav\";", new DialogueStatement.Call("play", ["music", "test.wav"]));
             ParsedStatementEquals(@"choice
                                     * ""Get up""
                                         ""I get up""

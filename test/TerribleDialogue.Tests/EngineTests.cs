@@ -2,9 +2,9 @@ using System.Text.Json;
 using TerribleDialogue;
 using TerribleDialogue.Model;
 
-namespace TerribleDialogueTests
+namespace TerribleDialogue.Tests
 {
-    public class Tests
+    internal class EngineTests
     {
         private DialogueObject dialogueObject;
         private Random rnd;
@@ -44,7 +44,7 @@ namespace TerribleDialogueTests
 
             TestContext.Out.WriteLine("=================");
 
-            DialogueState loadedState = JsonSerializer.Deserialize<DialogueState>(savedJson);
+            DialogueState? loadedState = JsonSerializer.Deserialize<DialogueState>(savedJson);
             string loadedJson = JsonSerializer.Serialize(loadedState, new JsonSerializerOptions() { WriteIndented = true });
             TestContext.Out.WriteLine(loadedJson);
 

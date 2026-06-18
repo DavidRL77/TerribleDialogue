@@ -155,7 +155,7 @@ namespace TerribleDialogue.Model
         private static readonly Parser<FlowAction.SetAction> SetAction =
             from header in Parse.String("set")
             from id in FlowActionId
-            select new FlowAction.SetAction(id, false);
+            select new FlowAction.SetAction(id);
 
         private static readonly Parser<FlowAction.RandomAction> RandomActionDiscard =
             from header in Parse.String("random")

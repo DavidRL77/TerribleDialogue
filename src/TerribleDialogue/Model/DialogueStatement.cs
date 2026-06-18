@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TerribleDialogue.Model
 {
@@ -31,7 +32,7 @@ namespace TerribleDialogue.Model
             public override bool IsYielding => true;
 
             public string Text { get; }
-            public Dictionary<string, string> Tags { get; }
+            public IReadOnlyDictionary<string, string> Tags { get; }
 
             public Line(string text, Dictionary<string, string> tags)
             {

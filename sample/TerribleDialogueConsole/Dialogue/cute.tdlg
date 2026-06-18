@@ -1,13 +1,13 @@
 set default:
     node 0:
-    call play music "kawaii.wav"
+    call play music "kawaii.wav";
     "O-Oh... Hi!"
     "Y-Y-You wanted t-t-to talk to me?! (∩˃o˂∩)♡"
     "I-I hope I'm not bothering you! I-I'm a little bit shy... (⌯˃̶᷄ ﹏ ˂̶᷄⌯)"
     goto node:1 break
 
     node 1:
-    call play music "kawaii.wav"
+    call play music "kawaii.wav";
     "W-Wow, y-you're really muscular and r-really toned..."
     "A-And your skin looks sooo soft..."
     "A-Also y-your hair is all fluffy and smells all nice~"
@@ -17,7 +17,7 @@ set default:
     goto node:2 break
 
     node 2:
-    call play music "kawaii.wav"
+    call play music "kawaii.wav";
     "S-Senpai..."
     "Y-You really like talking to me, don't you? (◍＞◡＜◍)⋈。✧♡"
     "I-I also like t-talking to you..."
@@ -26,7 +26,7 @@ set default:
     goto node:3 break
 
     node 3:
-    call play music "kawaii.wav"
+    call play music "kawaii.wav";
     "✧♡(◕‿◕✿)"
     "(◍＞◡＜◍)⋈。✧♡"
     "( ๑ ❛ ڡ ❛ ๑ )❤"
@@ -34,7 +34,7 @@ set default:
     goto node:4 break
 
     node 4:
-    call play music "kawaii.wav"
+    call play music "kawaii.wav";
     "Senpaiiiiiiii"
     "Daisukiiii i love youuuuuu"
     "Sen sen senpai~"
@@ -43,6 +43,6 @@ set default:
     "Hehehe did u like my little kiss, senpai~"
     "Chuu chuu chuu chuu~"
     "SENPAIIIIII~"
-    call stop music
+    call stop music;
     "Okay I think that's enough."
     goto END

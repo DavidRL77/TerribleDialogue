@@ -15,12 +15,10 @@ namespace TerribleDialogue.Model
         public sealed record SetAction : FlowAction
         {
             public string Id { get; }
-            public bool RandomNode { get; }
 
-            public SetAction(string id, bool randomNode)
+            public SetAction(string id)
             {
                 Id = id;
-                RandomNode = randomNode;
             }
         }
 

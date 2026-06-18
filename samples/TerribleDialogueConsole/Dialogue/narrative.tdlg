@@ -25,7 +25,6 @@ set wakeup:
     endchoice
 
     "I roll off my messy bed and flinch as my body hits the ground with a loud thud."
-    "Maybe I should have softened the blow?"
     "I stand up on my own two feet, bones creaking and cracking as they struggle to keep themselves from crumbling, and I start to walk with no particular destination in mind."
     "The bathroom seems like a good place to start the day."
     "Start?"
@@ -143,7 +142,7 @@ set wakeup:
     "I chewed it up so it had a better chance of going down the pipes."
     "I have a tendency to throw things into them and then they get clogged up and it's a whole thing."
     "So chewing something up--or rather, grinding something up in general--so it occupies a smaller physical space is only logical when you want to discard of it, is it not?"
-    "In that same regard, I could have maybe burnt the thought and thrown the ashes out-"
+    "In that same regard, I could have maybe burnt the thought and thrown the ashes out..."
     "Out somewhere."
     "Where do you throw ashes anyway?"
     "AHHH!"
@@ -259,7 +258,7 @@ set search:
     call play music "beauty.wav"
     "She looked dazzling as ever as she stepped into my living room."
     "Her dress flowed freely behind her like the wind itself."
-    "She spun around to greet my gaze with a warm smile."
+    "She spun around to greet my gaze with a warm smile, making sure I could see every angle of her."
     "I smiled back."
     "The orange-tinged afternoon light found its way through the windows and settled onto her fair skin."
     "If only for a moment, things looked perfect."
@@ -293,7 +292,7 @@ set search:
     "'████ ███████████ ██ █████ ███████████'"
     "'███ █ ████ █ █████ ██ ██ █████'"
     "'███ ██████ █ █████ ██ ████ ███ █████ ███ ███ ████ ███'"
-    "I will never forget the look of disgust in her eyes."
+    "I will never forget the look on her face."
     goto node:options
 
     node hallway:
@@ -330,27 +329,23 @@ set search:
     "I stared at the door in front of me." [display=inline]
     call play sfx "static.wav"
     "\rI stare at the door in front of me. "
+    "It looks old and rusted, stained with years of oxidation and dented in an unnatural way."
+    "I look down at the key in my hand."
+    ""
 
     node bedroom:
-    call screen clear
-    "...b... asleep f..."
-    "...pills..."
+    call screen clear;
+    "...asleep for..."
     "-sn't responded...looks to be..."
-    "...stable heartbeat..."
     "..."
     "..."
     "-tempt..."
-    "-y?"
-    "No-"
-    "...more information..."
     "C.. you h..?"
     "Can y.. hear...?"
     "Can you hear me?"
     "No response."
-    "...increase-"
-    "You're right."
     "Hey, can you hear me?"
-    "Can you open you eyes?"
-    call screen clear
-    call play music "milk.wav"
+    "Can you open your eyes?"
+    call screen clear;
+    call play music "milk.wav";
     "I open my eyes"

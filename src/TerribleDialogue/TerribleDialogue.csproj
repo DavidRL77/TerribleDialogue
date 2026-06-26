@@ -11,7 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sprache" Version="3.0.0-develop-00049" />
     <PackageReference Include="Superpower" Version="3.2.1" />
   </ItemGroup>
 

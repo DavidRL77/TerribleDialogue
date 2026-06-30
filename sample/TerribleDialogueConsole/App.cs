@@ -1,10 +1,7 @@
-﻿using Sprache;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using TerribleDialogue;
 using TerribleDialogue.Data;
-using TerribleDialogue.Model;
-using TerribleDialogue.Parser;
 using TerribleDialogueConsole.SoundPlayer;
 using TerribleDialogueConsole.View;
 
@@ -12,26 +9,22 @@ namespace TerribleDialogueConsole
 {
     internal class App
     {
-        private static string SavePath => Path.Combine(AppContext.BaseDirectory, "saves");
-
         private readonly ISoundPlayer musicPlayer;
         private readonly ISoundPlayer sfxPlayer;
         private readonly IDialogueView view;
 
-        private readonly Random random;
         private readonly DialogueManager dialogueManager;
-        private readonly List<Character> characters;
 
-        private Character activeCharacter;
-        private string activeMusic = null;
+        // Used to locate Music and Sfx files
+        private string baseDirectory;
 
         public App(ISoundPlayer musicPlayer, ISoundPlayer sfxPlayer)
         {
             this.musicPlayer = musicPlayer;
             this.sfxPlayer = sfxPlayer;
-            this.view = new ConsoleDialogueView(InputHandler);
+            this.baseDirectory = AppContext.BaseDirectory;
+            this.view = new ConsoleDialogueView();
 
-            random = new Random();
             dialogueManager = new DialogueManager();
 
             dialogueManager.OnLine += DialogueManager_OnLine;
@@ -43,68 +36,8 @@ namespace TerribleDialogueConsole
             dialogueManager.AddCallHandler("stop", StopCallHandler);
             dialogueManager.AddCallHandler("screen", ScreenCallHandler);
             dialogueManager.AddCallHandler("wait", WaitCallHandler);
-
-            characters = new() {
-                CreateCharacter("John", "Dialogue/john.tdlg"),
-                CreateCharacter("Byte", "Dialogue/byte.tdlg"),
-                CreateCharacter("Cute anime girl", "Dialogue/cute.tdlg"),
-                CreateCharacter("Test guy", "Dialogue/test.tdlg"),
-                CreateCharacter("Someone", "Dialogue/someone.tdlg"),
-                CreateCharacter("I open my eyes", "Dialogue/narrative.tdlg", true),
-            };
-
-            foreach(Character character in characters)
-            {
-                string saveFile = GetCharacterSavePath(character);
-                if(File.Exists(saveFile))
-                {
-                    DialogueState state = JsonSerializer.Deserialize<DialogueState>(File.ReadAllText(saveFile));
-                    character.Engine.LoadState(state);
-                }
-            }
         }
 
-        private ConsoleDialogueView.InputResult InputHandler(ConsoleKeyInfo keyInfo)
-        {
-            // ALT + S = Save
-            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.S)
-            {
-                SaveCharacter(activeCharacter);
-                return ConsoleDialogueView.InputResult.Handled;
-            }
-
-            // ALT + D = Delete save
-            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.D && activeCharacter != null)
-            {
-                string saveFile = GetCharacterSavePath(activeCharacter);
-                if(File.Exists(saveFile))
-                {
-                    File.Delete(saveFile);
-                    return ConsoleDialogueView.InputResult.Handled;
-                }
-            }
-
-            // ALT + W = Change set
-            if(keyInfo.Modifiers.HasFlag(ConsoleModifiers.Alt) && keyInfo.Key == ConsoleKey.W && activeCharacter != null)
-            {
-                Console.Clear();
-                Console.Write($"Set to jump to: ({String.Join(',',activeCharacter.Engine.DialogueObject.Sets.Keys)}): ");
-                string set = Console.ReadLine();
-                if(activeCharacter.Engine.HasSet(set))
-                {
-                    activeCharacter.Engine.SetSet(set);
-                    Console.Clear();
-                    return ConsoleDialogueView.InputResult.Cancelled;
-                }
-                else
-                {
-                    Console.WriteLine("No set with that name");
-                    return ConsoleDialogueView.InputResult.Handled;
-                }
-            }
-
-            return ConsoleDialogueView.InputResult.Unhandled;
-        }
 
         private void DialogueManager_OnLine(LineData lineData)
         {
@@ -121,30 +54,28 @@ namespace TerribleDialogueConsole
             dialogueManager.Next();
         }
 
-        public void Run()
+        public void Run(DialogueEngine engine, string baseDirectory)
         {
+            this.baseDirectory = baseDirectory;
+
             Console.Clear();
             Console.OutputEncoding = Encoding.UTF8;
 
-            while(true)
+            if(engine.IsDialogueOver)
             {
-                Console.WriteLine("Who do you want to talk to?");
-                for(int i = 0; i < characters.Count; i++)
-                {
-                    Console.WriteLine(characters[i].Name);
-                }
-                Console.Write("> ");
+                Console.Clear();
+                Console.Write($"Dialogue is over.");
+                Console.ReadLine();
+                Console.Clear();
+                return;
+            }
 
-                string answer = Console.ReadLine();
-                Character character = characters.FirstOrDefault(c => c.Name.ToLower() == answer.ToLower().Trim());
-                if(character == null)
-                {
-                    Console.WriteLine("No character by that name");
-                    Console.WriteLine();
-                    continue;
-                }
+            dialogueManager.BeginDialogue(engine);
 
-                TalkToCharacter(character);
+
+            while(dialogueManager.InDialogue)
+            {
+                dialogueManager.Next();
             }
         }
 
@@ -162,35 +93,6 @@ namespace TerribleDialogueConsole
         {
             Console.Clear();
             musicPlayer.Stop();
-            activeMusic = null;
-
-            if(activeCharacter.DeleteWhenOver && activeCharacter.Engine.IsDialogueOver)
-            {
-                characters.Remove(activeCharacter);
-            }
-        }
-
-        private void TalkToCharacter(Character c)
-        {
-            if(c.Engine.IsDialogueOver)
-            {
-                Console.Clear();
-                Console.Write($"{c.Name} has nothing else to say.");
-                Console.ReadLine();
-                Console.Clear();
-                return;
-            }
-
-            activeCharacter = c;
-
-            dialogueManager.BeginDialogue(c.Engine);
-
-            while(dialogueManager.InDialogue)
-            {
-                dialogueManager.Next();
-            }
-
-            activeCharacter = null;
         }
 
         private void ScreenCallHandler(CallData callData)
@@ -229,7 +131,12 @@ namespace TerribleDialogueConsole
             }
 
 
-            string filePath = Path.Combine(AppContext.BaseDirectory, folder, audioFile);
+            string filePath = Path.Combine(baseDirectory, folder, audioFile);
+            if(!File.Exists(filePath))
+            {
+                Console.Error.WriteLine($"File not found: '{filePath}'");
+                return;
+            }
 
             if(loop)
                 soundPlayer.PlayLooping(filePath);
@@ -259,27 +166,18 @@ namespace TerribleDialogueConsole
             Thread.Sleep((int)(seconds*1000));
         }
 
-        private static void SaveCharacter(Character character)
-        {
-            if(character == null)
-                return;
+        //private static void SaveCharacter(Character character)
+        //{
+        //    if(character == null)
+        //        return;
 
-            string saveFile = GetCharacterSavePath(character);
-            Directory.CreateDirectory(SavePath);
+        //    string saveFile = GetCharacterSavePath(character);
+        //    Directory.CreateDirectory(SavePath);
 
-            string stateJson = JsonSerializer.Serialize(character.Engine.State);
-            File.WriteAllText(saveFile, stateJson);
-        }
+        //    string stateJson = JsonSerializer.Serialize(character.Engine.State);
+        //    File.WriteAllText(saveFile, stateJson);
+        //}
 
-        private static string GetCharacterSavePath(Character character) => Path.Combine(SavePath, character.Name);
-
-        private Character CreateCharacter(string name, string dialogueFile, bool deleteWhenOver = false)
-        {
-            return new Character(name, new DialogueEngine(TerribleDialogueParser.Parse(
-                File.ReadAllText(
-                    Path.Combine(AppContext.BaseDirectory,dialogueFile))),
-                random.Next),
-                deleteWhenOver);
-        }
+        //private static string GetCharacterSavePath(Character character) => Path.Combine(SavePath, character.Name);
     }
 }

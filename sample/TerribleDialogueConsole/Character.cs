@@ -7,13 +7,13 @@ namespace TerribleDialogueConsole
         public string Name { get; }
         public DialogueEngine Engine { get; }
 
-        public bool DeleteWhenOver { get; }
+        public FileInfo DialogueFile { get; }
 
-        public Character(string name, DialogueEngine engine, bool deleteWhenOver = false)
+        public Character(string name, DialogueEngine engine, FileInfo dialogueFile)
         {
             Name = name;
             Engine = engine;
-            DeleteWhenOver = deleteWhenOver;
+            DialogueFile = dialogueFile;
         }
     }
 }

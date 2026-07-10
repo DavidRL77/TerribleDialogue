@@ -25,7 +25,9 @@ namespace TerribleDialogueConsole
             this.sfxPlayer = sfxPlayer;
             this.baseDirectory = AppContext.BaseDirectory;
             this.view = new ConsoleDialogueView([
-                new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet)
+                new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet),
+                new(ConsoleKey.N, ConsoleModifiers.Alt, JumpNode),
+                new(ConsoleKey.Q, ConsoleModifiers.Alt, () => dialogueManager.EndDialogue())
                 ]);
 
             dialogueManager = new DialogueManager();
@@ -48,6 +50,16 @@ namespace TerribleDialogueConsole
             string[] sets = currentEngine.DialogueObject.Sets.Keys.ToArray();
             string set = sets[ConsoleDisplay.Menu(sets)];
             currentEngine.SetSet(set);
+            Console.Clear();
+        }
+
+        private void JumpNode()
+        {
+            Console.Clear();
+            Console.WriteLine("Node to jump to: ");
+            string[] nodes = currentEngine.DialogueObject.Sets[currentEngine.CurrentSetId].Nodes.Keys.ToArray(); // holy shit
+            string node = nodes[ConsoleDisplay.Menu(nodes)];
+            currentEngine.SetNode(node);
             Console.Clear();
         }
 

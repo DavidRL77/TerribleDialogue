@@ -14,6 +14,7 @@ namespace TerribleDialogueConsole
         private readonly IDialogueView view;
 
         private readonly DialogueManager dialogueManager;
+        private DialogueEngine currentEngine;
 
         // Used to locate Music and Sfx files
         private string baseDirectory;
@@ -23,7 +24,9 @@ namespace TerribleDialogueConsole
             this.musicPlayer = musicPlayer;
             this.sfxPlayer = sfxPlayer;
             this.baseDirectory = AppContext.BaseDirectory;
-            this.view = new ConsoleDialogueView();
+            this.view = new ConsoleDialogueView([
+                new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet)
+                ]);
 
             dialogueManager = new DialogueManager();
 
@@ -38,6 +41,15 @@ namespace TerribleDialogueConsole
             dialogueManager.AddCallHandler("wait", WaitCallHandler);
         }
 
+        private void JumpSet()
+        {
+            Console.Clear();
+            Console.WriteLine("Set to jump to: ");
+            string[] sets = currentEngine.DialogueObject.Sets.Keys.ToArray();
+            string set = sets[ConsoleDisplay.Menu(sets)];
+            currentEngine.SetSet(set);
+            Console.Clear();
+        }
 
         private void DialogueManager_OnLine(LineData lineData)
         {
@@ -70,6 +82,7 @@ namespace TerribleDialogueConsole
                 return;
             }
 
+            currentEngine = engine;
             dialogueManager.BeginDialogue(engine);
 
 
@@ -92,7 +105,9 @@ namespace TerribleDialogueConsole
         private void OnDialogueEnd()
         {
             Console.Clear();
+            Console.ResetColor();
             musicPlayer.Stop();
+            currentEngine = null;
         }
 
         private void ScreenCallHandler(CallData callData)

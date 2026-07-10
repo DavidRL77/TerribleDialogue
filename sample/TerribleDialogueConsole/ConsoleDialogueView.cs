@@ -1,33 +1,17 @@
 ﻿using TerribleDialogue.Data;
+using TerribleDialogueConsole;
 using TerribleDialogueConsole.View;
 
 namespace TerribleDialogue
 {
     internal class ConsoleDialogueView : IDialogueView
     {
-        public enum InputResult
-        {
-            Handled,
-            Unhandled,
-            Cancelled
-        }
-
-        private const string CHOICE_DISPLAY_CHARS = "1234567890abcdefghijklmnopqrstuvwxyz";
         private const string LINE_BREAK = "<br>";
+        private Keybind[] keybinds;
 
-        private readonly Func<ConsoleKeyInfo, InputResult> inputHandler;
-
-        public ConsoleDialogueView() : this(DefaultInputHandler)
+        public ConsoleDialogueView(Keybind[] keybinds)
         {
-        }
-
-        /// <summary>
-        /// Custom input handling, return true if the input has already been handled, false if the view should handle it instead.
-        /// </summary>
-        /// <param name="inputHandler"></param>
-        public ConsoleDialogueView(Func<ConsoleKeyInfo, InputResult> inputHandler)
-        {
-            this.inputHandler = inputHandler;
+            this.keybinds = keybinds;
         }
 
         public void DisplayLine(LineData line)
@@ -43,8 +27,11 @@ namespace TerribleDialogue
                 Console.Write(linePart);
                 while(block == "yes") 
                 {
-                    if(!TryGetKey(out ConsoleKeyInfo keyInfo))
+                    if(!ConsoleDisplay.TryReadKey(true, this.keybinds, out ConsoleKeyInfo keyInfo))
+                    { 
+                        Console.ResetColor();
                         return;
+                    }
 
                     if(keyInfo.Key == ConsoleKey.Enter)
                         break;
@@ -59,53 +46,7 @@ namespace TerribleDialogue
 
         public int DisplayChoices(string[] choices)
         {
-        	Console.ForegroundColor = ConsoleColor.Gray;
-            // Can't support more than what we display
-            ArraySegment<string> displayableChoices = new ArraySegment<string>(choices, 0, Math.Min(CHOICE_DISPLAY_CHARS.Length, choices.Length));
-            for(int i = 0; i < displayableChoices.Count; i++)
-            {
-                char displayChar = CHOICE_DISPLAY_CHARS[i];
-                Console.WriteLine($"{displayChar}. {choices[i]}");
-            }
-
-            int choiceIndex = -1;
-            while(choiceIndex < 0 || choiceIndex >= displayableChoices.Count)
-            {
-                if(!TryGetKey(out ConsoleKeyInfo keyInfo))
-                    return -1;
-
-                char choice = keyInfo.KeyChar;
-                choiceIndex = CHOICE_DISPLAY_CHARS.IndexOf(choice);
-            }
-
-            for(int i = displayableChoices.Count - 1; i >= 0 && Console.CursorTop > 0; i--)
-            {
-                Console.SetCursorPosition(0, Console.CursorTop - 1);
-                Console.Write("\r" + new string(' ', Console.WindowWidth) + "\r");
-            }
-
-            Console.WriteLine($"> {choices[choiceIndex]}");
-            Console.ResetColor();
-            return choiceIndex;
-        }
-
-
-        private bool TryGetKey(out ConsoleKeyInfo keyInfo)
-        {
-            // Read keys until the input is no longer handled outside
-           while(true)
-            {
-                keyInfo = Console.ReadKey(true);
-                switch(inputHandler.Invoke(keyInfo))
-                {
-                    case InputResult.Handled:
-                        continue;
-                    case InputResult.Unhandled:
-                        return true;
-                    case InputResult.Cancelled:
-                        return false;
-                }
-            }
+            return ConsoleDisplay.Menu(choices, keybinds);
         }
 
         private static ConsoleColor ColorByName(string name)
@@ -119,8 +60,5 @@ namespace TerribleDialogue
                 return ConsoleColor.White;
             }
         }
-
-        // Always delegates the input to the view
-        private static InputResult DefaultInputHandler(ConsoleKeyInfo keyInfo) => InputResult.Unhandled;
     }
 }

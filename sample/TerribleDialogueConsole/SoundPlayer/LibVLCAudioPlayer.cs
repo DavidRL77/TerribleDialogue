@@ -5,6 +5,8 @@ namespace TerribleDialogueConsole.SoundPlayer
 {
     internal class LibVLCAudioPlayer : ISoundPlayer, IDisposable
     {
+        public float Volume { get => player.Volume; set => player.Volume = (int)value; }
+
         private readonly LibVLC libVLC;
         private readonly MediaPlayer player;
 
@@ -44,11 +46,6 @@ namespace TerribleDialogueConsole.SoundPlayer
 
             player.Media = media;
             player.Play();
-        }
-
-        public void SetVolume(float value)
-        {
-            player.Volume = (int)value;
         }
 
         public void Stop()

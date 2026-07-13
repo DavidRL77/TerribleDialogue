@@ -1,20 +1,20 @@
 ﻿using TerribleDialogue.Data;
 using TerribleDialogueConsole;
-using TerribleDialogueConsole.View;
 
-namespace TerribleDialogue
+namespace TerribleDialogueConsole.View
 {
     internal class ConsoleDialogueView : IDialogueView
     {
         private const string LINE_BREAK = "<br>";
         private Keybind[] keybinds;
+        private bool inputCancelled;
 
         public ConsoleDialogueView(Keybind[] keybinds)
         {
             this.keybinds = keybinds;
         }
 
-        public void DisplayLine(LineData line)
+        public bool DisplayLine(LineData line)
         {
             string displayType = line.Tags.GetValueOrDefault("display", "newline");
             string block = line.Tags.GetValueOrDefault("block", "yes");
@@ -27,13 +27,14 @@ namespace TerribleDialogue
                 Console.Write(linePart);
                 while(block == "yes") 
                 {
-                    if(!ConsoleDisplay.TryReadKey(true, this.keybinds, out ConsoleKeyInfo keyInfo))
-                    { 
+                    if(inputCancelled)
+                    {
+                        inputCancelled = false;
                         Console.ResetColor();
-                        return;
+                        return false;
                     }
 
-                    if(keyInfo.Key == ConsoleKey.Enter)
+                    if(ConsoleDisplay.TryReadKey(true, keybinds, out ConsoleKeyInfo keyInfo) && keyInfo.Key == ConsoleKey.Enter)
                         break;
                 }
             }
@@ -42,6 +43,8 @@ namespace TerribleDialogue
             
             if(displayType == "newline")
                 Console.WriteLine();
+
+            return true;
         }
 
         public int DisplayChoices(string[] choices)
@@ -59,6 +62,11 @@ namespace TerribleDialogue
             {
                 return ConsoleColor.White;
             }
+        }
+
+        public void CancelInput()
+        {
+            inputCancelled = true;
         }
     }
 }

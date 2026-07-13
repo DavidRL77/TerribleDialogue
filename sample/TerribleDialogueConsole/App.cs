@@ -27,6 +27,7 @@ namespace TerribleDialogueConsole
             this.view = new ConsoleDialogueView([
                 new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet),
                 new(ConsoleKey.N, ConsoleModifiers.Alt, JumpNode),
+                new(ConsoleKey.Escape, ConsoleModifiers.None, () => { }), // Dummy
                 new(ConsoleKey.Q, ConsoleModifiers.Alt, () => dialogueManager.EndDialogue())
                 ]);
 
@@ -45,22 +46,26 @@ namespace TerribleDialogueConsole
 
         private void JumpSet()
         {
-            Console.Clear();
-            Console.WriteLine("Set to jump to: ");
             string[] sets = currentEngine.DialogueObject.Sets.Keys.ToArray();
-            string set = sets[ConsoleDisplay.Menu(sets)];
+            string set = GetStringOption("Set to jump to:", sets);
             currentEngine.SetSet(set);
-            Console.Clear();
         }
 
         private void JumpNode()
         {
-            Console.Clear();
-            Console.WriteLine("Node to jump to: ");
             string[] nodes = currentEngine.DialogueObject.Sets[currentEngine.CurrentSetId].Nodes.Keys.ToArray(); // holy shit
-            string node = nodes[ConsoleDisplay.Menu(nodes)];
+            string node = GetStringOption("Node to jump to:", nodes);
             currentEngine.SetNode(node);
+        }
+
+        private string GetStringOption(string prompt, string[] options)
+        {
             Console.Clear();
+            Console.WriteLine(prompt);
+            string result = options[ConsoleDisplay.Menu(options)];
+            Console.Clear();
+            view.CancelInput();
+            return result;
         }
 
         private void DialogueManager_OnLine(LineData lineData)

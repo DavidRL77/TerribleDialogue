@@ -4,7 +4,8 @@ namespace TerribleDialogueConsole.View
 {
     internal interface IDialogueView
     {
-        public void DisplayLine(LineData line);
+        public bool DisplayLine(LineData line);
         public int DisplayChoices(string[] choices);
+        public void CancelInput();
     }
 }

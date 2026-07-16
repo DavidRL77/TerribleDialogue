@@ -21,6 +21,7 @@ namespace TerribleDialogueConsole
 
         private readonly DialogueManager dialogueManager;
         private DialogueEngine currentEngine;
+        private readonly ConsolePrompt linePrompt;
 
         // Used to locate Music and Sfx files
         private string baseDirectory;
@@ -37,7 +38,13 @@ namespace TerribleDialogueConsole
                 new(ConsoleKey.Escape, ConsoleModifiers.None, viewStack.Pop),
                 new(ConsoleKey.Q, ConsoleModifiers.Alt, () => dialogueManager.EndDialogue())
                 ];
+
             inputHandler = new KeybindConsoleInputHandler(true, keybinds);
+            linePrompt = new ConsolePrompt()
+            {
+                InputHandler = inputHandler,
+                OnComplete = s => dialoguePanel.RemoveElement(linePrompt)
+            };
 
             dialogueManager = new DialogueManager();
 
@@ -61,7 +68,7 @@ namespace TerribleDialogueConsole
                 {
                     Options = sets,
                     InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); viewStack.Pop();  dialoguePanel.ClearElements(); },
+                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); dialoguePanel.ClearElements(); viewStack.Pop(); },
                     ForegroundColor = ConsoleColor.Gray
                 }
             );
@@ -78,7 +85,7 @@ namespace TerribleDialogueConsole
                 {
                     Options = nodes,
                     InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); viewStack.Pop(); dialoguePanel.ClearElements(); },
+                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); dialoguePanel.ClearElements(); viewStack.Pop(); },
                     ForegroundColor = ConsoleColor.Gray
                 }
             );
@@ -95,11 +102,7 @@ namespace TerribleDialogueConsole
             ConsoleColor color = ColorByName(lineData.Tags.GetValueOrDefault("color", "white"));
 
             dialoguePanel.AddElement(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
-            
-            while(!inputHandler.TryGetInput(out ConsoleKeyInfo keyInfo) || keyInfo.Key != ConsoleKey.Enter)
-            {
-
-            }
+            dialoguePanel.AddElement(linePrompt);
         }
 
 

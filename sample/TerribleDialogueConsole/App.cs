@@ -1,9 +1,12 @@
-﻿using System.Text;
+﻿using System.CommandLine;
+using System.Text;
 using System.Text.Json;
+using System.Xml.Linq;
 using TerribleDialogue;
 using TerribleDialogue.Data;
 using TerribleDialogueConsole.SoundPlayer;
 using TerribleDialogueConsole.View;
+using TerribleDialogueConsole.View.Input;
 
 namespace TerribleDialogueConsole
 {
@@ -11,7 +14,10 @@ namespace TerribleDialogueConsole
     {
         private readonly ISoundPlayer musicPlayer;
         private readonly ISoundPlayer sfxPlayer;
-        private readonly IDialogueView view;
+        private readonly ViewStack viewStack = new ViewStack();
+        private readonly ConsolePanel dialoguePanel = new ConsolePanel();
+        private readonly Keybind[] keybinds;
+        private readonly IInputHandler<ConsoleKeyInfo> inputHandler;
 
         private readonly DialogueManager dialogueManager;
         private DialogueEngine currentEngine;
@@ -23,13 +29,15 @@ namespace TerribleDialogueConsole
         {
             this.musicPlayer = musicPlayer;
             this.sfxPlayer = sfxPlayer;
-            this.baseDirectory = AppContext.BaseDirectory;
-            this.view = new ConsoleDialogueView([
+            
+            baseDirectory = AppContext.BaseDirectory;
+            keybinds = [
                 new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet),
                 new(ConsoleKey.N, ConsoleModifiers.Alt, JumpNode),
-                new(ConsoleKey.Escape, ConsoleModifiers.None, () => { }), // Dummy
+                new(ConsoleKey.Escape, ConsoleModifiers.None, viewStack.Pop),
                 new(ConsoleKey.Q, ConsoleModifiers.Alt, () => dialogueManager.EndDialogue())
-                ]);
+                ];
+            inputHandler = new KeybindConsoleInputHandler(true, keybinds);
 
             dialogueManager = new DialogueManager();
 
@@ -47,35 +55,57 @@ namespace TerribleDialogueConsole
         private void JumpSet()
         {
             string[] sets = currentEngine.DialogueObject.Sets.Keys.ToArray();
-            string set = GetStringOption("Set to jump to:", sets);
-            currentEngine.SetSet(set);
+            ConsolePanel selectionPanel = new ConsolePanel(
+                new ConsoleText("Select set to jump to:", ConsoleColor.White, Console.BackgroundColor),
+                new ConsoleMenu<string>()
+                {
+                    Options = sets,
+                    InputHandler = inputHandler,
+                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); viewStack.Pop();  dialoguePanel.ClearElements(); },
+                    ForegroundColor = ConsoleColor.Gray
+                }
+            );
+
+            viewStack.Push(selectionPanel);
         }
 
         private void JumpNode()
         {
             string[] nodes = currentEngine.DialogueObject.Sets[currentEngine.CurrentSetId].Nodes.Keys.ToArray(); // holy shit
-            string node = GetStringOption("Node to jump to:", nodes);
-            currentEngine.SetNode(node);
-        }
+            ConsolePanel selectionPanel = new ConsolePanel(
+                new ConsoleText("Select node to jump to:", ConsoleColor.White, Console.BackgroundColor),
+                new ConsoleMenu<string>()
+                {
+                    Options = nodes,
+                    InputHandler = inputHandler,
+                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); viewStack.Pop(); dialoguePanel.ClearElements(); },
+                    ForegroundColor = ConsoleColor.Gray
+                }
+            );
 
-        private string GetStringOption(string prompt, string[] options)
-        {
-            Console.Clear();
-            Console.WriteLine(prompt);
-            string result = options[ConsoleDisplay.Menu(options)];
-            Console.Clear();
-            view.CancelInput();
-            return result;
+            viewStack.Push(selectionPanel);
         }
 
         private void DialogueManager_OnLine(LineData lineData)
         {
-            view.DisplayLine(lineData);
+            string displayType = lineData.Tags.GetValueOrDefault("display", "newline");
+            string block = lineData.Tags.GetValueOrDefault("block", "yes");
+            string[] splitLines = lineData.Text.Split("<br>");
+
+            ConsoleColor color = ColorByName(lineData.Tags.GetValueOrDefault("color", "white"));
+
+            dialoguePanel.AddElement(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
+            
+            while(!inputHandler.TryGetInput(out ConsoleKeyInfo keyInfo) || keyInfo.Key != ConsoleKey.Enter)
+            {
+
+            }
         }
+
 
         private void DialogueManager_OnChoices(string[] choices)
         {
-            int choice = view.DisplayChoices(choices);
+            int choice = ConsoleDisplay.Menu(choices, keybinds);
             if(choice < 0)
                 return;
 
@@ -111,7 +141,7 @@ namespace TerribleDialogueConsole
 
         private void OnDialogueStart()
         {
-            Console.Clear();
+            viewStack.Push(dialoguePanel);
         }
 
         private void OnStop()
@@ -125,6 +155,7 @@ namespace TerribleDialogueConsole
             Console.ResetColor();
             musicPlayer.Stop();
             currentEngine = null;
+            viewStack.Clear();
         }
 
         private void ScreenCallHandler(CallData callData)
@@ -196,6 +227,18 @@ namespace TerribleDialogueConsole
         {
             float seconds = callData.Args.GetOrDefault<float>(0);
             Thread.Sleep((int)(seconds*1000));
+        }
+
+        private static ConsoleColor ColorByName(string name)
+        {
+            if(Enum.TryParse(name, true, out ConsoleColor color))
+            {
+                return color;
+            }
+            else
+            {
+                return ConsoleColor.White;
+            }
         }
 
         //private static void SaveCharacter(Character character)

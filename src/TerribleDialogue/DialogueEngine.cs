@@ -60,7 +60,7 @@ namespace TerribleDialogue
             return state.StatementPath.Count > 0;
         }
 
-        public bool IsAtValidStatement() =>  state.StatementPath.Count == 1 && state.StatementPath[0].StatementIndex < 0;
+        public bool IsAtValidStatement() =>  state.StatementPath.Count >= 1 && state.StatementPath[^1].StatementIndex >= 0;
 
         /// <summary>
         /// Advances the dialogue to the next stopping point.

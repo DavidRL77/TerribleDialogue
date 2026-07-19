@@ -50,10 +50,10 @@ namespace TerribleDialogue
 
             this.engine = engine;
             
-            // If the engine is already at a valid statement, avoid skipping over it
-            if(engine.IsAtValidStatement())
+            // If the engine hasn't been stepped yet, make sure to do so
+            if(!engine.IsAtValidStatement())
                 Next();
-            else
+            else // If it's already at a statement, don't skip over it
                 ProcessEngine();
         }
         /// <summary>

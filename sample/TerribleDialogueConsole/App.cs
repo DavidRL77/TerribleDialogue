@@ -106,8 +106,7 @@ namespace TerribleDialogueConsole
             if(block == "yes")
                 dialoguePanel.ShowPrompt();
 
-            if(dialogueManager.InDialogue)
-                dialogueManager.Next();
+            AdvanceDialogue();
         }
 
 

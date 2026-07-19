@@ -46,10 +46,10 @@ namespace TerribleDialogue
 
         public void BeginDialogue(DialogueEngine engine)
         {
+            this.engine = engine;
+
             OnStart?.Invoke();
 
-            this.engine = engine;
-            
             // If the engine hasn't been stepped yet, make sure to do so
             if(!engine.IsAtValidStatement())
                 Next();

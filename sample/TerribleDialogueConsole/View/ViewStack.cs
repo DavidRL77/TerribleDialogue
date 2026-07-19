@@ -9,6 +9,7 @@ namespace TerribleDialogueConsole.View
     // Stack of views where only the one on top will be visible
     internal class ViewStack
     {
+        public int Count => views.Count;
         public IViewElement CurrentView => views.TryPeek(out IViewElement view) ? view : null;
 
         private readonly Stack<IViewElement> views;

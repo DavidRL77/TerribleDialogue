@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
@@ -35,12 +36,13 @@ namespace TerribleDialogueConsole
             keybinds = [
                 new(ConsoleKey.S, ConsoleModifiers.Alt, JumpSet),
                 new(ConsoleKey.N, ConsoleModifiers.Alt, JumpNode),
-                new(ConsoleKey.Escape, ConsoleModifiers.None, viewStack.Pop),
-                new(ConsoleKey.Q, ConsoleModifiers.Alt, () => dialogueManager.EndDialogue())
+                new(ConsoleKey.Escape, ConsoleModifiers.None, GoBack),
+                new(ConsoleKey.Q, ConsoleModifiers.Alt, Quit),
+                new(ConsoleKey.F1, ConsoleModifiers.None, ShowKeybinds)
                 ];
 
             inputHandler = new KeybindConsoleInputHandler(true, keybinds);
-            dialoguePanel = new DialoguePanel(inputHandler, () => { });
+            dialoguePanel = new DialoguePanel(inputHandler, () => { }); // TODO: Remove the callback altogether
 
             dialogueManager = new DialogueManager();
 
@@ -111,6 +113,41 @@ namespace TerribleDialogueConsole
             viewStack.Push(selectionPanel);
         }
 
+        private void GoBack()
+        {
+            if(viewStack.Count > 1)
+                viewStack.Pop();
+            else
+                dialogueManager.EndDialogue();
+        }
+
+        private void Quit()
+        {
+            dialogueManager.EndDialogue();
+        }
+
+        private void ShowKeybinds()
+        {
+            ConsolePanel panel = new ConsolePanel();
+            foreach(ConsoleKeybind keybind in keybinds)
+            {
+                if(keybind.Modifiers != ConsoleModifiers.None)
+                {
+                    panel.AddElement(new ConsoleText(Enum.GetName(keybind.Modifiers) + "+", ConsoleColor.Cyan, ConsoleColor.Black, false));
+                }
+                panel.AddElement(new ConsoleText(Enum.GetName(keybind.Key) + ": ", ConsoleColor.Cyan, ConsoleColor.Black, false));
+                panel.AddElement(new ConsoleText(keybind.Action.GetMethodInfo().Name, ConsoleColor.White, ConsoleColor.Black, true));
+            }
+
+            panel.AddElement(new ConsolePrompt()
+            {
+                InputHandler = inputHandler,
+                OnComplete = s => GoBack()
+            });
+
+            viewStack.Push(panel);
+        }
+
         private void ResetView()
         {
             viewStack.Clear();
@@ -167,7 +204,8 @@ namespace TerribleDialogueConsole
         {
             musicPlayer.Stop();
             currentEngine = null;
-            ResetView();
+            viewStack.Clear();
+            dialoguePanel.Clear();
         }
         #endregion
 

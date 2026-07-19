@@ -6,6 +6,7 @@ using TerribleDialogue;
 using TerribleDialogue.Data;
 using TerribleDialogueConsole.SoundPlayer;
 using TerribleDialogueConsole.View;
+using TerribleDialogueConsole.View.Custom;
 using TerribleDialogueConsole.View.Input;
 
 namespace TerribleDialogueConsole
@@ -15,13 +16,12 @@ namespace TerribleDialogueConsole
         private readonly ISoundPlayer musicPlayer;
         private readonly ISoundPlayer sfxPlayer;
         private readonly ViewStack viewStack = new ViewStack();
-        private readonly ConsolePanel dialoguePanel = new ConsolePanel();
-        private readonly Keybind[] keybinds;
+        private readonly DialoguePanel dialoguePanel;
+        private readonly ConsoleKeybind[] keybinds;
         private readonly IInputHandler<ConsoleKeyInfo> inputHandler;
 
         private readonly DialogueManager dialogueManager;
         private DialogueEngine currentEngine;
-        private readonly ConsolePrompt linePrompt;
 
         // Used to locate Music and Sfx files
         private string baseDirectory;
@@ -40,11 +40,7 @@ namespace TerribleDialogueConsole
                 ];
 
             inputHandler = new KeybindConsoleInputHandler(true, keybinds);
-            linePrompt = new ConsolePrompt()
-            {
-                InputHandler = inputHandler,
-                OnComplete = s => dialoguePanel.RemoveElement(linePrompt)
-            };
+            dialoguePanel = new DialoguePanel(inputHandler, () => { });
 
             dialogueManager = new DialogueManager();
 
@@ -68,7 +64,7 @@ namespace TerribleDialogueConsole
                 {
                     Options = sets,
                     InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); dialoguePanel.ClearElements(); viewStack.Pop(); },
+                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); ResetView(); AdvanceDialogue(); },
                     ForegroundColor = ConsoleColor.Gray
                 }
             );
@@ -85,7 +81,7 @@ namespace TerribleDialogueConsole
                 {
                     Options = nodes,
                     InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); dialoguePanel.ClearElements(); viewStack.Pop(); },
+                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); ResetView(); AdvanceDialogue(); },
                     ForegroundColor = ConsoleColor.Gray
                 }
             );
@@ -95,14 +91,23 @@ namespace TerribleDialogueConsole
 
         private void DialogueManager_OnLine(LineData lineData)
         {
+            // TEMP FIX
+            if(!dialoguePanel.Visible)
+                return;
+
             string displayType = lineData.Tags.GetValueOrDefault("display", "newline");
             string block = lineData.Tags.GetValueOrDefault("block", "yes");
             string[] splitLines = lineData.Text.Split("<br>");
 
             ConsoleColor color = ColorByName(lineData.Tags.GetValueOrDefault("color", "white"));
 
-            dialoguePanel.AddElement(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
-            dialoguePanel.AddElement(linePrompt);
+            dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
+
+            if(block == "yes")
+                dialoguePanel.ShowPrompt();
+
+            if(dialogueManager.InDialogue)
+                dialogueManager.Next();
         }
 
 
@@ -133,18 +138,30 @@ namespace TerribleDialogueConsole
             }
 
             currentEngine = engine;
+
+            viewStack.Push(dialoguePanel);
+            // BUG: The second time the same dialogue is opened, both START and ON LINE will be called, duplicating the lines and prompts in the dialogue panel
             dialogueManager.BeginDialogue(engine);
+        }
 
+        private void ResetView()
+        {
+            viewStack.Clear();
+            dialoguePanel.Clear();
+            viewStack.Push(dialoguePanel);
+        }
 
-            while(dialogueManager.InDialogue)
-            {
-                dialogueManager.Next();
-            }
+        private void AdvanceDialogue()
+        {
+            if(!dialogueManager.InDialogue)
+                return;
+
+            dialogueManager.Next();
         }
 
         private void OnDialogueStart()
         {
-            viewStack.Push(dialoguePanel);
+            
         }
 
         private void OnStop()
@@ -154,11 +171,9 @@ namespace TerribleDialogueConsole
 
         private void OnDialogueEnd()
         {
-            Console.Clear();
-            Console.ResetColor();
             musicPlayer.Stop();
             currentEngine = null;
-            viewStack.Clear();
+            ResetView();
         }
 
         private void ScreenCallHandler(CallData callData)

@@ -12,9 +12,9 @@ namespace TerribleDialogueConsole
 
         public static int Menu(object[] options) => Menu(options, []);
 
-        public static int Menu(object[] options, Keybind[] keybinds) => Menu(options, o => o.ToString(), keybinds);
+        public static int Menu(object[] options, ConsoleKeybind[] keybinds) => Menu(options, o => o.ToString(), keybinds);
 
-        public static int Menu(object[] options, Func<object, string> displayFunc, Keybind[] keybinds)
+        public static int Menu(object[] options, Func<object, string> displayFunc, ConsoleKeybind[] keybinds)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -54,10 +54,10 @@ namespace TerribleDialogueConsole
         /// <param name="keybinds"></param>
         /// <param name="consoleKeyInfo"></param>
         /// <returns>false if a keybind has been used, true otherwise</returns>
-        public static bool TryReadKey(bool intercept, Keybind[] keybinds, out ConsoleKeyInfo consoleKeyInfo)
+        public static bool TryReadKey(bool intercept, ConsoleKeybind[] keybinds, out ConsoleKeyInfo consoleKeyInfo)
         {
             consoleKeyInfo = Console.ReadKey(intercept);
-            foreach(Keybind keybind in keybinds)
+            foreach(ConsoleKeybind keybind in keybinds)
             {
                 if(consoleKeyInfo.Key == keybind.Key && consoleKeyInfo.Modifiers == keybind.Modifiers)
                 {

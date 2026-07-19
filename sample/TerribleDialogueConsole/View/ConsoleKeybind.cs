@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace TerribleDialogueConsole
 {
-    internal class Keybind
+    internal class ConsoleKeybind
     {
         public ConsoleKey Key { get; }
         public ConsoleModifiers Modifiers { get; }
         public Action Action { get; }
 
-        public Keybind(ConsoleKey key, ConsoleModifiers modifiers, Action action)
+        public ConsoleKeybind(ConsoleKey key, ConsoleModifiers modifiers, Action action)
         {
             Key = key;
             Modifiers = modifiers;

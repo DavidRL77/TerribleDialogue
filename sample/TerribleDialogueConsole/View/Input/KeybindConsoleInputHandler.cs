@@ -9,9 +9,9 @@ namespace TerribleDialogueConsole.View.Input
     internal class KeybindConsoleInputHandler : IInputHandler<ConsoleKeyInfo>
     {
         public bool Intercept { get; }
-        public Keybind[] Keybinds { get; }
+        public ConsoleKeybind[] Keybinds { get; }
 
-        public KeybindConsoleInputHandler(bool intercept, Keybind[] keybinds)
+        public KeybindConsoleInputHandler(bool intercept, ConsoleKeybind[] keybinds)
         {
             Intercept = intercept;
             Keybinds = keybinds;
@@ -30,7 +30,7 @@ namespace TerribleDialogueConsole.View.Input
         /// <returns>If a keybind has been triggered</returns>
         private bool TriggerKeybinds(ConsoleKeyInfo keyInfo)
         {
-            foreach(Keybind keybind in Keybinds)
+            foreach(ConsoleKeybind keybind in Keybinds)
             {
                 if(keyInfo.Key == keybind.Key && keyInfo.Modifiers == keybind.Modifiers)
                 {

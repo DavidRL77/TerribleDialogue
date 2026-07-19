@@ -39,7 +39,8 @@ namespace TerribleDialogueConsole.View
                 result.Append(input.KeyChar);
             }
 
-            OnComplete.Invoke(result.ToString());
+            if(Visible)
+                OnComplete.Invoke(result.ToString());
         }
 
         protected override void OnHide()

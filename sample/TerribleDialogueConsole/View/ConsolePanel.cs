@@ -8,6 +8,7 @@ namespace TerribleDialogueConsole.View
 {
     internal class ConsolePanel : AbstractViewElement
     {
+        public int Count => Elements.Count;
         private List<IViewElement> Elements { get; }
 
         public ConsolePanel(params IViewElement[] elements)
@@ -19,6 +20,9 @@ namespace TerribleDialogueConsole.View
         {
             foreach(IViewElement element in Elements)
             {
+                if(!Visible) // Other elements might hide the panel before it's done rendering everything
+                    break;
+
                 element.Show();
             }
         }
@@ -36,7 +40,9 @@ namespace TerribleDialogueConsole.View
         public void AddElement(IViewElement element)
         {
             Elements.Add(element);
-            element.Show();
+
+            if(Visible)
+                element.Show();
         }
 
         public void RemoveElement(IViewElement element)

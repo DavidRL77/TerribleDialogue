@@ -46,13 +46,35 @@ namespace TerribleDialogueConsole
 
             dialogueManager.OnLine += DialogueManager_OnLine;
             dialogueManager.OnChoices += DialogueManager_OnChoices;
-            dialogueManager.OnStart += OnDialogueStart;
-            dialogueManager.OnStop += OnStop;
-            dialogueManager.OnEnd += OnDialogueEnd;
+            dialogueManager.OnStop += DialogueManager_OnStop;
+            dialogueManager.OnEnd += DialogueManager_OnEnd;
             dialogueManager.AddCallHandler("play", PlayCallHandler);
             dialogueManager.AddCallHandler("stop", StopCallHandler);
             dialogueManager.AddCallHandler("screen", ScreenCallHandler);
             dialogueManager.AddCallHandler("wait", WaitCallHandler);
+        }
+
+        public void Run(DialogueEngine engine, string baseDirectory)
+        {
+            this.baseDirectory = baseDirectory;
+
+            Console.Clear();
+            Console.OutputEncoding = Encoding.UTF8;
+
+            if(engine.IsDialogueOver)
+            {
+                Console.Clear();
+                Console.Write($"Dialogue is over.");
+                Console.ReadLine();
+                Console.Clear();
+                return;
+            }
+
+            currentEngine = engine;
+
+            viewStack.Push(dialoguePanel);
+            // BUG: The second time the same dialogue is opened, both START and ON LINE will be called, duplicating the lines and prompts in the dialogue panel
+            dialogueManager.BeginDialogue(engine);
         }
 
         private void JumpSet()
@@ -89,6 +111,22 @@ namespace TerribleDialogueConsole
             viewStack.Push(selectionPanel);
         }
 
+        private void ResetView()
+        {
+            viewStack.Clear();
+            dialoguePanel.Clear();
+            viewStack.Push(dialoguePanel);
+        }
+
+        private void AdvanceDialogue()
+        {
+            if(!dialogueManager.InDialogue)
+                return;
+
+            dialogueManager.Next();
+        }
+
+        #region DIALOGUE_CALLBACKS
         private void DialogueManager_OnLine(LineData lineData)
         {
             // TEMP FIX
@@ -120,61 +158,20 @@ namespace TerribleDialogueConsole
             dialogueManager.Next();
         }
 
-        public void Run(DialogueEngine engine, string baseDirectory)
-        {
-            this.baseDirectory = baseDirectory;
-
-            Console.Clear();
-            Console.OutputEncoding = Encoding.UTF8;
-
-            if(engine.IsDialogueOver)
-            {
-                Console.Clear();
-                Console.Write($"Dialogue is over.");
-                Console.ReadLine();
-                Console.Clear();
-                return;
-            }
-
-            currentEngine = engine;
-
-            viewStack.Push(dialoguePanel);
-            // BUG: The second time the same dialogue is opened, both START and ON LINE will be called, duplicating the lines and prompts in the dialogue panel
-            dialogueManager.BeginDialogue(engine);
-        }
-
-        private void ResetView()
-        {
-            viewStack.Clear();
-            dialoguePanel.Clear();
-            viewStack.Push(dialoguePanel);
-        }
-
-        private void AdvanceDialogue()
-        {
-            if(!dialogueManager.InDialogue)
-                return;
-
-            dialogueManager.Next();
-        }
-
-        private void OnDialogueStart()
-        {
-            
-        }
-
-        private void OnStop()
+        private void DialogueManager_OnStop()
         {
             dialogueManager.EndDialogue();
         }
 
-        private void OnDialogueEnd()
+        private void DialogueManager_OnEnd()
         {
             musicPlayer.Stop();
             currentEngine = null;
             ResetView();
         }
+        #endregion
 
+        #region DIALOGUE_CALL_HANDLERS
         private void ScreenCallHandler(CallData callData)
         {
             string action = callData.Args.Get<string>(0);
@@ -227,7 +224,7 @@ namespace TerribleDialogueConsole
         private void StopCallHandler(CallData callData)
         {
             string channel = callData.Args.GetOrDefault<string>(0);
-            
+
             if(channel == null)
                 return;
 
@@ -243,8 +240,10 @@ namespace TerribleDialogueConsole
         private void WaitCallHandler(CallData callData)
         {
             float seconds = callData.Args.GetOrDefault<float>(0);
-            Thread.Sleep((int)(seconds*1000));
+            Thread.Sleep((int)(seconds * 1000));
         }
+        #endregion
+
 
         private static ConsoleColor ColorByName(string name)
         {
@@ -257,19 +256,5 @@ namespace TerribleDialogueConsole
                 return ConsoleColor.White;
             }
         }
-
-        //private static void SaveCharacter(Character character)
-        //{
-        //    if(character == null)
-        //        return;
-
-        //    string saveFile = GetCharacterSavePath(character);
-        //    Directory.CreateDirectory(SavePath);
-
-        //    string stateJson = JsonSerializer.Serialize(character.Engine.State);
-        //    File.WriteAllText(saveFile, stateJson);
-        //}
-
-        //private static string GetCharacterSavePath(Character character) => Path.Combine(SavePath, character.Name);
     }
 }

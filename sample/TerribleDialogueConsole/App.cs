@@ -82,35 +82,34 @@ namespace TerribleDialogueConsole
         private void JumpSet()
         {
             string[] sets = currentEngine.DialogueObject.Sets.Keys.ToArray();
-            ConsolePanel selectionPanel = new ConsolePanel(
-                new ConsoleText("Select set to jump to:", ConsoleColor.White, Console.BackgroundColor),
-                new ConsoleMenu<string>()
-                {
-                    Options = sets,
-                    InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetSet(option); ResetView(); AdvanceDialogue(); },
-                    ForegroundColor = ConsoleColor.Gray
-                }
-            );
-
-            viewStack.Push(selectionPanel);
+            ShowJumpMenu(sets, "Set to jump to:", currentEngine.SetSet);
         }
 
         private void JumpNode()
         {
             string[] nodes = currentEngine.DialogueObject.Sets[currentEngine.CurrentSetId].Nodes.Keys.ToArray(); // holy shit
-            ConsolePanel selectionPanel = new ConsolePanel(
-                new ConsoleText("Select node to jump to:", ConsoleColor.White, Console.BackgroundColor),
-                new ConsoleMenu<string>()
-                {
-                    Options = nodes,
-                    InputHandler = inputHandler,
-                    SelectionCallback = (index, option) => { currentEngine.SetNode(option); ResetView(); AdvanceDialogue(); },
-                    ForegroundColor = ConsoleColor.Gray
-                }
-            );
+            ShowJumpMenu(nodes, "Node to jump to:", currentEngine.SetNode);
+        }
 
-            viewStack.Push(selectionPanel);
+        private void ShowJumpMenu(string[] options, string prompt, Action<string> callback)
+        {
+            viewStack.Push(
+                new ConsolePanel(
+                    new ConsoleText(prompt, ConsoleColor.White, ConsoleColor.Black),
+                    new ConsoleMenu<string>()
+                    {
+                        Options = options,
+                        InputHandler = inputHandler,
+                        SelectionCallback = (index, option) =>
+                        {
+                            callback.Invoke(option);
+                            ResetView();
+                            AdvanceDialogue();
+                        },
+                        ForegroundColor = ConsoleColor.Gray
+                    }
+                )
+            );
         }
 
         private void GoBack()

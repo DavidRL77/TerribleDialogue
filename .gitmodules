@@ -1,0 +1,3 @@
+[submodule "ConsoleView"]
+	path = ConsoleView
+	url = git@github.com:DavidRL77/ConsoleView.git

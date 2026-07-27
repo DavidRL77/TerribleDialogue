@@ -7,8 +7,8 @@ using TerribleDialogue;
 using TerribleDialogue.Data;
 using TerribleDialogueConsole.SoundPlayer;
 using TerribleDialogueConsole.View;
-using TerribleDialogueConsole.View.Custom;
-using TerribleDialogueConsole.View.Input;
+using ConsoleView.View;
+using ConsoleView.Input;
 
 namespace TerribleDialogueConsole
 {
@@ -42,7 +42,7 @@ namespace TerribleDialogueConsole
                 ];
 
             inputHandler = new KeybindConsoleInputHandler(true, keybinds);
-            dialoguePanel = new DialoguePanel(inputHandler, () => { }); // TODO: Remove the callback altogether
+            dialoguePanel = new DialoguePanel(AdvanceDialogue);
 
             dialogueManager = new DialogueManager();
 
@@ -77,6 +77,17 @@ namespace TerribleDialogueConsole
             viewStack.Push(dialoguePanel);
             // BUG: The second time the same dialogue is opened, both START and ON LINE will be called, duplicating the lines and prompts in the dialogue panel
             dialogueManager.BeginDialogue(engine);
+
+            while(viewStack.Count > 0)
+            {
+                if(viewStack.CurrentView is IInputListener<ConsoleKeyInfo> listener 
+                && listener.CanHandleInput() 
+                && inputHandler.TryGetInput(out ConsoleKeyInfo input))
+                {
+                    listener.OnInput(input);
+                }
+                    
+            }
         }
 
         private void JumpSet()
@@ -96,18 +107,12 @@ namespace TerribleDialogueConsole
             viewStack.Push(
                 new ConsolePanel(
                     new ConsoleText(prompt, ConsoleColor.White, ConsoleColor.Black),
-                    new ConsoleMenu<string>()
-                    {
-                        Options = options,
-                        InputHandler = inputHandler,
-                        SelectionCallback = (index, option) =>
+                    new ConsoleMenu<string>(options, (self, index, option) =>
                         {
                             callback.Invoke(option);
                             ResetView();
                             AdvanceDialogue();
-                        },
-                        ForegroundColor = ConsoleColor.Gray
-                    }
+                        }, ConsoleColor.Gray)
                 )
             );
         }
@@ -138,11 +143,7 @@ namespace TerribleDialogueConsole
                 panel.AddElement(new ConsoleText(keybind.Action.GetMethodInfo().Name, ConsoleColor.White, ConsoleColor.Black, true));
             }
 
-            panel.AddElement(new ConsolePrompt()
-            {
-                InputHandler = inputHandler,
-                OnComplete = s => GoBack()
-            });
+            panel.AddElement(ConsoleKeyPrompt.UntilKeyPressed(ConsoleKey.Enter, GoBack));
 
             viewStack.Push(panel);
         }
@@ -177,21 +178,20 @@ namespace TerribleDialogueConsole
 
             dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
 
-            if(block == "yes")
-                dialoguePanel.ShowPrompt();
-
-            AdvanceDialogue();
+            // if(block == "yes")
+            //     dialoguePanel.ShowPrompt();
         }
 
 
         private void DialogueManager_OnChoices(string[] choices)
         {
-            int choice = ConsoleDisplay.Menu(choices, keybinds);
-            if(choice < 0)
-                return;
-
-            dialogueManager.AddChoice(choice);
-            dialogueManager.Next();
+            dialoguePanel.AddText(new ConsoleMenu<string>(choices, (self, index, option) =>
+            {
+                dialoguePanel.RemoveText(self);
+                dialoguePanel.AddText(new ConsoleText("> " + option, ConsoleColor.Gray));
+                dialogueManager.AddChoice(index);
+                AdvanceDialogue();
+            }));
         }
 
         private void DialogueManager_OnStop()

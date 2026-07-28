@@ -178,6 +178,7 @@ namespace TerribleDialogueConsole
 
             dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
 
+            // TODO: Fix
             // if(block == "yes")
             //     dialoguePanel.ShowPrompt();
         }

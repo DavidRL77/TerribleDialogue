@@ -170,15 +170,15 @@ namespace TerribleDialogueConsole
             if(!dialoguePanel.Visible)
                 return;
 
-            string displayType = lineData.Tags.GetValueOrDefault("display", "newline");
-            string block = lineData.Tags.GetValueOrDefault("block", "yes");
+            bool newline = lineData.Tags.GetValueOrDefault("display", "newline") == "newline";
+            bool block = lineData.Tags.GetValueOrDefault("block", "yes") == "yes";
             string[] splitLines = lineData.Text.Split("<br>");
 
             ConsoleColor color = ColorByName(lineData.Tags.GetValueOrDefault("color", "white"));
 
-            dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
+            dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, newline));   
 
-            if(block == "yes")
+            if(block)
                 dialoguePanel.ShowPrompt();
             else 
                 AdvanceDialogue();

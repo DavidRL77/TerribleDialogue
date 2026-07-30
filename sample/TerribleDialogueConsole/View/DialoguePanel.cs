@@ -20,9 +20,13 @@ namespace TerribleDialogueConsole.View
         public DialoguePanel(Action onPromptComplete)
         {
             textPanel = new ConsolePanel();
-            prompt = ConsoleKeyPrompt.UntilKeyPressed(ConsoleKey.Enter, onPromptComplete);
+            prompt = ConsoleKeyPrompt.UntilKeyPressed(ConsoleKey.Enter, () =>
+            {
+                mainPanel.RemoveElement(prompt);
+                onPromptComplete.Invoke();
+            });
 
-            mainPanel = new ConsolePanel(textPanel, prompt);
+            mainPanel = new ConsolePanel(textPanel);
         }
 
         protected override void OnHide()
@@ -43,6 +47,12 @@ namespace TerribleDialogueConsole.View
         public void RemoveText(IViewElement element)
         {
             textPanel.RemoveElement(element);
+        }
+
+        public void ShowPrompt()
+        {
+            if(!mainPanel.ContainsElement(prompt))
+                mainPanel.AddElement(prompt);
         }
 
 

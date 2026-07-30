@@ -178,9 +178,10 @@ namespace TerribleDialogueConsole
 
             dialoguePanel.AddText(new ConsoleText(lineData.Text, color, Console.BackgroundColor, displayType == "newline"));
 
-            // TODO: Fix
-            // if(block == "yes")
-            //     dialoguePanel.ShowPrompt();
+            if(block == "yes")
+                dialoguePanel.ShowPrompt();
+            else 
+                AdvanceDialogue();
         }
 
 
@@ -215,7 +216,7 @@ namespace TerribleDialogueConsole
             string action = callData.Args.Get<string>(0);
 
             if(action == "clear")
-                Console.Clear();
+                dialoguePanel.Clear();
         }
 
         private void PlayCallHandler(CallData callData)

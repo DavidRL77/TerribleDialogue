@@ -8,6 +8,7 @@
   </PropertyGroup>
 	
 	<ItemGroup>
+    <PackageReference Include="Davicro.ConsoleView" Version="0.0.1-alpha" />
     <PackageReference Include="LibVLCSharp" Version="3.9.6" />
     <PackageReference Include="System.CommandLine" Version="3.0.0-preview.5.26302.115" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.23" />

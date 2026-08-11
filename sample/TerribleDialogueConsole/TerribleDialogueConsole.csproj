@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TerribleDialogue\TerribleDialogue.csproj" />
-    <ProjectReference Include="..\..\lib\ConsoleView\ConsoleView\ConsoleView.csproj" />
   </ItemGroup>
 
 </Project>

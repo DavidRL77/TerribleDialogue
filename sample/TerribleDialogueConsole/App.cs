@@ -193,7 +193,7 @@ namespace TerribleDialogueConsole
                 dialoguePanel.AddText(new ConsoleText("> " + option, ConsoleColor.Gray));
                 dialogueManager.AddChoice(index);
                 AdvanceDialogue();
-            }));
+            }, ConsoleColor.Gray));
         }
 
         private void DialogueManager_OnStop()

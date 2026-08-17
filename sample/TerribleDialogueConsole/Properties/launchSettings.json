@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "TerribleDialogueConsole": {
-      "commandName": "Project",
-      "commandLineArgs": "../../../../Dialogue/*"
-    }
-  }
-}
